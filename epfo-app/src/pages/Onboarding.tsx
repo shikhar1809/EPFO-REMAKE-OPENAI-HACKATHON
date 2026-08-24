@@ -106,12 +106,12 @@ export const Onboarding: React.FC = () => {
   
   const { verifyUAN, loginWithPhone, completeProfile, user } = useSessionStore();
   
-  const [uanInput, setUanInput] = useState('');
-  const [phoneInput, setPhoneInput] = useState('');
-  const [otpInput, setOtpInput] = useState('');
+  const [uanInput, setUanInput] = useState('101234567890');
+  const [phoneInput, setPhoneInput] = useState('9876543210');
+  const [otpInput, setOtpInput] = useState('1234');
   const [showOtp, setShowOtp] = useState(false);
-  const [profileName, setProfileName] = useState('');
-  const [mpinInput, setMpinInput] = useState('');
+  const [profileName, setProfileName] = useState('Rameshwar Sharma');
+  const [mpinInput, setMpinInput] = useState('1234');
   const [isVerifying, setIsVerifying] = useState(false);
 
   const languages = [

@@ -13,12 +13,12 @@ export const Claim: React.FC = () => {
   const { stepUpAuth } = useSessionStore();
   
   const [step, setStep] = useState(1);
-  const [bankDigits, setBankDigits] = useState('');
+  const [bankDigits, setBankDigits] = useState('1234');
   const [claimType, setClaimType] = useState('31'); // 31 = Advance, 19 = Full
-  const [purpose, setPurpose] = useState('');
-  const [amount, setAmount] = useState('');
-  const [address, setAddress] = useState('');
-  const [otp, setOtp] = useState('');
+  const [purpose, setPurpose] = useState('illness');
+  const [amount, setAmount] = useState('50000');
+  const [address, setAddress] = useState('Flat 402, Shanti Vihar, Sector 14, Dwarka, New Delhi - 110078');
+  const [otp, setOtp] = useState('1234');
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [operationId, setOperationId] = useState<string | null>(null);

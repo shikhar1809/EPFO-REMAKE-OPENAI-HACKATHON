@@ -17,10 +17,10 @@ export const SmartFlowEngine: React.FC = () => {
   
   const task = getCurrentTask();
   
-  const [bankDigits, setBankDigits] = useState('');
-  const [purpose, setPurpose] = useState('');
-  const [amount, setAmount] = useState('');
-  const [otpInput, setOtpInput] = useState('');
+  const [bankDigits, setBankDigits] = useState('1234');
+  const [purpose, setPurpose] = useState('Medical Emergency (Illness)');
+  const [amount, setAmount] = useState('50000');
+  const [otpInput, setOtpInput] = useState('1234');
   const [authError, setAuthError] = useState(false);
   const [operationId, setOperationId] = useState<string | null>(null);
 

@@ -43,8 +43,8 @@ export const UanActivation: React.FC = () => {
             </div>
             
             <div className='space-y-4 mt-8'>
-              <Input placeholder='Enter your 12-digit UAN' type='number' />
-              <Input placeholder='Enter your Aadhaar Number' type='number' />
+              <Input placeholder='Enter your 12-digit UAN' defaultValue='101234567890' />
+              <Input placeholder='Enter your Aadhaar Number' defaultValue='987654321098' />
             </div>
 
             <Button className='w-full mt-8' onClick={handleNext}>Continue to Verification</Button>
@@ -62,7 +62,7 @@ export const UanActivation: React.FC = () => {
             </div>
             
             <div className='mt-8'>
-              <Input placeholder='Enter OTP' type='number' maxLength={6} className='text-center text-xl tracking-widest' />
+              <Input placeholder='Enter OTP' defaultValue='123456' maxLength={6} className='text-center text-xl tracking-widest' />
             </div>
 
             <Button className='w-full mt-8' onClick={handleNext} isLoading={loading}>Activate Account</Button>
