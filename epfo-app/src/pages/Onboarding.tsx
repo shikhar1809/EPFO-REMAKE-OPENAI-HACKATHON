@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Globe, ArrowLeft, User, FileText } from 'lucide-react';
+import { ShieldCheck, Globe, ArrowLeft, User } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useSessionStore } from '../store/useSessionStore';
 
@@ -32,12 +32,6 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
       {/* Animated DigiLocker Vault Hero Animation */}
       {vaultState === 'intro' && (
         <VaultIntroAnimation />
-      )}
-
-      {vaultState !== 'intro' && (
-        <div className='bg-amber-50 p-3.5 rounded-2xl w-14 h-14 flex items-center justify-center mb-2'>
-          <FileText className='w-7 h-7 text-amber-600' />
-        </div>
       )}
 
       <div>
