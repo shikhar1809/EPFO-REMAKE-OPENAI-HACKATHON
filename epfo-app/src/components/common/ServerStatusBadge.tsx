@@ -66,16 +66,26 @@ export const ServerStatusBadge: React.FC = () => {
   const config = getStatusConfig(status);
 
   return (
-    <button
-      onClick={() => navigate('/server-status')}
-      className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border transition-all cursor-pointer select-none text-[10px] font-extrabold tracking-tight shrink-0 shadow-2xs ${config.badgeBg}`}
-      title="Click to view full Server Status, Uptime, Incidents & Bug Reporting"
-    >
-      <span className="relative flex h-2 w-2 shrink-0">
-        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${config.pulseColor}`}></span>
-        <span className={`relative inline-flex rounded-full h-2 w-2 ${config.dotColor}`}></span>
-      </span>
-      <span className="tracking-wide uppercase">{config.labelText}</span>
-    </button>
+    <div className="relative group inline-flex items-center">
+      <button
+        onClick={() => navigate('/server-status')}
+        className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border transition-all cursor-pointer select-none text-[10px] font-extrabold tracking-tight shrink-0 shadow-2xs ${config.badgeBg}`}
+      >
+        <span className="relative flex h-2 w-2 shrink-0">
+          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${config.pulseColor}`}></span>
+          <span className={`relative inline-flex rounded-full h-2 w-2 ${config.dotColor}`}></span>
+        </span>
+        <span className="tracking-wide uppercase">{config.labelText}</span>
+      </button>
+
+      {/* Floating Hover Tooltip */}
+      <div className="absolute left-0 top-full mt-1.5 hidden group-hover:flex flex-col items-start z-50 pointer-events-none">
+        {/* Subtle Upward Arrow */}
+        <div className="w-2 h-2 bg-slate-900 rotate-45 ml-4 -mb-1 border-t border-l border-slate-700/60" />
+        <div className="bg-slate-900/95 backdrop-blur-xs text-white text-[10px] font-medium px-2.5 py-1.5 rounded-xl shadow-2xl border border-slate-700/60 whitespace-nowrap animate-in fade-in zoom-in-95 duration-150">
+          Click to check server status and view technical details
+        </div>
+      </div>
+    </div>
   );
 };
