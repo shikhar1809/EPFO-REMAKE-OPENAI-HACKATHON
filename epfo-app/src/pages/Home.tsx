@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  FileText, 
-  Wallet, 
   FolderOpen, 
-  ArrowRightLeft, 
   LogOut, 
   ShieldAlert, 
   Play, 
@@ -12,8 +9,6 @@ import {
   Trash2, 
   ShieldCheck, 
   ArrowRight, 
-  Award, 
-  CalendarX2, 
   Bell
 } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
@@ -54,11 +49,8 @@ export const Home: React.FC = () => {
     navigate('/smart-flow');
   };
 
-  const handleTraditionalScroll = () => {
-    const section = document.getElementById('self-service-directory');
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
-    }
+  const handleTraditionalClick = () => {
+    navigate('/claim');
   };
 
   const [resumeTaskId, setResumeTaskId] = useState<string | null>(null);
@@ -160,7 +152,7 @@ export const Home: React.FC = () => {
         )}
 
         {/* Prominent Center Choice Section: NEED MORE HELP ? */}
-        <section className='space-y-3 pt-1'>
+        <section className='space-y-3 pt-2'>
           <div className='px-1'>
             <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>
               Need More Help?
@@ -200,7 +192,7 @@ export const Home: React.FC = () => {
 
             {/* TRADITIONAL FLOW */}
             <button 
-              onClick={handleTraditionalScroll}
+              onClick={handleTraditionalClick}
               className='p-5 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-3xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all hover:scale-[1.02]'
             >
               <div>
@@ -211,130 +203,11 @@ export const Home: React.FC = () => {
                   Traditional Flow
                 </h3>
                 <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
-                  Direct access to Passbook, Forms, Grievances & manual filing.
+                  Direct access to classic self-service portal, forms & filing.
                 </p>
               </div>
               <div className='mt-4 text-xs font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
-                Browse Services ↓
-              </div>
-            </button>
-
-          </div>
-        </section>
-
-        {/* Self-Service Grid */}
-        <section id='self-service-directory' className='space-y-3 pt-2'>
-          <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider px-1'>
-            {t('self_service')}
-          </h2>
-
-          <div className='grid grid-cols-2 gap-3'>
-            
-            {/* 1. Passbook */}
-            <button 
-              onClick={() => navigate('/passbook')} 
-              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
-            >
-              <div className='w-10 h-10 bg-blue-50 text-epfo-blue rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
-                <Wallet className='w-5 h-5' />
-              </div>
-              <div>
-                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
-                  {t('passbook')}
-                </h3>
-                <p className='text-xs text-slate-500 mt-1'>
-                  Check monthly wages & balance
-                </p>
-              </div>
-            </button>
-
-            {/* 2. Raise Claim */}
-            <button 
-              onClick={() => navigate('/claim')} 
-              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
-            >
-              <div className='w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
-                <FileText className='w-5 h-5' />
-              </div>
-              <div>
-                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
-                  {t('claim')}
-                </h3>
-                <p className='text-xs text-slate-500 mt-1'>
-                  Form 31 / 19 / 10C Withdrawal
-                </p>
-              </div>
-            </button>
-
-            {/* 3. Transfer & Merge */}
-            <button 
-              onClick={() => navigate('/transfer')} 
-              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
-            >
-              <div className='w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
-                <ArrowRightLeft className='w-5 h-5' />
-              </div>
-              <div>
-                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
-                  {t('transfer_merge')}
-                </h3>
-                <p className='text-xs text-slate-500 mt-1'>
-                  One Member One EPF auto-merge
-                </p>
-              </div>
-            </button>
-
-            {/* 4. Digital Life Certificate */}
-            <button 
-              onClick={() => navigate('/life-certificate')} 
-              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
-            >
-              <div className='w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
-                <Award className='w-5 h-5' />
-              </div>
-              <div>
-                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
-                  {t('life_certificate')}
-                </h3>
-                <p className='text-xs text-slate-500 mt-1'>
-                  Face-Auth Jeevan Pramaan
-                </p>
-              </div>
-            </button>
-
-            {/* 5. Mark Exit Date */}
-            <button 
-              onClick={() => navigate('/mark-exit')} 
-              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
-            >
-              <div className='w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
-                <CalendarX2 className='w-5 h-5' />
-              </div>
-              <div>
-                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
-                  {t('mark_exit_date')}
-                </h3>
-                <p className='text-xs text-slate-500 mt-1'>
-                  Self-declare leaving date (after 60 days)
-                </p>
-              </div>
-            </button>
-
-            {/* 6. Document Vault */}
-            <button 
-              onClick={() => navigate('/documents')} 
-              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
-            >
-              <div className='w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
-                <FolderOpen className='w-5 h-5' />
-              </div>
-              <div>
-                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
-                  {t('vault')}
-                </h3>
-                <p className='text-xs text-slate-500 mt-1'>
-                  DigiLocker Aadhaar & Bank KYC
-                </p>
+                Open Traditional Portal →
               </div>
             </button>
 
