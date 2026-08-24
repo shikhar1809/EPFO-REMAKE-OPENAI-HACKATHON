@@ -1,14 +1,30 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { FileText, Wallet, FolderOpen, ArrowRightLeft, LogOut, ShieldAlert, Play, Bot, Mic, CheckCircle2, Trash2, ShieldCheck, ArrowRight, Award, CalendarX2, Bell } from 'lucide-react';
+import { 
+  FileText, 
+  Wallet, 
+  FolderOpen, 
+  ArrowRightLeft, 
+  LogOut, 
+  ShieldAlert, 
+  Play, 
+  Bot, 
+  Mic, 
+  CheckCircle2, 
+  Trash2, 
+  ShieldCheck, 
+  ArrowRight, 
+  Award, 
+  CalendarX2, 
+  Bell,
+  Search
+} from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { useWorkflowStore } from '../store/useWorkflowStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { Button } from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 import { NotificationModal } from '../components/notifications/NotificationModal';
-
 
 export const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -19,11 +35,9 @@ export const Home: React.FC = () => {
   
   const [chatInput, setChatInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
-  const [flowChoice, setFlowChoice] = useState<'none' | 'agentic' | 'traditional'>('none');
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const traditionalFlowRef = React.useRef<HTMLDivElement>(null);
   
-  // Auto-archive completed tasks that might have been left here by using the back button
+  // Auto-archive completed tasks
   React.useEffect(() => {
     Object.values(activeTasks).forEach(task => {
       if (task.agentState === 'completed') {
@@ -32,17 +46,7 @@ export const Home: React.FC = () => {
     });
   }, [activeTasks, archiveTask]);
 
-  React.useEffect(() => {
-    if (flowChoice === 'traditional' && traditionalFlowRef.current) {
-      traditionalFlowRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [flowChoice]);
-
   const activeTaskValues = Object.values(activeTasks).filter(t => t.agentState !== 'completed');
-
-  const handleAction = (path: string) => {
-    navigate(path);
-  };
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzePhase, setAnalyzePhase] = useState<'fetching' | 'generating' | 'starting' | null>(null);
@@ -50,7 +54,6 @@ export const Home: React.FC = () => {
   const toggleRecording = () => {
     if (!isRecording) {
       setIsRecording(true);
-      // Simulate Voice Transcription
       setTimeout(() => {
         setChatInput("I want to submit my life certificate");
         setIsRecording(false);
@@ -60,21 +63,21 @@ export const Home: React.FC = () => {
     }
   };
 
-  const handleAgenticStart = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
+  const handleAgenticStart = (e: React.FormEvent, directPrompt?: string) => {
+    if (e) e.preventDefault();
+    const query = directPrompt || chatInput;
+    if (!query.trim()) return;
 
     setIsAnalyzing(true);
     setAnalyzePhase('fetching');
     
-    // Simulate Agent Intent Understanding & Planning phases
     setTimeout(() => setAnalyzePhase('generating'), 1000);
     setTimeout(() => setAnalyzePhase('starting'), 2000);
 
     setTimeout(() => {
       setIsAnalyzing(false);
       setAnalyzePhase(null);
-      const intent = chatInput;
+      const intent = query;
       const lowerIntent = intent.toLowerCase();
 
       // Quick routes for specialized flows
@@ -120,7 +123,7 @@ export const Home: React.FC = () => {
       startTask(intent, taskType, plan);
       setChatInput('');
       navigate(`/smart-flow`);
-    }, 3000);
+    }, 2800);
   };
 
   const [resumeTaskId, setResumeTaskId] = useState<string | null>(null);
@@ -142,8 +145,8 @@ export const Home: React.FC = () => {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
       e.preventDefault();
       handleAgenticStart(e);
     }
@@ -152,26 +155,22 @@ export const Home: React.FC = () => {
   return (
     <div className='flex-1 flex flex-col bg-transparent overflow-y-auto relative'>
       
-      {/* Sleek Compact Header */}
-      <div className='px-4 pt-12 pb-3 bg-white/80 backdrop-blur-md border-b border-slate-200/60 flex justify-between items-center sticky top-0 z-10'>
+      {/* Spacious Clean Header */}
+      <div className='px-5 py-4 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex justify-between items-center sticky top-0 z-10 shadow-xs'>
         <div>
-          <h1 className='text-lg font-bold tracking-tight text-slate-900 leading-snug'>
+          <h1 className='text-xl font-bold tracking-tight text-slate-900'>
             {isAuthenticated ? t('welcome_back', { name: user?.name || 'Citizen' }) : t('portal_title')}
           </h1>
           {isAuthenticated && user?.uan && (
-            <p className='text-[11px] text-slate-500 font-mono'>UAN: {user.uan}</p>
+            <p className='text-xs text-slate-500 font-mono mt-0.5'>
+              UAN: <span className='font-bold text-slate-700'>{user.uan}</span>
+            </p>
           )}
         </div>
-        <div className='flex items-center gap-1.5'>
-          {isAnalyzing && (
-            <div className='flex items-center gap-1 px-2 py-1 bg-blue-50 text-epfo-blue rounded-full text-[10px] font-medium animate-pulse'>
-              <Bot className='w-3 h-3' />
-              Thinking...
-            </div>
-          )}
+        <div className='flex items-center gap-2'>
           <button 
             onClick={() => setIsNotificationOpen(true)}
-            className={`p-1.5 rounded-full transition-all shadow-sm relative ${
+            className={`p-2.5 rounded-full transition-all shadow-xs relative ${
               notificationsEnabled 
                 ? 'bg-blue-50 text-epfo-blue hover:bg-blue-100' 
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -180,301 +179,348 @@ export const Home: React.FC = () => {
           >
             <Bell className='w-4 h-4' />
             {notificationsEnabled && (
-              <span className='absolute top-1 right-1 w-2 h-2 bg-emerald-500 rounded-full ring-1 ring-white'></span>
+              <span className='absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white'></span>
             )}
           </button>
-          <button onClick={() => { logout(); navigate('/onboarding', { replace: true }); }} className='p-1.5 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors shadow-sm' title={t('logout')}>
+          <button 
+            onClick={() => { logout(); navigate('/onboarding', { replace: true }); }} 
+            className='p-2.5 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors shadow-xs' 
+            title={t('logout')}
+          >
             <LogOut className='w-4 h-4' />
           </button>
         </div>
       </div>
 
-      <div className='p-4 space-y-4 max-w-2xl mx-auto w-full pb-10'>
+      <div className='p-5 space-y-6 max-w-2xl mx-auto w-full pb-16'>
         
-        {/* PF Balance & Integrated Alert Status Hero Widget - Simple & Matte */}
-        {isAuthenticated && flowChoice === 'none' && (
-          <section className='bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-sm relative'>
+        {/* Modern Clean PF Balance Hero Card */}
+        {isAuthenticated && (
+          <section className='bg-white/95 backdrop-blur-md rounded-3xl p-5 border border-slate-200/90 shadow-sm relative overflow-hidden'>
             <div className='flex items-center justify-between'>
-              <span className='text-slate-400 text-xs font-medium'>{t('total_pf_balance')}</span>
+              <span className='text-slate-500 text-xs font-bold uppercase tracking-wider'>
+                {t('total_pf_balance')}
+              </span>
               <button 
                 onClick={() => navigate('/passbook')}
-                className='bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1 rounded-lg text-xs font-medium transition-colors flex items-center gap-1'
+                className='bg-blue-50 hover:bg-blue-100 text-epfo-blue font-bold px-3.5 py-1.5 rounded-xl text-xs transition-colors flex items-center gap-1 shadow-2xs'
               >
-                {t('view_passbook')} →
+                {t('view_passbook')} <ArrowRight className='w-3.5 h-3.5' />
               </button>
             </div>
             
-            <div className='text-2xl font-bold my-1 text-white tracking-tight'>₹2,34,560</div>
+            <div className='text-3xl font-extrabold my-2 text-slate-900 tracking-tight'>
+              ₹2,34,560
+            </div>
 
-            {/* Integrated Compact Notification Bar */}
+            {/* Notification Status Footer */}
             <div 
               onClick={() => setIsNotificationOpen(true)}
-              className='mt-2.5 pt-2.5 border-t border-slate-800 flex items-center justify-between cursor-pointer hover:opacity-90 transition-opacity text-[11px]'
+              className='mt-3 pt-3 border-t border-slate-100 flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity'
             >
-              <div className='flex items-center gap-1.5'>
-                <span className={`w-2 h-2 rounded-full ${notificationsEnabled ? 'bg-emerald-400' : 'bg-slate-500'}`} />
-                <span className='text-slate-300'>
+              <div className='flex items-center gap-2 text-xs'>
+                <span className={`w-2.5 h-2.5 rounded-full ${notificationsEnabled ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                <span className='text-slate-600 font-medium'>
                   {notificationsEnabled ? 'WhatsApp & Email Alerts Active' : 'Enable WhatsApp & Email Alerts'}
                 </span>
               </div>
-              <span className='text-slate-400 text-[10px] bg-slate-800 border border-slate-700 px-2 py-0.5 rounded-full font-medium'>
-                Configure ⚙️
+              <span className='text-epfo-blue text-xs font-semibold hover:underline'>
+                Settings ⚙️
               </span>
             </div>
           </section>
         )}
 
-        {/* 2-Column Compact Choice Cards */}
-        {flowChoice === 'none' && (
-          <section className='space-y-2'>
-            <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider px-0.5'>{t('how_to_proceed')}</h2>
-            
-            <div className='grid grid-cols-2 gap-2.5'>
-              {/* Option 1: Smart Agent */}
-              <button 
-                onClick={() => setFlowChoice('agentic')} 
-                className='p-3.5 bg-white/95 backdrop-blur-sm border-2 border-epfo-blue/50 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-sm transition-all hover:bg-blue-50/50'
-              >
-                <div>
-                  <div className='flex items-center justify-between mb-2'>
-                    <div className='w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center text-epfo-blue'>
-                      <Bot className='w-4 h-4' />
-                    </div>
-                    <span className='bg-epfo-orange text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase'>
-                      {t('recommended')}
-                    </span>
-                  </div>
-                  <h3 className='font-bold text-sm text-epfo-blue leading-tight'>
-                    {t('smart_agent')}
-                  </h3>
-                  <p className='text-slate-500 text-[11px] mt-1 leading-snug'>
-                    AI handles complex forms & auto-fills steps.
-                  </p>
-                </div>
-                <div className='mt-2.5 text-[11px] font-bold text-epfo-blue flex items-center gap-0.5'>
-                  Launch Agent →
-                </div>
-              </button>
-
-              {/* Option 2: Traditional Self-Service */}
-              <button 
-                onClick={() => setFlowChoice('traditional')} 
-                className='p-3.5 bg-white/95 backdrop-blur-sm border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left shadow-sm transition-all hover:bg-slate-50'
-              >
-                <div>
-                  <div className='w-8 h-8 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 mb-2'>
-                    <FolderOpen className='w-4 h-4' />
-                  </div>
-                  <h3 className='font-bold text-sm text-slate-800 leading-tight'>
-                    {t('traditional_service')}
-                  </h3>
-                  <p className='text-slate-500 text-[11px] mt-1 leading-snug'>
-                    Direct access to Passbook, Claims & Forms.
-                  </p>
-                </div>
-                <div className='mt-2.5 text-[11px] font-bold text-slate-600 flex items-center gap-0.5'>
-                  Open Portal →
-                </div>
-              </button>
+        {/* Smart AI Assistant Container */}
+        <section className='bg-gradient-to-br from-blue-50/90 via-indigo-50/60 to-white/90 backdrop-blur-md rounded-3xl p-5 border border-blue-100 shadow-sm space-y-4'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-2'>
+              <div className='w-8 h-8 bg-epfo-blue text-white rounded-xl flex items-center justify-center shadow-sm'>
+                <Bot className='w-5 h-5' />
+              </div>
+              <div>
+                <h2 className='text-base font-bold text-slate-900 leading-tight'>
+                  {t('smart_agent')}
+                </h2>
+                <p className='text-xs text-slate-500'>
+                  Instant guidance & automated form filling
+                </p>
+              </div>
             </div>
-          </section>
-        )}
+            <span className='bg-epfo-orange text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-2xs'>
+              {t('recommended')}
+            </span>
+          </div>
 
-        {flowChoice === 'agentic' && (
-          <>
-            <button onClick={() => setFlowChoice('none')} className='text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 mb-1'>
-              {t('back_to_choices')}
-            </button>
-            <section>
-              <h2 className='text-base font-bold mb-2.5 text-slate-900'>{t('agent_prompt_title')}</h2>
-              {isAnalyzing ? (
-                <div className='bg-white rounded-2xl border border-slate-200 p-6 flex flex-col items-center justify-center space-y-4 shadow-sm min-h-[160px]'>
-                  <div className='w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center'>
-                    <Bot className='w-5 h-5 text-epfo-blue animate-pulse' />
-                  </div>
-                  
-                  <div className='w-full max-w-xs space-y-2 text-xs'>
-                    <div className='flex items-center gap-2.5'>
-                      <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
-                      <span className={`font-medium ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Fetching Query</span>
-                    </div>
-                    <div className='flex items-center gap-2.5'>
-                      <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
-                      <span className={`font-medium ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Generating Steps</span>
-                    </div>
-                    <div className='flex items-center gap-2.5'>
-                      <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
-                      <span className={`font-medium ${analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Starting Session</span>
-                    </div>
-                  </div>
+          {isAnalyzing ? (
+            <div className='bg-white rounded-2xl border border-blue-100 p-5 flex flex-col items-center justify-center space-y-3 shadow-inner min-h-[140px]'>
+              <div className='w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center'>
+                <Bot className='w-5 h-5 text-epfo-blue animate-pulse' />
+              </div>
+              <div className='w-full max-w-xs space-y-2 text-xs'>
+                <div className='flex items-center gap-2.5'>
+                  <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
+                  <span className={`font-medium ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Understanding request</span>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <form onSubmit={handleAgenticStart} className='relative bg-white/90 backdrop-blur-sm rounded-2xl border-2 border-epfo-blue/30 focus-within:border-epfo-blue shadow-sm overflow-hidden transition-all'>
-                    <div className='absolute left-3 top-3'>
-                      <Bot className='w-5 h-5 text-epfo-blue' />
-                    </div>
-                    <textarea 
-                      className='w-full bg-transparent text-slate-900 placeholder-slate-500 pl-10 pr-3 pt-3 pb-12 min-h-[90px] resize-none focus:outline-none text-xs leading-relaxed'
-                      placeholder={t('agent_placeholder')}
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      disabled={isAnalyzing}
-                      autoFocus
-                    />
-                    
-                    <div className='absolute bottom-2 left-3 right-2 flex justify-between items-center'>
-                      <button 
-                        type="button"
-                        onClick={toggleRecording}
-                        className={`p-2 rounded-full flex items-center gap-1.5 transition-all ${isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                      >
-                        <Mic className='w-4 h-4' />
-                        {isRecording && <span className='text-xs font-medium'>{t('listening')}</span>}
-                      </button>
-
-                      <button 
-                        type='submit' 
-                        disabled={!chatInput.trim() || isAnalyzing}
-                        className='bg-epfo-blue text-white rounded-full px-4 py-1.5 text-xs font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center'
-                      >
-                        {t('send')}
-                      </button>
-                    </div>
-                  </form>
-                  
-                  {/* Suggestion Chips */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {[
-                      { label: t('claim'), val: "Withdraw PF" },
-                      { label: t('life_certificate'), val: "Life Certificate" },
-                      { label: t('mark_exit_date'), val: "Mark Exit Date" },
-                      { label: t('transfer_merge'), val: "Merge PF Accounts" },
-                      { label: t('passbook'), val: "Check Balance" }
-                    ].map((item, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          setChatInput(item.val);
-                        }}
-                        className="bg-white/90 backdrop-blur-sm border border-slate-200 text-slate-700 px-2.5 py-1 rounded-full text-[11px] font-medium hover:border-epfo-blue hover:text-epfo-blue transition-colors shadow-xs"
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
+                <div className='flex items-center gap-2.5'>
+                  <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
+                  <span className={`font-medium ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Generating steps</span>
                 </div>
-              )}
-            </section>
-          </>
-        )}
+                <div className='flex items-center gap-2.5'>
+                  <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
+                  <span className={`font-medium ${analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Launching workflow</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleAgenticStart} className='space-y-3'>
+              <div className='relative flex items-center bg-white rounded-2xl border border-slate-200 focus-within:border-epfo-blue shadow-sm overflow-hidden transition-all'>
+                <div className='pl-3.5 text-slate-400'>
+                  <Search className='w-4 h-4' />
+                </div>
+                <input 
+                  type='text'
+                  className='w-full py-3.5 pl-2.5 pr-20 bg-transparent text-slate-900 placeholder-slate-400 outline-none text-xs font-medium'
+                  placeholder='e.g. "I want to withdraw ₹50,000 for medical emergency"'
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+                <div className='absolute right-2 flex items-center gap-1.5'>
+                  <button 
+                    type="button"
+                    onClick={toggleRecording}
+                    className={`p-2 rounded-full transition-all ${isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}
+                    title='Voice input'
+                  >
+                    <Mic className='w-4 h-4' />
+                  </button>
+                  <button 
+                    type='submit' 
+                    disabled={!chatInput.trim()}
+                    className='bg-epfo-blue hover:bg-blue-700 text-white rounded-xl px-3 py-1.5 text-xs font-bold transition-colors disabled:opacity-40 flex items-center justify-center'
+                  >
+                    {t('send')}
+                  </button>
+                </div>
+              </div>
 
-        {flowChoice === 'traditional' && (
-          <>
-            <button onClick={() => setFlowChoice('none')} className='text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 mb-1'>
-              {t('back_to_choices')}
+              {/* 1-Tap Quick Action Chips */}
+              <div className='flex flex-wrap gap-2 pt-1'>
+                {[
+                  { label: "⚡ Withdraw PF", query: "I want to withdraw PF advance" },
+                  { label: "🪪 Life Certificate", query: "Submit Digital Life Certificate" },
+                  { label: "📅 Mark Exit Date", query: "I want to mark my exit date" },
+                  { label: "🔄 Merge Accounts", query: "Merge previous PF accounts" }
+                ].map((item, idx) => (
+                  <button
+                    key={idx}
+                    type='button'
+                    onClick={(e) => handleAgenticStart(e, item.query)}
+                    className='bg-white/95 border border-slate-200 hover:border-epfo-blue hover:text-epfo-blue text-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all shadow-2xs'
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </form>
+          )}
+        </section>
+
+        {/* Self-Service Grid (Clear, Spacious 2-Column Cards) */}
+        <section className='space-y-3 pt-1'>
+          <h2 className='text-sm font-bold text-slate-800 uppercase tracking-wider px-1'>
+            {t('self_service')}
+          </h2>
+
+          <div className='grid grid-cols-2 gap-3'>
+            
+            {/* 1. Passbook */}
+            <button 
+              onClick={() => navigate('/passbook')} 
+              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
+            >
+              <div className='w-10 h-10 bg-blue-50 text-epfo-blue rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
+                <Wallet className='w-5 h-5' />
+              </div>
+              <div>
+                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
+                  {t('passbook')}
+                </h3>
+                <p className='text-xs text-slate-500 mt-1'>
+                  Check monthly wages & balance
+                </p>
+              </div>
             </button>
-            <section ref={traditionalFlowRef}>
-              <h2 className='text-base font-bold mb-2.5 text-slate-800'>{t('self_service')}</h2>
-              <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } }} className='grid grid-cols-3 gap-2'>
-                <motion.button variants={{ hidden: { opacity: 0, y: 5 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/passbook')} className='p-3 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1.5 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-xs'>
-                  <Wallet className='w-5 h-5 text-epfo-blue' />
-                  <span className='font-semibold text-xs text-slate-800'>{t('passbook')}</span>
-                </motion.button>
-                <motion.button variants={{ hidden: { opacity: 0, y: 5 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/claim')} className='p-3 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1.5 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-xs'>
-                  <FileText className='w-5 h-5 text-epfo-blue' />
-                  <span className='font-semibold text-xs text-slate-800'>{t('claim')}</span>
-                </motion.button>
-                <motion.button variants={{ hidden: { opacity: 0, y: 5 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/transfer')} className='p-3 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1.5 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-xs'>
-                  <ArrowRightLeft className='w-5 h-5 text-epfo-blue' />
-                  <span className='font-semibold text-xs text-slate-800 text-center leading-tight'>{t('transfer_merge')}</span>
-                </motion.button>
-                <motion.button variants={{ hidden: { opacity: 0, y: 5 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/documents')} className='p-3 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1.5 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-xs'>
-                  <FolderOpen className='w-5 h-5 text-epfo-blue' />
-                  <span className='font-semibold text-xs text-slate-800'>{t('vault')}</span>
-                </motion.button>
-                <motion.button variants={{ hidden: { opacity: 0, y: 5 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/life-certificate')} className='p-3 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1.5 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-xs'>
-                  <Award className='w-5 h-5 text-emerald-600' />
-                  <span className='font-semibold text-xs text-slate-800 text-center leading-tight'>{t('life_certificate')}</span>
-                </motion.button>
-                <motion.button variants={{ hidden: { opacity: 0, y: 5 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/mark-exit')} className='p-3 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1.5 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-xs'>
-                  <CalendarX2 className='w-5 h-5 text-amber-600' />
-                  <span className='font-semibold text-xs text-slate-800 text-center leading-tight'>{t('mark_exit_date')}</span>
-                </motion.button>
-              </motion.div>
-            </section>
-          </>
-        )}
 
-        {/* Active Tasks / Crash Recovery */}
-        {flowChoice === 'none' && activeTaskValues.length > 0 && (
-          <section>
-            <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5'>
+            {/* 2. Raise Claim */}
+            <button 
+              onClick={() => navigate('/claim')} 
+              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
+            >
+              <div className='w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
+                <FileText className='w-5 h-5' />
+              </div>
+              <div>
+                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
+                  {t('claim')}
+                </h3>
+                <p className='text-xs text-slate-500 mt-1'>
+                  Form 31 / 19 / 10C Withdrawal
+                </p>
+              </div>
+            </button>
+
+            {/* 3. Transfer & Merge */}
+            <button 
+              onClick={() => navigate('/transfer')} 
+              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
+            >
+              <div className='w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
+                <ArrowRightLeft className='w-5 h-5' />
+              </div>
+              <div>
+                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
+                  {t('transfer_merge')}
+                </h3>
+                <p className='text-xs text-slate-500 mt-1'>
+                  One Member One EPF auto-merge
+                </p>
+              </div>
+            </button>
+
+            {/* 4. Digital Life Certificate */}
+            <button 
+              onClick={() => navigate('/life-certificate')} 
+              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
+            >
+              <div className='w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
+                <Award className='w-5 h-5' />
+              </div>
+              <div>
+                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
+                  {t('life_certificate')}
+                </h3>
+                <p className='text-xs text-slate-500 mt-1'>
+                  Face-Auth Jeevan Pramaan
+                </p>
+              </div>
+            </button>
+
+            {/* 5. Mark Exit Date */}
+            <button 
+              onClick={() => navigate('/mark-exit')} 
+              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
+            >
+              <div className='w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
+                <CalendarX2 className='w-5 h-5' />
+              </div>
+              <div>
+                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
+                  {t('mark_exit_date')}
+                </h3>
+                <p className='text-xs text-slate-500 mt-1'>
+                  Self-declare leaving date (after 60 days)
+                </p>
+              </div>
+            </button>
+
+            {/* 6. Document Vault */}
+            <button 
+              onClick={() => navigate('/documents')} 
+              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl flex items-start gap-3 hover:shadow-md transition-all text-left group shadow-xs'
+            >
+              <div className='w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
+                <FolderOpen className='w-5 h-5' />
+              </div>
+              <div>
+                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-epfo-blue'>
+                  {t('vault')}
+                </h3>
+                <p className='text-xs text-slate-500 mt-1'>
+                  DigiLocker Aadhaar & Bank KYC
+                </p>
+              </div>
+            </button>
+
+          </div>
+        </section>
+
+        {/* Active Tasks & Crash Recovery */}
+        {activeTaskValues.length > 0 && (
+          <section className='space-y-2 pt-1'>
+            <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider px-1 flex items-center gap-1.5'>
               {t('active_tasks')}
-              <span className='bg-orange-100 text-orange-700 text-[10px] px-1.5 py-0.2 rounded-full font-bold'>{activeTaskValues.length}</span>
+              <span className='bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded-full font-bold'>
+                {activeTaskValues.length}
+              </span>
             </h2>
-            <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } }} className='space-y-2'>
+            <div className='space-y-2.5'>
               {activeTaskValues.map(task => (
-                <motion.div variants={{ hidden: { opacity: 0, x: -10 }, visible: { opacity: 1, x: 0 } }} key={task.taskId} className='bg-white/95 p-3 rounded-xl border border-orange-200 shadow-xs flex justify-between items-center'>
+                <div key={task.taskId} className='bg-white/95 p-4 rounded-2xl border border-orange-200 shadow-sm flex justify-between items-center'>
                   <div>
-                    <p className='font-semibold text-xs text-slate-900'>{task.intent}</p>
-                    <p className='text-[10px] text-slate-500 mt-0.5'>Status: {task.agentState.replace('_', ' ')} • {new Date(task.lastCheckpoint).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    <p className='font-bold text-sm text-slate-900'>{task.intent}</p>
+                    <p className='text-xs text-slate-500 mt-0.5'>
+                      Status: <span className='font-semibold text-orange-600 capitalize'>{task.agentState.replace('_', ' ')}</span> • {new Date(task.lastCheckpoint).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
                   </div>
-                  <div className='flex items-center gap-1.5'>
-                    <Button onClick={() => handleResume(task.taskId)} className='shrink-0 gap-1 text-xs py-1.5 px-3'>
-                      <Play className='w-3 h-3 fill-current' /> {t('resume')}
+                  <div className='flex items-center gap-2'>
+                    <Button onClick={() => handleResume(task.taskId)} className='shrink-0 gap-1.5 text-xs py-2 px-3.5 font-bold'>
+                      <Play className='w-3.5 h-3.5 fill-current' /> {t('resume')}
                     </Button>
-                    <button onClick={() => clearTask(task.taskId)} className='p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors'>
+                    <button 
+                      onClick={() => clearTask(task.taskId)} 
+                      className='p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors'
+                      title='Delete task'
+                    >
                       <Trash2 className='w-4 h-4' />
                     </button>
                   </div>
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
-          </section>
-        )}
-
-        {/* History / Completed Tasks */}
-        {flowChoice === 'none' && (
-          <section>
-            <div className='flex items-center justify-between mb-2'>
-              <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5'>
-                {t('past_requests')}
-                {completedTasks && completedTasks.length > 0 && (
-                  <span className='bg-green-100 text-green-700 text-[10px] px-1.5 py-0.2 rounded-full font-bold'>{completedTasks.length}</span>
-                )}
-              </h2>
-              <button onClick={() => navigate('/history')} className='text-xs text-epfo-blue font-medium flex items-center gap-0.5 hover:underline'>
-                {t('view_all')} <ArrowRight className="w-3 h-3"/>
-              </button>
             </div>
-            
-            {completedTasks && completedTasks.length > 0 ? (
-              <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } }} className='space-y-2'>
-                {completedTasks.slice(0, 2).map(task => (
-                  <motion.div variants={{ hidden: { opacity: 0, x: -10 }, visible: { opacity: 1, x: 0 } }} key={task.taskId} className='bg-white/95 p-3 rounded-xl border border-slate-200 shadow-xs flex justify-between items-center opacity-85 hover:opacity-100 transition-opacity cursor-pointer' onClick={() => navigate('/history')}>
-                    <div className='flex items-center gap-2.5'>
-                      <div className='bg-green-50 p-1.5 rounded-full text-green-600'>
-                        <CheckCircle2 className='w-4 h-4' />
-                      </div>
-                      <div>
-                        <p className='font-semibold text-xs text-slate-900'>{task.intent}</p>
-                        <p className='text-[10px] text-slate-500 mt-0.5'>Completed on {new Date(task.lastCheckpoint).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            ) : (
-              <button onClick={() => navigate('/history')} className='w-full p-3 bg-white/90 border border-slate-200 border-dashed rounded-xl flex items-center justify-center gap-1.5 text-slate-500 hover:text-epfo-blue hover:border-epfo-blue/50 transition-colors'>
-                <FolderOpen className='w-4 h-4' />
-                <span className='font-medium text-xs'>{t('no_active_tasks')}</span>
-              </button>
-            )}
           </section>
         )}
 
+        {/* Past Requests History */}
+        <section className='space-y-2 pt-1'>
+          <div className='flex items-center justify-between px-1'>
+            <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5'>
+              {t('past_requests')}
+              {completedTasks && completedTasks.length > 0 && (
+                <span className='bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold'>
+                  {completedTasks.length}
+                </span>
+              )}
+            </h2>
+            <button onClick={() => navigate('/history')} className='text-xs text-epfo-blue font-bold flex items-center gap-1 hover:underline'>
+              {t('view_all')} <ArrowRight className="w-3.5 h-3.5"/>
+            </button>
+          </div>
+          
+          {completedTasks && completedTasks.length > 0 ? (
+            <div className='space-y-2'>
+              {completedTasks.slice(0, 2).map(task => (
+                <div key={task.taskId} className='bg-white/95 p-3.5 rounded-2xl border border-slate-200 shadow-2xs flex justify-between items-center cursor-pointer hover:border-slate-300 transition-all' onClick={() => navigate('/history')}>
+                  <div className='flex items-center gap-3'>
+                    <div className='bg-green-50 p-2 rounded-full text-green-600'>
+                      <CheckCircle2 className='w-4 h-4' />
+                    </div>
+                    <div>
+                      <p className='font-bold text-xs text-slate-900'>{task.intent}</p>
+                      <p className='text-[11px] text-slate-500 mt-0.5'>Completed on {new Date(task.lastCheckpoint).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <button onClick={() => navigate('/history')} className='w-full p-3.5 bg-white/90 border border-slate-200 border-dashed rounded-2xl flex items-center justify-center gap-2 text-slate-500 hover:text-epfo-blue hover:border-epfo-blue/50 transition-colors text-xs font-medium'>
+              <FolderOpen className='w-4 h-4' />
+              <span>{t('no_active_tasks')}</span>
+            </button>
+          )}
+        </section>
 
         {/* Security Alert (Step-up Auth / Hijacking prevention) */}
         {riskLevel !== 'low' && (
@@ -488,8 +534,6 @@ export const Home: React.FC = () => {
             </div>
           </section>
         )}
-
-
 
       </div>
 
