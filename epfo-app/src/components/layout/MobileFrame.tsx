@@ -2,9 +2,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 import { ServerStatusBadge } from '../common/ServerStatusBadge';
+import { useServerStatusStore } from '../../store/useServerStatusStore';
 
 export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { i18n } = useTranslation();
+  const { status } = useServerStatusStore();
   const [fontScale, setFontScale] = React.useState(() => parseInt(localStorage.getItem('fontScale') || '16'));
 
   React.useEffect(() => {
@@ -31,6 +33,15 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  const getTopBarBg = () => {
+    switch (status) {
+      case 'healthy': return 'bg-emerald-50/95 border-emerald-200';
+      case 'medium': return 'bg-amber-50/95 border-amber-200';
+      case 'heavy': return 'bg-rose-50/95 border-rose-200';
+      default: return 'bg-white/90 border-slate-200/70';
+    }
+  };
+
   return (
     <div className='min-h-screen bg-slate-900 flex items-center justify-center p-4 overflow-hidden'>
       {/* Left decorative area */}
@@ -54,7 +65,7 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
         </div>
 
         {/* Dedicated Top App Utility Bar */}
-        <div className='relative z-20 px-3 py-1.5 bg-white/90 backdrop-blur-md border-b border-slate-200/70 flex items-center justify-between gap-1.5 shadow-xs shrink-0'>
+        <div className={`relative z-20 px-3 py-1.5 backdrop-blur-md border-b flex items-center justify-between gap-1.5 shadow-xs shrink-0 transition-colors duration-500 ${getTopBarBg()}`}>
           
           {/* Top-Left Live Server Health Status */}
           <ServerStatusBadge />

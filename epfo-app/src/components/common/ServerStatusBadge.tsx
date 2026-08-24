@@ -43,22 +43,22 @@ export const ServerStatusBadge: React.FC = () => {
         return {
           dotColor: 'bg-emerald-500',
           pulseColor: 'bg-emerald-400',
-          badgeBg: 'bg-emerald-50/95 text-emerald-800 border-emerald-200 hover:bg-emerald-100',
-          labelText: 'OPTIMAL',
+          badgeBg: 'text-emerald-800 hover:opacity-75',
+          labelText: 'SERVER STATUS: OPTIMAL',
         };
       case 'medium':
         return {
           dotColor: 'bg-amber-500',
           pulseColor: 'bg-amber-400',
-          badgeBg: 'bg-amber-50/95 text-amber-800 border-amber-200 hover:bg-amber-100',
-          labelText: 'MEDIUM LOAD',
+          badgeBg: 'text-amber-900 hover:opacity-75',
+          labelText: 'SERVER STATUS: MEDIUM LOAD',
         };
       case 'heavy':
         return {
           dotColor: 'bg-rose-500',
           pulseColor: 'bg-rose-400',
-          badgeBg: 'bg-rose-50/95 text-rose-800 border-rose-200 hover:bg-rose-100',
-          labelText: 'HEAVY LOAD',
+          badgeBg: 'text-rose-900 hover:opacity-75',
+          labelText: 'SERVER STATUS: HEAVY LOAD',
         };
     }
   };
@@ -69,7 +69,7 @@ export const ServerStatusBadge: React.FC = () => {
     <div className="relative group inline-flex items-center">
       <button
         onClick={() => navigate('/server-status')}
-        className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border transition-all cursor-pointer select-none text-[10px] font-extrabold tracking-tight shrink-0 shadow-2xs ${config.badgeBg}`}
+        className={`flex items-center gap-1.5 px-1 py-0.5 transition-all cursor-pointer select-none text-[10px] font-extrabold tracking-tight shrink-0 ${config.badgeBg}`}
       >
         <span className="relative flex h-2 w-2 shrink-0">
           <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${config.pulseColor}`}></span>
