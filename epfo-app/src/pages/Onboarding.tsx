@@ -29,32 +29,34 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
   return (
     <motion.div key="vault_intro" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='space-y-4 my-auto'>
       
-      {/* Animated DigiLocker Vault Hero Animation */}
+      {/* Animated 3D Keyhole Vault Hero */}
       {vaultState === 'intro' && (
         <VaultIntroAnimation />
       )}
 
-      <div>
-        <h1 className='text-2xl font-bold text-slate-900'>Document Vault</h1>
-        <p className='text-xs text-slate-500 mt-1'>
-          Government DigiLocker & KYC Integration
-        </p>
-      </div>
+      {vaultState !== 'intro' && (
+        <div>
+          <h1 className='text-2xl font-bold text-slate-900'>Document Vault</h1>
+          <p className='text-xs text-slate-500 mt-0.5'>
+            Government DigiLocker & KYC Integration
+          </p>
+        </div>
+      )}
       
       {vaultState === 'intro' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-3.5'>
-          <p className='text-xs text-slate-600 leading-relaxed'>
-            To provide you with seamless 1-click services, we securely fetch and encrypt your KYC documents from DigiLocker.
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-3'>
+          <p className='text-xs text-slate-600 text-center leading-relaxed px-2'>
+            To provide seamless 1-click services, we securely fetch and encrypt your KYC documents from DigiLocker.
           </p>
-          <div className='bg-slate-50 border border-slate-200 rounded-2xl p-3.5 flex items-start gap-3'>
+          <div className='bg-white border border-slate-200/90 rounded-2xl p-3.5 flex items-start gap-3 shadow-2xs'>
             <Lock className='w-4 h-4 text-slate-500 shrink-0 mt-0.5' />
             <p className='text-[11px] text-slate-600 leading-snug'>
-              Your documents (Aadhaar, PAN, Bank Details) are 256-bit encrypted. We only share verified cryptographic hashes when you explicitly approve a claim or transfer.
+              Your documents (Aadhaar, PAN, Bank Details) are 256-bit encrypted. We only share verified cryptographic references upon your explicit approval.
             </p>
           </div>
-          <div className='pt-2'>
-            <Button className='w-full py-3.5 text-sm font-bold bg-green-600 hover:bg-green-700 shadow-md' onClick={startDigiLockerFetch}>
-              Connect with DigiLocker
+          <div className='pt-1'>
+            <Button className='w-full py-3.5 text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-2xl shadow-sm' onClick={startDigiLockerFetch}>
+              Connect with DigiLocker →
             </Button>
           </div>
         </motion.div>

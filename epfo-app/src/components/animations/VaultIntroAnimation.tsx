@@ -1,39 +1,117 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Lock } from 'lucide-react';
 
 export const VaultIntroAnimation: React.FC = () => {
   return (
-    <div className="flex flex-col items-center justify-center py-2 select-none">
-      {/* Clean Minimalist Shield with Gentle Breathing Glow */}
-      <div className="relative flex items-center justify-center w-24 h-24">
-        {/* Soft subtle breathing pulse ring */}
-        <motion.div
-          className="absolute inset-0 rounded-3xl bg-emerald-500/10 border border-emerald-500/20"
-          animate={{ scale: [1, 1.08, 1], opacity: [0.7, 0.25, 0.7] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        />
+    <div className="flex flex-col items-center justify-center py-4 select-none bg-transparent">
+      {/* 3D Extruded Keyhole Icon with Gentle Float and Depth */}
+      <motion.div
+        className="relative flex items-center justify-center"
+        initial={{ scale: 0.92, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1, y: [-3, 3, -3] }}
+        transition={{ 
+          y: { duration: 3.5, repeat: Infinity, ease: "easeInOut" },
+          scale: { duration: 0.4 },
+          opacity: { duration: 0.4 }
+        }}
+      >
+        {/* Soft Background Radial Light */}
+        <div className="absolute w-36 h-36 bg-slate-200/40 rounded-full blur-xl pointer-events-none" />
 
-        {/* Crisp Central Icon Badge */}
-        <motion.div 
-          className="relative z-10 w-16 h-16 bg-emerald-50 border border-emerald-200/90 rounded-2xl flex items-center justify-center text-emerald-600 shadow-xs"
-          animate={{ y: [-2, 2, -2] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+        <svg 
+          viewBox="0 0 160 180" 
+          className="w-28 h-28 drop-shadow-md overflow-visible"
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <ShieldCheck className="w-8 h-8 text-emerald-600" />
-        </motion.div>
+          {/* 3D Extrusion Shadow Body (Solid Black) */}
+          <path
+            d="M 74 16 
+               C 100 16, 120 36, 120 62
+               C 120 78, 110 92, 102 100
+               L 122 150
+               L 106 152
+               L 54 152
+               L 42 150
+               L 64 100
+               C 56 92, 46 78, 46 62
+               C 46 36, 66 16, 74 16 Z"
+            fill="#09090b"
+          />
 
-        {/* Small subtle security lock badge */}
-        <div className="absolute bottom-0 right-0 z-20 bg-slate-900 text-emerald-400 p-1 rounded-full border-2 border-white shadow-2xs">
-          <Lock className="w-3 h-3" />
-        </div>
-      </div>
+          {/* Right Isometric Extrusion Bevel (Dark Shade) */}
+          <path
+            d="M 74 16 
+               C 100 16, 120 36, 120 62
+               C 120 78, 110 92, 102 100
+               L 122 150
+               L 104 150
+               L 86 100
+               C 94 92, 102 78, 102 62
+               C 102 40, 88 22, 66 22
+               Z"
+            fill="#18181b"
+          />
 
-      {/* Minimal clean verified badge */}
-      <div className="mt-3 flex items-center gap-1.5 px-3 py-1 bg-emerald-50/90 border border-emerald-100 rounded-full text-[11px] font-semibold text-emerald-800">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        DigiLocker Certified Vault
-      </div>
+          {/* Front Face Keyhole Outer Shell */}
+          <path
+            d="M 64 26 
+               C 86 26, 104 44, 104 66
+               C 104 80, 95 92, 88 100
+               L 106 148
+               L 44 148
+               L 62 100
+               C 55 92, 46 80, 46 66
+               C 46 44, 64 26, 64 26 Z"
+            fill="#09090b"
+          />
+
+          {/* Inner Light Aperture (Crisp White Keyhole Opening) */}
+          <motion.path
+            d="M 75 42 
+               C 87 42, 95 51, 95 64
+               C 95 73, 89 80, 84 86
+               L 92 136
+               L 58 136
+               L 66 86
+               C 61 80, 55 73, 55 64
+               C 55 51, 63 42, 75 42 Z"
+            fill="#ffffff"
+            animate={{ opacity: [0.94, 1, 0.94] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          {/* Subtle 3D Inner Left Bevel Highlight */}
+          <path
+            d="M 55 64
+               C 55 51, 63 42, 75 42
+               L 75 44
+               C 64 44, 57 52, 57 64
+               C 57 72, 62 79, 67 85
+               L 59 134
+               L 58 136
+               L 66 86
+               C 61 80, 55 73, 55 64 Z"
+            fill="#e2e8f0"
+            opacity="0.85"
+          />
+        </svg>
+      </motion.div>
+
+      {/* Bold Minimalist VAULT Typography */}
+      <motion.div 
+        className="mt-3.5 flex flex-col items-center text-center"
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <h2 className="text-xl font-black tracking-[0.25em] text-slate-950 uppercase font-sans">
+          VAULT
+        </h2>
+        <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mt-0.5">
+          DigiLocker KYC Bridge
+        </span>
+      </motion.div>
     </div>
   );
 };
