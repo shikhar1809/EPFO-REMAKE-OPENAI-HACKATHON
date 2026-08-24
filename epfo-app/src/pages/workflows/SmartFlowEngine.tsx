@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Bot, ShieldAlert, CheckCircle2, Lock, CreditCard } from 'lucide-react';
+import { ArrowLeft, Bot, ShieldAlert, CheckCircle2, Lock, CreditCard, Star } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { ThinkingAnimation } from '../../components/ui/ThinkingAnimation';
 import { Input } from '../../components/ui/Input';
@@ -29,6 +29,9 @@ export const SmartFlowEngine: React.FC = () => {
     return task?.agentState === 'planned' && task?.plan[0]?.status === 'active';
   });
   const [initStage, setInitStage] = useState(0);
+  const [rating, setRating] = useState(0);
+  const [feedbackText, setFeedbackText] = useState('');
+  const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
 
   const initMessages = [
     "Tracking User Request...",
@@ -293,14 +296,62 @@ export const SmartFlowEngine: React.FC = () => {
       )}
 
         {isDone && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='mt-8 bg-green-50 border border-green-200 p-6 rounded-2xl flex items-start gap-4'>
-            <div className='bg-green-100 p-2 rounded-full shrink-0'>
-              <CheckCircle2 className='w-8 h-8 text-green-600' />
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='mt-8 space-y-4'>
+            <div className='bg-green-50 border border-green-200 p-6 rounded-2xl flex items-start gap-4'>
+              <div className='bg-green-100 p-2 rounded-full shrink-0'>
+                <CheckCircle2 className='w-8 h-8 text-green-600' />
+              </div>
+              <div>
+                <h3 className='font-bold text-green-900 text-lg'>All Steps Completed</h3>
+                <p className='text-green-800 text-sm mt-1'>Your request has been processed and filed. The agent has successfully completed all necessary actions on your behalf.</p>
+              </div>
             </div>
-            <div>
-              <h3 className='font-bold text-green-900 text-lg'>All Steps Completed Successfully</h3>
-              <p className='text-green-800 text-sm mt-1'>Your request has been processed and filed. The agent has successfully completed all necessary actions on your behalf.</p>
-            </div>
+
+            {/* In-App Feedback Section */}
+            {!isFeedbackSubmitted ? (
+              <div className='bg-white border border-slate-200 p-5 rounded-2xl shadow-sm'>
+                <h4 className='font-bold text-slate-800 mb-2'>How was your experience?</h4>
+                <p className='text-xs text-slate-500 mb-4'>Your feedback helps us improve the Smart Flow experience.</p>
+                
+                <div className='flex gap-2 mb-4'>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button 
+                      key={star}
+                      onClick={() => setRating(star)}
+                      className={`p-1 transition-colors ${rating >= star ? 'text-amber-400' : 'text-slate-200 hover:text-amber-200'}`}
+                    >
+                      <Star className='w-8 h-8 fill-current' />
+                    </button>
+                  ))}
+                </div>
+
+                {rating > 0 && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className='space-y-3 overflow-hidden'>
+                    <textarea 
+                      placeholder='Did you face any difficulty during this process? (Optional)'
+                      className='w-full p-3 text-sm border border-slate-200 rounded-xl outline-none focus:border-epfo-blue resize-none'
+                      rows={3}
+                      value={feedbackText}
+                      onChange={(e) => setFeedbackText(e.target.value)}
+                    />
+                    <Button 
+                      onClick={() => {
+                        setIsFeedbackSubmitted(true);
+                        toast.success('Thank you for your valuable feedback!');
+                      }}
+                      className='w-full bg-slate-900 text-white hover:bg-slate-800'
+                    >
+                      Submit Feedback
+                    </Button>
+                  </motion.div>
+                )}
+              </div>
+            ) : (
+              <div className='bg-blue-50 border border-blue-100 p-5 rounded-2xl text-center'>
+                <p className='font-bold text-blue-900'>Thank you! 🎉</p>
+                <p className='text-xs text-blue-700 mt-1'>Your feedback has been recorded.</p>
+              </div>
+            )}
           </motion.div>
         )}
       </div>
