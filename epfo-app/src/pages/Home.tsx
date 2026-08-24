@@ -29,6 +29,7 @@ import { useNotificationStore } from '../store/useNotificationStore';
 import { Button } from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 import { NotificationModal } from '../components/notifications/NotificationModal';
+import toast from 'react-hot-toast';
 
 export const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -53,6 +54,40 @@ export const Home: React.FC = () => {
       }
     });
   }, [activeTasks, archiveTask]);
+
+  // Remind users to setup notifications if not enabled
+  React.useEffect(() => {
+    if (isAuthenticated && !notificationsEnabled) {
+      const hasSeenToast = sessionStorage.getItem('epfo_notif_toast_seen');
+      if (!hasSeenToast) {
+        sessionStorage.setItem('epfo_notif_toast_seen', 'true');
+        setTimeout(() => {
+          toast(
+            (t) => (
+              <div className="flex flex-col gap-2 p-1">
+                <span className="text-xs font-semibold text-slate-800">
+                  Stay updated on your claims!
+                </span>
+                <span className="text-[11px] text-slate-600 leading-tight">
+                  Enable WhatsApp & Email alerts for instant status updates.
+                </span>
+                <button
+                  onClick={() => {
+                    toast.dismiss(t.id);
+                    setIsNotificationOpen(true);
+                  }}
+                  className="mt-1 bg-epfo-blue text-white py-1.5 rounded-lg text-[11px] font-bold shadow-xs hover:bg-blue-800 transition-colors w-full"
+                >
+                  Setup Notifications
+                </button>
+              </div>
+            ),
+            { duration: 8000, position: 'bottom-center' }
+          );
+        }, 800);
+      }
+    }
+  }, [isAuthenticated, notificationsEnabled]);
 
   const activeTaskValues = Object.values(activeTasks).filter(t => t.agentState !== 'completed');
   const firstName = user?.name ? user.name.trim().split(' ')[0] : 'Citizen';
@@ -216,21 +251,7 @@ export const Home: React.FC = () => {
                   ₹2,34,560
                 </div>
 
-                {/* Notification Status Footer */}
-                <div 
-                  onClick={() => setIsNotificationOpen(true)}
-                  className='mt-2 pt-2 border-t border-slate-100 flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity'
-                >
-                  <div className='flex items-center gap-1.5 text-[11px]'>
-                    <span className={`w-2 h-2 rounded-full ${notificationsEnabled ? 'bg-emerald-500' : 'bg-slate-400'}`} />
-                    <span className='text-slate-600 font-medium'>
-                      {notificationsEnabled ? 'WhatsApp & Email Alerts Active' : 'Enable WhatsApp & Email Alerts'}
-                    </span>
-                  </div>
-                  <span className='text-epfo-blue text-[11px] font-semibold hover:underline'>
-                    Settings ⚙️
-                  </span>
-                </div>
+
               </section>
             )}
 
