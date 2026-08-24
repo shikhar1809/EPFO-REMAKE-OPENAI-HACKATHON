@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   FolderOpen, 
   LogOut, 
@@ -11,15 +12,16 @@ import {
   ArrowRight, 
   Bell,
   Mic,
-  Search,
-  X,
+  ArrowLeft,
   FileText,
   Wallet,
   ArrowRightLeft,
   Award,
   CalendarX2,
   HelpCircle,
-  Lock
+  Lock,
+  Sparkles,
+  Send
 } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { useWorkflowStore } from '../store/useWorkflowStore';
@@ -35,12 +37,13 @@ export const Home: React.FC = () => {
   const { activeTasks, startTask, resumeTask, clearTask, archiveTask } = useWorkflowStore();
   const { enabled: notificationsEnabled } = useNotificationStore();
   
+  const [flowChoice, setFlowChoice] = useState<'none' | 'agentic' | 'traditional'>('none');
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [isSmartFlowOpen, setIsSmartFlowOpen] = useState(false);
-  const [isTraditionalOpen, setIsTraditionalOpen] = useState(false);
   
-  const [smartPrompt, setSmartPrompt] = useState('');
+  const [chatInput, setChatInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzePhase, setAnalyzePhase] = useState<'fetching' | 'generating' | 'starting' | null>(null);
 
   // Auto-archive completed tasks
   React.useEffect(() => {
@@ -58,7 +61,7 @@ export const Home: React.FC = () => {
     if (!isRecording) {
       setIsRecording(true);
       setTimeout(() => {
-        setSmartPrompt("I want to submit my life certificate");
+        setChatInput("I want to submit my life certificate");
         setIsRecording(false);
       }, 2200);
     } else {
@@ -66,57 +69,66 @@ export const Home: React.FC = () => {
     }
   };
 
-  const handleSmartIntent = (intentText: string, specificType?: string) => {
-    const query = intentText.trim();
+  const handleAgenticStart = (e?: React.FormEvent, customQuery?: string) => {
+    if (e) e.preventDefault();
+    const query = (customQuery || chatInput).trim();
     if (!query) return;
 
-    const lower = query.toLowerCase();
+    setIsAnalyzing(true);
+    setAnalyzePhase('fetching');
+    
+    setTimeout(() => setAnalyzePhase('generating'), 1000);
+    setTimeout(() => setAnalyzePhase('starting'), 2000);
 
-    // Specific direct navigation routes if applicable
-    if (lower.includes('life') || lower.includes('certificate') || lower.includes('pramaan')) {
-      setIsSmartFlowOpen(false);
-      navigate('/life-certificate');
-      return;
-    }
+    setTimeout(() => {
+      setIsAnalyzing(false);
+      setAnalyzePhase(null);
+      const lower = query.toLowerCase();
 
-    if (lower.includes('exit') || lower.includes('leaving') || lower.includes('quit')) {
-      setIsSmartFlowOpen(false);
-      navigate('/mark-exit');
-      return;
-    }
+      // Quick routes for specialized flows
+      if (lower.includes('life') || lower.includes('certificate') || lower.includes('pramaan')) {
+        setChatInput('');
+        navigate('/life-certificate');
+        return;
+      }
 
-    const taskType = specificType || (
-      lower.includes('withdraw') || lower.includes('claim') || lower.includes('advance') ? 'withdraw_pf' :
-      lower.includes('transfer') || lower.includes('merge') ? 'transfer_pf' : 'general_inquiry'
-    );
+      if (lower.includes('exit') || lower.includes('leaving') || lower.includes('quit')) {
+        setChatInput('');
+        navigate('/mark-exit');
+        return;
+      }
 
-    let plan: any[] = [];
-    if (taskType === 'withdraw_pf') {
-      plan = [
-        { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
-        { step: 'check_eligibility', description: 'Check advance / final claim eligibility', status: 'pending' as const },
-        { step: 'gather_documents', description: 'Fetch KYC & Bank details from DigiLocker', status: 'pending' as const },
-        { step: 'review_claim', description: 'Review claim purpose & amount', status: 'pending' as const },
-        { step: 'submit_claim', description: 'Aadhaar OTP sign & final submission', status: 'pending' as const },
-      ];
-    } else if (taskType === 'transfer_pf') {
-      plan = [
-        { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
-        { step: 'fetch_employment', description: 'Locate previous Member IDs & establishments', status: 'pending' as const },
-        { step: 'initiate_transfer', description: 'Authorize transfer to current account', status: 'pending' as const },
-        { step: 'submit_transfer', description: 'Attestation & OTP submission', status: 'pending' as const },
-      ];
-    } else {
-      plan = [
-        { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
-        { step: 'process_inquiry', description: 'Analyze your request & calculate rules', status: 'pending' as const },
-        { step: 'resolve_inquiry', description: 'Provide accurate guidance or grievance path', status: 'pending' as const }
-      ];
-    }
+      const taskType = lower.includes('withdraw') || lower.includes('advance') || lower.includes('claim') ? 'withdraw_pf' : 
+                       (lower.includes('transfer') || lower.includes('merge')) ? 'transfer_pf' : 'general_inquiry';
+      
+      let plan: any[] = [];
+      if (taskType === 'withdraw_pf') {
+        plan = [
+          { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
+          { step: 'check_eligibility', description: 'Check advance / final claim eligibility', status: 'pending' as const },
+          { step: 'gather_documents', description: 'Fetch KYC & Bank details from DigiLocker', status: 'pending' as const },
+          { step: 'review_claim', description: 'Review claim purpose & amount', status: 'pending' as const },
+          { step: 'submit_claim', description: 'Aadhaar OTP sign & final submission', status: 'pending' as const },
+        ];
+      } else if (taskType === 'transfer_pf') {
+        plan = [
+          { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
+          { step: 'fetch_employment', description: 'Locate previous Member IDs & establishments', status: 'pending' as const },
+          { step: 'initiate_transfer', description: 'Authorize transfer to current account', status: 'pending' as const },
+          { step: 'submit_transfer', description: 'Attestation & OTP submission', status: 'pending' as const },
+        ];
+      } else {
+        plan = [
+          { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
+          { step: 'process_inquiry', description: 'Analyze your request & calculate rules', status: 'pending' as const },
+          { step: 'resolve_inquiry', description: 'Provide accurate guidance or grievance path', status: 'pending' as const }
+        ];
+      }
 
-    startTask(query, taskType, plan);
-    setIsSmartFlowOpen(false);
-    navigate('/smart-flow');
+      startTask(query, taskType, plan);
+      setChatInput('');
+      navigate('/smart-flow');
+    }, 2800);
   };
 
   const [resumeTaskId, setResumeTaskId] = useState<string | null>(null);
@@ -178,139 +190,356 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      <div className='p-4 space-y-3.5 max-w-2xl mx-auto w-full pb-10'>
+      <div className='p-4 space-y-4 max-w-2xl mx-auto w-full pb-12'>
         
-        {/* Streamlined PF Balance Card */}
-        {isAuthenticated && (
-          <section className='bg-white/95 backdrop-blur-md rounded-2xl p-3.5 border border-slate-200/90 shadow-2xs relative overflow-hidden'>
-            <div className='flex items-center justify-between'>
-              <span className='text-slate-500 text-[11px] font-bold uppercase tracking-wider'>
-                {t('total_pf_balance')}
-              </span>
-              <button 
-                onClick={() => navigate('/passbook')}
-                className='bg-blue-50 hover:bg-blue-100 text-epfo-blue font-bold px-2.5 py-1 rounded-lg text-[11px] transition-colors flex items-center gap-1'
-              >
-                {t('view_passbook')} <ArrowRight className='w-3 h-3' />
-              </button>
-            </div>
-            
-            <div className='text-2xl font-extrabold my-1 text-slate-900 tracking-tight'>
-              ₹2,34,560
-            </div>
+        {/* ========================================================= */}
+        {/* MODE 1: MAIN DASHBOARD VIEW (flowChoice === 'none')       */}
+        {/* ========================================================= */}
+        {flowChoice === 'none' && (
+          <>
+            {/* Streamlined PF Balance Card */}
+            {isAuthenticated && (
+              <section className='bg-white/95 backdrop-blur-md rounded-2xl p-3.5 border border-slate-200/90 shadow-2xs relative overflow-hidden'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-500 text-[11px] font-bold uppercase tracking-wider'>
+                    {t('total_pf_balance')}
+                  </span>
+                  <button 
+                    onClick={() => navigate('/passbook')}
+                    className='bg-blue-50 hover:bg-blue-100 text-epfo-blue font-bold px-2.5 py-1 rounded-lg text-[11px] transition-colors flex items-center gap-1'
+                  >
+                    {t('view_passbook')} <ArrowRight className='w-3 h-3' />
+                  </button>
+                </div>
+                
+                <div className='text-2xl font-extrabold my-1 text-slate-900 tracking-tight'>
+                  ₹2,34,560
+                </div>
 
-            {/* Notification Status Footer */}
-            <div 
-              onClick={() => setIsNotificationOpen(true)}
-              className='mt-2 pt-2 border-t border-slate-100 flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity'
-            >
-              <div className='flex items-center gap-1.5 text-[11px]'>
-                <span className={`w-2 h-2 rounded-full ${notificationsEnabled ? 'bg-emerald-500' : 'bg-slate-400'}`} />
-                <span className='text-slate-600 font-medium'>
-                  {notificationsEnabled ? 'WhatsApp & Email Alerts Active' : 'Enable WhatsApp & Email Alerts'}
-                </span>
-              </div>
-              <span className='text-epfo-blue text-[11px] font-semibold hover:underline'>
-                Settings ⚙️
-              </span>
-            </div>
-          </section>
-        )}
-
-        {/* Spacious Need More Help ? Section */}
-        <section className='space-y-2.5 pt-1'>
-          <div className='px-0.5'>
-            <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>
-              Need More Help?
-            </h2>
-          </div>
-
-          <div className='grid grid-cols-2 gap-3.5'>
-            
-            {/* 1. SMART FLOW (Opens Interactive AI Intent Chooser) */}
-            <button 
-              onClick={() => setIsSmartFlowOpen(true)}
-              className='p-4 sm:p-4.5 bg-gradient-to-br from-blue-50/95 via-white to-blue-50/50 border-2 border-epfo-blue/50 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all min-h-[165px]'
-            >
-              <div>
-                <div className='flex items-center justify-between mb-2.5'>
-                  <div className='w-9 h-9 bg-epfo-blue text-white rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform'>
-                    <Bot className='w-5 h-5' />
+                {/* Notification Status Footer */}
+                <div 
+                  onClick={() => setIsNotificationOpen(true)}
+                  className='mt-2 pt-2 border-t border-slate-100 flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity'
+                >
+                  <div className='flex items-center gap-1.5 text-[11px]'>
+                    <span className={`w-2 h-2 rounded-full ${notificationsEnabled ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                    <span className='text-slate-600 font-medium'>
+                      {notificationsEnabled ? 'WhatsApp & Email Alerts Active' : 'Enable WhatsApp & Email Alerts'}
+                    </span>
                   </div>
-                  <span className='bg-epfo-orange text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase'>
-                    {t('recommended')}
+                  <span className='text-epfo-blue text-[11px] font-semibold hover:underline'>
+                    Settings ⚙️
                   </span>
                 </div>
-                <h3 className='font-bold text-sm text-epfo-blue leading-tight'>
-                  Smart Flow
-                </h3>
-                <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
-                  AI assistant guides your claims, transfers & certificates.
-                </p>
-              </div>
-              <div className='mt-3 text-xs font-bold text-epfo-blue flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
-                Launch Smart Flow →
-              </div>
-            </button>
+              </section>
+            )}
 
-            {/* 2. TRADITIONAL FLOW (Opens Classic Portal Menu) */}
-            <button 
-              onClick={() => setIsTraditionalOpen(true)}
-              className='p-4 sm:p-4.5 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all min-h-[165px]'
-            >
-              <div>
-                <div className='w-9 h-9 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform'>
-                  <FolderOpen className='w-5 h-5' />
-                </div>
-                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-slate-700'>
-                  Traditional Flow
-                </h3>
-                <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
-                  Direct access to classic portal forms, claims & filing.
-                </p>
+            {/* NEED MORE HELP ? (Smart Flow vs Traditional Flow) */}
+            <section className='space-y-2.5 pt-1'>
+              <div className='px-0.5'>
+                <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>
+                  Need More Help?
+                </h2>
               </div>
-              <div className='mt-3 text-xs font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
-                Open Portal →
-              </div>
-            </button>
 
-          </div>
-        </section>
-
-        {/* Active Tasks & Crash Recovery */}
-        {activeTaskValues.length > 0 && (
-          <section className='space-y-1.5'>
-            <h2 className='text-[11px] font-bold text-slate-800 uppercase tracking-wider px-0.5 flex items-center gap-1.5'>
-              {t('active_tasks')}
-              <span className='bg-orange-100 text-orange-700 text-[9px] px-1.5 py-0.5 rounded-full font-bold'>
-                {activeTaskValues.length}
-              </span>
-            </h2>
-            <div className='space-y-2'>
-              {activeTaskValues.map(task => (
-                <div key={task.taskId} className='bg-white/95 p-3 rounded-2xl border border-orange-200 shadow-2xs flex justify-between items-center'>
+              <div className='grid grid-cols-2 gap-3.5'>
+                
+                {/* 1. SMART FLOW (Opens Dedicated Smart Agent View) */}
+                <button 
+                  onClick={() => setFlowChoice('agentic')}
+                  className='p-4 sm:p-4.5 bg-gradient-to-br from-blue-50/95 via-white to-blue-50/50 border-2 border-epfo-blue/50 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all min-h-[165px]'
+                >
                   <div>
-                    <p className='font-bold text-xs text-slate-900'>{task.intent}</p>
-                    <p className='text-[11px] text-slate-500 mt-0.5'>
-                      Status: <span className='font-semibold text-orange-600 capitalize'>{task.agentState.replace('_', ' ')}</span> • {new Date(task.lastCheckpoint).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    <div className='flex items-center justify-between mb-2.5'>
+                      <div className='w-9 h-9 bg-epfo-blue text-white rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform'>
+                        <Bot className='w-5 h-5' />
+                      </div>
+                      <span className='bg-epfo-orange text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase'>
+                        {t('recommended')}
+                      </span>
+                    </div>
+                    <h3 className='font-bold text-sm text-epfo-blue leading-tight'>
+                      Smart Flow
+                    </h3>
+                    <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
+                      AI assistant guides your claims, transfers & certificates.
                     </p>
                   </div>
-                  <div className='flex items-center gap-1.5'>
-                    <Button onClick={() => handleResume(task.taskId)} className='shrink-0 gap-1 text-[11px] py-1.5 px-3 font-bold'>
-                      <Play className='w-3 h-3 fill-current' /> {t('resume')}
-                    </Button>
-                    <button 
-                      onClick={() => clearTask(task.taskId)} 
-                      className='p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors'
-                      title='Delete task'
-                    >
-                      <Trash2 className='w-3.5 h-3.5' />
-                    </button>
+                  <div className='mt-3 text-xs font-bold text-epfo-blue flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+                    Launch Smart Flow →
+                  </div>
+                </button>
+
+                {/* 2. TRADITIONAL FLOW (Opens Dedicated Traditional View) */}
+                <button 
+                  onClick={() => setFlowChoice('traditional')}
+                  className='p-4 sm:p-4.5 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all min-h-[165px]'
+                >
+                  <div>
+                    <div className='w-9 h-9 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform'>
+                      <FolderOpen className='w-5 h-5' />
+                    </div>
+                    <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-slate-700'>
+                      Traditional Flow
+                    </h3>
+                    <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
+                      Direct access to classic portal forms, claims & filing.
+                    </p>
+                  </div>
+                  <div className='mt-3 text-xs font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+                    Open Portal →
+                  </div>
+                </button>
+
+              </div>
+            </section>
+
+            {/* Active Tasks & Crash Recovery */}
+            {activeTaskValues.length > 0 && (
+              <section className='space-y-1.5'>
+                <h2 className='text-[11px] font-bold text-slate-800 uppercase tracking-wider px-0.5 flex items-center gap-1.5'>
+                  {t('active_tasks')}
+                  <span className='bg-orange-100 text-orange-700 text-[9px] px-1.5 py-0.5 rounded-full font-bold'>
+                    {activeTaskValues.length}
+                  </span>
+                </h2>
+                <div className='space-y-2'>
+                  {activeTaskValues.map(task => (
+                    <div key={task.taskId} className='bg-white/95 p-3 rounded-2xl border border-orange-200 shadow-2xs flex justify-between items-center'>
+                      <div>
+                        <p className='font-bold text-xs text-slate-900'>{task.intent}</p>
+                        <p className='text-[11px] text-slate-500 mt-0.5'>
+                          Status: <span className='font-semibold text-orange-600 capitalize'>{task.agentState.replace('_', ' ')}</span> • {new Date(task.lastCheckpoint).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                      <div className='flex items-center gap-1.5'>
+                        <Button onClick={() => handleResume(task.taskId)} className='shrink-0 gap-1 text-[11px] py-1.5 px-3 font-bold'>
+                          <Play className='w-3 h-3 fill-current' /> {t('resume')}
+                        </Button>
+                        <button 
+                          onClick={() => clearTask(task.taskId)} 
+                          className='p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors'
+                          title='Delete task'
+                        >
+                          <Trash2 className='w-3.5 h-3.5' />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
+        )}
+
+        {/* ========================================================= */}
+        {/* MODE 2: SMART FLOW AGENT PAGE (flowChoice === 'agentic')   */}
+        {/* ========================================================= */}
+        {flowChoice === 'agentic' && (
+          <motion.div 
+            initial={{ opacity: 0, y: 8 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            className='space-y-4'
+          >
+            {/* Back Button to Dashboard */}
+            <button 
+              onClick={() => setFlowChoice('none')} 
+              className='text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1 font-semibold transition-colors'
+            >
+              <ArrowLeft className='w-3.5 h-3.5' /> {t('back_to_choices') || 'Back to Dashboard'}
+            </button>
+
+            {/* Smart Agent Greeting & Prompt Section */}
+            <section className='bg-white/95 backdrop-blur-md rounded-3xl p-5 border border-slate-200/90 shadow-sm space-y-4'>
+              <div className='flex items-center gap-3'>
+                <div className='w-11 h-11 bg-epfo-blue text-white rounded-2xl flex items-center justify-center shadow-sm shrink-0'>
+                  <Bot className='w-6 h-6' />
+                </div>
+                <div>
+                  <h2 className='text-base font-bold text-slate-900'>
+                    {t('smart_agent') || 'EPFO Smart Assistant'}
+                  </h2>
+                  <p className='text-xs text-slate-500'>
+                    How can I assist you with your provident fund today?
+                  </p>
+                </div>
+              </div>
+
+              {/* Analyzing / Plan Generation State */}
+              {isAnalyzing ? (
+                <div className='bg-slate-50 rounded-2xl border border-blue-100 p-6 flex flex-col items-center justify-center space-y-4 shadow-inner min-h-[180px]'>
+                  <div className='w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center'>
+                    <Bot className='w-6 h-6 text-epfo-blue animate-pulse' />
+                  </div>
+                  <div className='w-full max-w-xs space-y-2 text-xs'>
+                    <div className='flex items-center gap-2.5'>
+                      <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
+                      <span className={`font-medium ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Analyzing request & rules</span>
+                    </div>
+                    <div className='flex items-center gap-2.5'>
+                      <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
+                      <span className={`font-medium ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Generating step-by-step plan</span>
+                    </div>
+                    <div className='flex items-center gap-2.5'>
+                      <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
+                      <span className={`font-medium ${analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Launching secure workflow</span>
+                    </div>
                   </div>
                 </div>
-              ))}
+              ) : (
+                /* Chatbox Textarea with Voice & Action Button */
+                <form onSubmit={handleAgenticStart} className='space-y-3'>
+                  <div className='relative bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-epfo-blue focus-within:bg-white transition-all shadow-2xs overflow-hidden'>
+                    <textarea 
+                      className='w-full p-3.5 pb-12 bg-transparent text-slate-900 placeholder-slate-400 outline-none text-xs font-medium resize-none min-h-[90px]'
+                      placeholder='Type what you need in simple words (e.g. "I want to withdraw ₹50,000 for medical emergency", "Submit life certificate", "Merge my old PF accounts")...'
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleAgenticStart(e);
+                        }
+                      }}
+                    />
+                    
+                    <div className='absolute bottom-2.5 right-2.5 flex items-center gap-1.5'>
+                      <button 
+                        type="button"
+                        onClick={toggleRecording}
+                        className={`p-2 rounded-xl transition-all ${isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-200'}`}
+                        title='Voice input'
+                      >
+                        <Mic className='w-4 h-4' />
+                      </button>
+                      <button 
+                        type='submit' 
+                        disabled={!chatInput.trim()}
+                        className='bg-epfo-blue hover:bg-blue-700 text-white rounded-xl px-3.5 py-1.5 text-xs font-bold transition-colors disabled:opacity-40 flex items-center gap-1.5 shadow-xs'
+                      >
+                        <Send className='w-3 h-3' />
+                        {t('send') || 'Analyze'}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              )}
+            </section>
+
+            {/* Frequently Asked Questions / Quick Intents (FAQs) */}
+            <section className='space-y-2 pt-1'>
+              <div className='flex items-center gap-1.5 px-1'>
+                <Sparkles className='w-3.5 h-3.5 text-epfo-blue' />
+                <h3 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>
+                  Common Questions & Workflows
+                </h3>
+              </div>
+
+              <div className='space-y-2'>
+                {[
+                  {
+                    title: "I want to withdraw PF for medical emergency",
+                    desc: "Auto-selects Form 31 Advance with Illness clause & instant claim check",
+                    query: "I want to withdraw ₹50,000 for medical emergency"
+                  },
+                  {
+                    title: "Submit my Digital Life Certificate (Jeevan Pramaan)",
+                    desc: "Pensioner face authentication and submission to nodal bank",
+                    query: "I want to submit my life certificate"
+                  },
+                  {
+                    title: "Merge previous PF account with current employer",
+                    desc: "One Member One EPF auto-merge with online employer attestation",
+                    query: "Transfer and merge my previous PF accounts"
+                  },
+                  {
+                    title: "I left my job and want to mark my exit date",
+                    desc: "Self-declare date of exit if not updated by previous employer (>60 days)",
+                    query: "I want to mark my date of exit"
+                  },
+                  {
+                    title: "Why was my claim rejected or delayed?",
+                    desc: "Check reason for rejection and get auto-fix recommendations",
+                    query: "Why was my claim rejected?"
+                  }
+                ].map((faq, idx) => (
+                  <button
+                    key={idx}
+                    onClick={(e) => handleAgenticStart(e, faq.query)}
+                    className='w-full p-3 bg-white/95 hover:bg-blue-50/80 hover:border-epfo-blue border border-slate-200/90 rounded-2xl flex items-center justify-between text-left transition-all shadow-2xs group'
+                  >
+                    <div>
+                      <p className='text-xs font-bold text-slate-800 group-hover:text-epfo-blue'>
+                        {faq.title}
+                      </p>
+                      <p className='text-[11px] text-slate-500 mt-0.5'>
+                        {faq.desc}
+                      </p>
+                    </div>
+                    <ArrowRight className='w-4 h-4 text-slate-400 group-hover:text-epfo-blue group-hover:translate-x-1 transition-transform shrink-0 ml-2' />
+                  </button>
+                ))}
+              </div>
+            </section>
+          </motion.div>
+        )}
+
+        {/* ========================================================= */}
+        {/* MODE 3: TRADITIONAL PORTAL VIEW (flowChoice === 'traditional') */}
+        {/* ========================================================= */}
+        {flowChoice === 'traditional' && (
+          <motion.div 
+            initial={{ opacity: 0, y: 8 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            className='space-y-4'
+          >
+            {/* Back Button to Dashboard */}
+            <button 
+              onClick={() => setFlowChoice('none')} 
+              className='text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1 font-semibold transition-colors'
+            >
+              <ArrowLeft className='w-3.5 h-3.5' /> {t('back_to_choices') || 'Back to Dashboard'}
+            </button>
+
+            <div className='px-1'>
+              <h2 className='text-base font-bold text-slate-900'>
+                {t('traditional_service') || 'Traditional EPFO Services'}
+              </h2>
+              <p className='text-xs text-slate-500 mt-0.5'>
+                Direct access to classic forms, passbook, claims & grievances
+              </p>
             </div>
-          </section>
+
+            {/* Direct Services List */}
+            <div className='grid grid-cols-2 gap-3'>
+              {[
+                { title: "Member Passbook", desc: "Monthly wage deductions & interest", path: "/passbook", icon: Wallet, color: "text-blue-600 bg-blue-50" },
+                { title: "File Online Claim", desc: "Form 31 / 19 / 10C Withdrawal", path: "/claim", icon: FileText, color: "text-emerald-600 bg-emerald-50" },
+                { title: "Transfer & Merge", desc: "One Member One EPF auto-merge", path: "/transfer", icon: ArrowRightLeft, color: "text-indigo-600 bg-indigo-50" },
+                { title: "Life Certificate", desc: "Face-Auth Jeevan Pramaan", path: "/life-certificate", icon: Award, color: "text-teal-600 bg-teal-50" },
+                { title: "Mark Exit Date", desc: "Self-declare leaving date (>60d)", path: "/mark-exit", icon: CalendarX2, color: "text-amber-600 bg-amber-50" },
+                { title: "Document Vault", desc: "DigiLocker KYC & Bank references", path: "/documents", icon: Lock, color: "text-purple-600 bg-purple-50" },
+                { title: "EPFiGMS Grievance", desc: "Register & track official complaints", path: "/grievance", icon: HelpCircle, color: "text-rose-600 bg-rose-50" }
+              ].map((item, idx) => {
+                const IconComponent = item.icon;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => navigate(item.path)}
+                    className='p-3.5 bg-white/95 hover:border-epfo-blue border border-slate-200/90 rounded-2xl flex flex-col justify-between text-left transition-all shadow-2xs hover:shadow-xs group min-h-[110px]'
+                  >
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mb-2 ${item.color}`}>
+                      <IconComponent className='w-4 h-4' />
+                    </div>
+                    <div>
+                      <p className='text-xs font-bold text-slate-800 group-hover:text-epfo-blue leading-tight'>{item.title}</p>
+                      <p className='text-[10px] text-slate-500 mt-1 leading-snug'>{item.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
         )}
 
         {/* Security Alert (Step-up Auth / Hijacking prevention) */}
@@ -327,151 +556,6 @@ export const Home: React.FC = () => {
         )}
 
       </div>
-
-      {/* 🤖 SMART FLOW MODAL: Ask what the user wants to accomplish */}
-      {isSmartFlowOpen && (
-        <div className='fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[150] flex items-center justify-center p-4'>
-          <div className='bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl space-y-4 border border-slate-200 animate-in fade-in zoom-in-95 duration-150'>
-            
-            <div className='flex items-center justify-between pb-2 border-b border-slate-100'>
-              <div className='flex items-center gap-2'>
-                <div className='w-8 h-8 rounded-xl bg-blue-50 text-epfo-blue flex items-center justify-center'>
-                  <Bot className='w-5 h-5' />
-                </div>
-                <div>
-                  <h3 className='font-bold text-sm text-slate-900'>EPFO Smart Assistant</h3>
-                  <p className='text-[11px] text-slate-500'>What would you like help with?</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsSmartFlowOpen(false)}
-                className='p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors'
-              >
-                <X className='w-4 h-4' />
-              </button>
-            </div>
-
-            {/* Natural Language Prompt & Voice Input */}
-            <form onSubmit={(e) => { e.preventDefault(); handleSmartIntent(smartPrompt); }} className='relative'>
-              <div className='relative flex items-center bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-epfo-blue focus-within:bg-white transition-all overflow-hidden'>
-                <div className='pl-3 text-slate-400'>
-                  <Search className='w-4 h-4' />
-                </div>
-                <input 
-                  type='text'
-                  className='w-full py-3 pl-2.5 pr-20 bg-transparent text-slate-900 placeholder-slate-400 outline-none text-xs font-medium'
-                  placeholder='e.g. "Withdraw ₹50,000 for medical"'
-                  value={smartPrompt}
-                  onChange={(e) => setSmartPrompt(e.target.value)}
-                />
-                <div className='absolute right-2 flex items-center gap-1'>
-                  <button 
-                    type='button'
-                    onClick={toggleRecording}
-                    className={`p-1.5 rounded-full transition-all ${isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-200'}`}
-                    title='Voice input'
-                  >
-                    <Mic className='w-3.5 h-3.5' />
-                  </button>
-                  <button 
-                    type='submit'
-                    disabled={!smartPrompt.trim()}
-                    className='bg-epfo-blue hover:bg-blue-700 text-white rounded-lg px-2.5 py-1 text-[11px] font-bold disabled:opacity-40'
-                  >
-                    Go
-                  </button>
-                </div>
-              </div>
-            </form>
-
-            {/* Quick 1-Tap Intent Options */}
-            <div className='space-y-1.5 pt-1'>
-              <p className='text-[10px] uppercase font-bold text-slate-400 tracking-wider px-0.5'>
-                Or choose a quick workflow:
-              </p>
-
-              {[
-                { title: "Withdraw PF Advance / Final", desc: "Medical, Illness, Housing, Form 31/19", type: "withdraw_pf" },
-                { title: "Transfer & Merge PF Accounts", desc: "One Member One EPF auto-merge", type: "transfer_pf" },
-                { title: "Submit Digital Life Certificate", desc: "Face-Auth Jeevan Pramaan for Pensioners", type: "life_cert" },
-                { title: "Mark Date of Exit", desc: "Self-declaration of leaving employment", type: "mark_exit" },
-                { title: "Ask EPFO General Question", desc: "Tax rules, eligibility, passbook help", type: "general_inquiry" }
-              ].map((item, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleSmartIntent(item.title, item.type)}
-                  className='w-full p-2.5 bg-slate-50 hover:bg-blue-50/80 hover:border-epfo-blue border border-slate-200/80 rounded-xl flex items-center justify-between text-left group transition-all'
-                >
-                  <div>
-                    <p className='text-xs font-bold text-slate-800 group-hover:text-epfo-blue'>{item.title}</p>
-                    <p className='text-[10px] text-slate-500'>{item.desc}</p>
-                  </div>
-                  <ArrowRight className='w-3.5 h-3.5 text-slate-400 group-hover:text-epfo-blue group-hover:translate-x-0.5 transition-transform' />
-                </button>
-              ))}
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* 📁 TRADITIONAL FLOW MODAL: Classic Portal & Services Directory */}
-      {isTraditionalOpen && (
-        <div className='fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[150] flex items-center justify-center p-4'>
-          <div className='bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl space-y-4 border border-slate-200 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto'>
-            
-            <div className='flex items-center justify-between pb-2 border-b border-slate-100'>
-              <div className='flex items-center gap-2'>
-                <div className='w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center'>
-                  <FolderOpen className='w-5 h-5' />
-                </div>
-                <div>
-                  <h3 className='font-bold text-sm text-slate-900'>Traditional EPFO Portal</h3>
-                  <p className='text-[11px] text-slate-500'>Direct access to self-service forms</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsTraditionalOpen(false)}
-                className='p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors'
-              >
-                <X className='w-4 h-4' />
-              </button>
-            </div>
-
-            {/* Direct Services List */}
-            <div className='space-y-2'>
-              {[
-                { title: "Member Passbook", desc: "Detailed wage deductions & interest credits", path: "/passbook", icon: Wallet, color: "text-blue-600 bg-blue-50" },
-                { title: "File Online Claim", desc: "Form 31 Advance / Form 19 Final Withdrawal", path: "/claim", icon: FileText, color: "text-emerald-600 bg-emerald-50" },
-                { title: "One Member One EPF", desc: "Transfer previous Member IDs to current account", path: "/transfer", icon: ArrowRightLeft, color: "text-indigo-600 bg-indigo-50" },
-                { title: "Digital Life Certificate", desc: "Jeevan Pramaan face authentication for pensioners", path: "/life-certificate", icon: Award, color: "text-teal-600 bg-teal-50" },
-                { title: "Mark Date of Exit", desc: "Declare leaving date (60+ days post exit)", path: "/mark-exit", icon: CalendarX2, color: "text-amber-600 bg-amber-50" },
-                { title: "DigiLocker Document Vault", desc: "Encrypted Aadhaar & Bank KYC references", path: "/documents", icon: Lock, color: "text-purple-600 bg-purple-50" },
-                { title: "EPFiGMS Grievance Portal", desc: "Register or track official EPFO complaints", path: "/grievance", icon: HelpCircle, color: "text-rose-600 bg-rose-50" }
-              ].map((item, idx) => {
-                const IconComponent = item.icon;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => { setIsTraditionalOpen(false); navigate(item.path); }}
-                    className='w-full p-2.5 bg-slate-50 hover:bg-white hover:border-slate-300 border border-slate-200/80 rounded-xl flex items-center gap-3 text-left transition-all shadow-2xs hover:shadow-xs group'
-                  >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.color}`}>
-                      <IconComponent className='w-4 h-4' />
-                    </div>
-                    <div className='flex-1 min-w-0'>
-                      <p className='text-xs font-bold text-slate-800 group-hover:text-epfo-blue'>{item.title}</p>
-                      <p className='text-[10px] text-slate-500 truncate'>{item.desc}</p>
-                    </div>
-                    <ArrowRight className='w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform' />
-                  </button>
-                );
-              })}
-            </div>
-
-          </div>
-        </div>
-      )}
 
       {resumeTaskId && (
         <div className='fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4'>
