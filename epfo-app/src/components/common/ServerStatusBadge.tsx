@@ -7,23 +7,26 @@ export const ServerStatusBadge: React.FC = () => {
   const { status, latencyMs, isManualOverride, setStatus } = useServerStatusStore();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Subtle Demo Load Fluctuation (Randomly toggles between Green and Yellow only, never Red)
+  // Guarantee clean healthy start and smooth demo oscillation between Green and Yellow ONLY
   useEffect(() => {
+    // Force healthy on initial mount
+    setStatus('healthy', false);
+
     let timeoutId: ReturnType<typeof setTimeout>;
 
     const scheduleNextToggle = () => {
-      // If currently healthy, wait 45s - 75s, then switch to medium
-      // If currently medium or heavy, stay for 10s - 15s, then switch to healthy
       const current = useServerStatusStore.getState().status;
       
       if (current === 'healthy') {
-        const healthyDuration = 45000 + Math.random() * 30000; // 45s to 75s
+        // Stay green for 40s to 70s
+        const healthyDuration = 40000 + Math.random() * 30000;
         timeoutId = setTimeout(() => {
           setStatus('medium', false);
           scheduleNextToggle();
         }, healthyDuration);
       } else {
-        const mediumDuration = 10000 + Math.random() * 5000; // 10s to 15s
+        // Stay yellow for 10s to 14s, then switch back to green
+        const mediumDuration = 10000 + Math.random() * 4000;
         timeoutId = setTimeout(() => {
           setStatus('healthy', false);
           scheduleNextToggle();
