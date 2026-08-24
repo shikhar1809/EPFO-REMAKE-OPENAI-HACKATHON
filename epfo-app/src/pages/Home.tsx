@@ -191,39 +191,35 @@ export const Home: React.FC = () => {
 
       <div className='p-4 space-y-4 max-w-2xl mx-auto w-full pb-10'>
         
-        {/* PF Balance & Integrated Alert Status Hero Widget */}
+        {/* PF Balance & Integrated Alert Status Hero Widget - Simple & Matte */}
         {isAuthenticated && flowChoice === 'none' && (
-          <section className='bg-gradient-to-br from-epfo-blue via-blue-700 to-indigo-800 rounded-2xl p-4 text-white shadow-md relative overflow-hidden'>
-            <div className='absolute -right-2 -bottom-2 p-2 opacity-15 pointer-events-none'>
-              <Wallet className='w-20 h-20' />
-            </div>
-            <div className='relative z-10'>
-              <div className='flex items-center justify-between'>
-                <span className='text-blue-100 text-xs font-medium'>{t('total_pf_balance')}</span>
-                <button 
-                  onClick={() => navigate('/passbook')}
-                  className='bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1'
-                >
-                  {t('view_passbook')} →
-                </button>
-              </div>
-              <div className='text-2xl font-bold my-1 tracking-tight'>₹2,34,560</div>
-
-              {/* Integrated Compact Notification Bar */}
-              <div 
-                onClick={() => setIsNotificationOpen(true)}
-                className='mt-2.5 pt-2 border-t border-white/20 flex items-center justify-between cursor-pointer hover:opacity-90 transition-opacity text-[11px]'
+          <section className='bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-sm relative'>
+            <div className='flex items-center justify-between'>
+              <span className='text-slate-400 text-xs font-medium'>{t('total_pf_balance')}</span>
+              <button 
+                onClick={() => navigate('/passbook')}
+                className='bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1 rounded-lg text-xs font-medium transition-colors flex items-center gap-1'
               >
-                <div className='flex items-center gap-1.5'>
-                  <span className={`w-2 h-2 rounded-full ${notificationsEnabled ? 'bg-emerald-400' : 'bg-slate-400'}`} />
-                  <span className='text-blue-100'>
-                    {notificationsEnabled ? 'WhatsApp & Email Alerts Active' : 'Enable WhatsApp & Email Alerts'}
-                  </span>
-                </div>
-                <span className='text-blue-200 text-[10px] bg-white/10 px-2 py-0.5 rounded-full font-medium'>
-                  Configure ⚙️
+                {t('view_passbook')} →
+              </button>
+            </div>
+            
+            <div className='text-2xl font-bold my-1 text-white tracking-tight'>₹2,34,560</div>
+
+            {/* Integrated Compact Notification Bar */}
+            <div 
+              onClick={() => setIsNotificationOpen(true)}
+              className='mt-2.5 pt-2.5 border-t border-slate-800 flex items-center justify-between cursor-pointer hover:opacity-90 transition-opacity text-[11px]'
+            >
+              <div className='flex items-center gap-1.5'>
+                <span className={`w-2 h-2 rounded-full ${notificationsEnabled ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+                <span className='text-slate-300'>
+                  {notificationsEnabled ? 'WhatsApp & Email Alerts Active' : 'Enable WhatsApp & Email Alerts'}
                 </span>
               </div>
+              <span className='text-slate-400 text-[10px] bg-slate-800 border border-slate-700 px-2 py-0.5 rounded-full font-medium'>
+                Configure ⚙️
+              </span>
             </div>
           </section>
         )}
