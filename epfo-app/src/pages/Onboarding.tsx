@@ -215,7 +215,7 @@ export const Onboarding: React.FC = () => {
               </div>
               <div className='space-y-3 mt-8'>
                 {languages.map((lang) => (
-                  <button key={lang.code} onClick={() => handleLanguageSelect(lang.code)} className='w-full p-4 rounded-xl border border-slate-200 text-left hover:bg-transparent transition-colors'>
+                  <button key={lang.code} onClick={() => handleLanguageSelect(lang.code)} className='w-full p-4 rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm text-left hover:border-epfo-blue transition-colors'>
                     <span className='font-medium text-lg'>{lang.name}</span>
                   </button>
                 ))}
@@ -233,11 +233,11 @@ export const Onboarding: React.FC = () => {
                 <p className='text-slate-500'>Are you a new or returning user?</p>
               </div>
               <div className='space-y-3 mt-8'>
-                <button onClick={() => setStep('identity')} className='w-full p-4 rounded-xl border border-slate-200 text-left hover:border-epfo-blue transition-colors flex items-center justify-between'>
+                <button onClick={() => setStep('identity')} className='w-full p-4 rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm text-left hover:border-epfo-blue transition-colors flex items-center justify-between'>
                   <span className='font-medium text-lg'>I am a new user</span>
                   <ArrowLeft className='w-4 h-4 rotate-180 text-slate-400' />
                 </button>
-                <button onClick={() => setStep('returning_login')} className='w-full p-4 rounded-xl border border-slate-200 text-left hover:border-epfo-blue transition-colors flex items-center justify-between'>
+                <button onClick={() => setStep('returning_login')} className='w-full p-4 rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm text-left hover:border-epfo-blue transition-colors flex items-center justify-between'>
                   <span className='font-medium text-lg text-epfo-blue'>I am a returning user</span>
                   <ArrowLeft className='w-4 h-4 rotate-180 text-epfo-blue' />
                 </button>
