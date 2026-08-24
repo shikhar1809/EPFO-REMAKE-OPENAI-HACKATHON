@@ -106,14 +106,21 @@ export const Onboarding: React.FC = () => {
   
   const { verifyUAN, loginWithPhone, completeProfile } = useSessionStore();
   
-  const [uanInput, setUanInput] = useState('100000000000');
-  const [phoneInput, setPhoneInput] = useState('9876543210');
+  const [uanInput, setUanInput] = useState('');
+  const [phoneInput, setPhoneInput] = useState('');
   const [otpInput, setOtpInput] = useState('');
+  const [showOtp, setShowOtp] = useState(false);
+  const [profileName, setProfileName] = useState('');
+  const [mpinInput, setMpinInput] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
 
   const languages = [
     { code: 'en', name: 'English' },
-    { code: 'hi', name: 'हिंदी' }
+    { code: 'hi', name: 'हिंदी' },
+    { code: 'mr', name: 'मराठी' },
+    { code: 'bn', name: 'বাংলা' },
+    { code: 'te', name: 'తెలుగు' },
+    { code: 'ta', name: 'தமிழ்' }
   ];
 
   const handleLanguageSelect = (code: string) => {
@@ -123,17 +130,34 @@ export const Onboarding: React.FC = () => {
   };
 
   const handleUanVerification = async () => {
-    setIsVerifying(true);
-    const success = await verifyUAN(uanInput);
-    setIsVerifying(false);
-    if (success) {
-      if (step === 'returning_login') {
-        finishOnboarding();
+    if (!showOtp) {
+      if (uanInput.length === 12) {
+        setIsVerifying(true);
+        await new Promise(r => setTimeout(r, 800)); // Simulate sending OTP
+        setIsVerifying(false);
+        setShowOtp(true);
       } else {
-        setStep('profile_setup');
+        alert('Invalid UAN (must be 12 digits)');
+      }
+      return;
+    }
+
+    // Verify OTP
+    if (otpInput === '1234') {
+      setIsVerifying(true);
+      const success = await verifyUAN(uanInput);
+      setIsVerifying(false);
+      if (success) {
+        if (step === 'returning_login') {
+          completeProfile({ name: 'Returning User' });
+          localStorage.setItem('onboarded', 'true');
+          navigate('/');
+        } else {
+          setStep('profile_setup');
+        }
       }
     } else {
-      alert('Invalid UAN (must be 12 digits)');
+      alert('Invalid OTP. Please use 1234.');
     }
   };
 
@@ -239,20 +263,33 @@ export const Onboarding: React.FC = () => {
                   placeholder="Enter 12-digit UAN"
                   value={uanInput}
                   onChange={(e) => setUanInput(e.target.value.replace(/\D/g, ''))}
+                  disabled={showOtp}
                 />
+
+                {showOtp && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                    <input 
+                      type="text"
+                      className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all mt-4'
+                      placeholder="Enter OTP (Use 1234)"
+                      value={otpInput}
+                      onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                    />
+                  </motion.div>
+                )}
                 
                 <Button 
                   className='w-full py-4 text-lg' 
                   onClick={handleUanVerification}
-                  disabled={uanInput.length !== 12 || isVerifying}
+                  disabled={(uanInput.length !== 12) || (showOtp && otpInput.length < 4) || isVerifying}
                   isLoading={isVerifying}
                 >
-                  Verify & Login
+                  {showOtp ? 'Verify OTP & Login' : 'Get OTP'}
                 </Button>
 
                 <div className='pt-6 relative'>
                   <div className='absolute inset-0 flex items-center'><div className='w-full border-t border-slate-200'></div></div>
-                  <div className='relative flex justify-center text-sm'><span className='px-2 bg-white text-slate-500'>OR</span></div>
+                  <div className='relative flex justify-center text-sm'><span className='px-2 bg-slate-50 text-slate-500'>OR</span></div>
                 </div>
                 
                 <Button variant='outline' className='w-full py-4' onClick={() => setStep('mobile_login')}>
@@ -295,6 +332,11 @@ export const Onboarding: React.FC = () => {
                 <Button variant='outline' className='w-full py-4 text-lg' onClick={() => setStep('mobile_login')}>
                   Continue without UAN (Mobile Only)
                 </Button>
+                <div className="pt-2 text-center">
+                  <button onClick={() => setStep('mobile_login')} className="text-sm text-epfo-blue hover:underline font-medium">
+                    I don't know my UAN / Help me find it
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
@@ -309,9 +351,23 @@ export const Onboarding: React.FC = () => {
                   className='w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-epfo-orange outline-none'
                   value={uanInput}
                   onChange={e => setUanInput(e.target.value.replace(/\D/g, ''))}
+                  disabled={showOtp}
                 />
-                <Button className='w-full py-4' disabled={isVerifying || uanInput.length !== 12} onClick={handleUanVerification}>
-                  {isVerifying ? 'Verifying...' : 'Verify'}
+
+                {showOtp && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                    <input 
+                      type="text"
+                      className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-orange transition-all mt-4'
+                      placeholder="Enter OTP (Use 1234)"
+                      value={otpInput}
+                      onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                    />
+                  </motion.div>
+                )}
+
+                <Button className='w-full py-4' disabled={(uanInput.length !== 12) || (showOtp && otpInput.length < 4) || isVerifying} onClick={handleUanVerification}>
+                  {isVerifying ? 'Verifying...' : showOtp ? 'Verify OTP' : 'Get OTP'}
                 </Button>
                 <div className='pt-4 border-t border-slate-100'>
                   <p className='text-sm text-center text-slate-500 mb-3'>Haven't activated your UAN yet?</p>
@@ -353,9 +409,24 @@ export const Onboarding: React.FC = () => {
             <motion.div key="profile_setup" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='space-y-6 my-auto text-center'>
               <ProfileSuccessAnim />
               <h1 className='text-3xl font-semibold mb-2'>UAN Verified</h1>
-              <p className='text-slate-500'>We've successfully verified your UAN. Let's finish setting up your profile.</p>
-              <div className='space-y-4 pt-8'>
-                <Button className='w-full py-4 text-lg' onClick={() => setStep('prerequisites')}>
+              <p className='text-slate-500'>We've successfully verified your UAN. What should we call you?</p>
+              
+              <div className='pt-6 text-left'>
+                <label className="text-sm font-medium text-slate-700 block mb-2">Full Name</label>
+                <input 
+                  type="text"
+                  placeholder="e.g. Ramesh Kumar"
+                  className="w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all"
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                />
+              </div>
+
+              <div className='space-y-4 pt-4'>
+                <Button className='w-full py-4 text-lg' disabled={!profileName.trim()} onClick={() => {
+                  completeProfile({ name: profileName });
+                  setStep('prerequisites');
+                }}>
                   Continue
                 </Button>
               </div>
@@ -387,16 +458,19 @@ export const Onboarding: React.FC = () => {
                 </div>
 
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium text-slate-700'>Security Question</label>
-                  <select className='w-full p-4 border border-slate-200 rounded-xl outline-none bg-white' defaultValue="pet">
-                    <option value="pet">What was the name of your first pet?</option>
-                    <option value="school">What was your first school?</option>
-                  </select>
-                  <input type="text" value="Fluffy" readOnly className='w-full p-4 border border-slate-200 rounded-xl bg-transparent text-slate-500 outline-none mt-2' />
-                  <p className='text-xs text-slate-500'>You will be asked this question when resuming abandoned sessions.</p>
+                  <label className='text-sm font-medium text-slate-700'>Set a 4-Digit MPIN</label>
+                  <input 
+                    type="password" 
+                    maxLength={4}
+                    value={mpinInput} 
+                    onChange={e => setMpinInput(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Enter 4 digits"
+                    className='w-full p-4 border border-slate-200 rounded-xl bg-transparent focus:ring-2 focus:ring-epfo-orange outline-none tracking-[1em] text-center text-lg' 
+                  />
+                  <p className='text-xs text-slate-500 text-center'>You will use this MPIN to quickly log in to the app next time.</p>
                 </div>
 
-                <Button className='w-full py-4 text-lg mt-4 bg-orange-600 hover:bg-orange-700' onClick={() => setStep('vault_intro')}>
+                <Button className='w-full py-4 text-lg mt-4 bg-orange-600 hover:bg-orange-700' disabled={mpinInput.length !== 4} onClick={() => setStep('vault_intro')}>
                   Verify & Continue
                 </Button>
               </div>

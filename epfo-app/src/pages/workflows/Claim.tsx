@@ -110,21 +110,22 @@ export const Claim: React.FC = () => {
               <div className='space-y-2'>
                 <label className='text-sm font-medium text-slate-700'>I want to apply for</label>
                 <select 
-                  className='w-full p-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-epfo-blue outline-none'
+                  className='w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none text-slate-800 shadow-sm font-medium'
                   value={claimType}
                   onChange={e => setClaimType(e.target.value)}
                 >
-                  <option value="31">PF Advance (Form 31)</option>
-                  <option value="19">Only PF Withdrawal (Form 19)</option>
+                  <option value="31">Form 31 - PF Advance</option>
+                  <option value="19">Form 19 - Full Final Settlement</option>
+                  <option value="10C">Form 10C - Pension Withdrawal</option>
                 </select>
               </div>
 
               {claimType === '31' && (
                 <>
-                  <div className='space-y-2'>
+                  <div className='space-y-2 mt-4'>
                     <label className='text-sm font-medium text-slate-700'>Purpose of Advance</label>
                     <select 
-                      className='w-full p-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-epfo-blue outline-none'
+                      className='w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none text-slate-800 shadow-sm'
                       value={purpose}
                       onChange={e => setPurpose(e.target.value)}
                       required
@@ -136,17 +137,24 @@ export const Claim: React.FC = () => {
                       <option value="house">Purchase of House/Flat</option>
                     </select>
                   </div>
-                  <div className='space-y-2'>
+                  <div className='space-y-2 mt-4'>
                     <label className='text-sm font-medium text-slate-700'>Amount Required (₹)</label>
-                    <Input type='number' placeholder='Enter amount' value={amount} onChange={e => setAmount(e.target.value)} required />
+                    <input 
+                      className="w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none shadow-sm"
+                      type='number' 
+                      placeholder='Enter amount' 
+                      value={amount} 
+                      onChange={e => setAmount(e.target.value)} 
+                      required 
+                    />
                   </div>
                 </>
               )}
 
-              <div className='space-y-2'>
+              <div className='space-y-2 mt-4'>
                 <label className='text-sm font-medium text-slate-700 flex items-center gap-2'><HomeIcon className='w-4 h-4' /> Employee Address</label>
                 <textarea 
-                  className='w-full p-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-epfo-blue outline-none resize-none h-24'
+                  className='w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none resize-none h-24 shadow-sm'
                   placeholder='Full residential address'
                   value={address}
                   onChange={e => setAddress(e.target.value)}

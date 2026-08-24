@@ -42,9 +42,16 @@ export const History: React.FC = () => {
         </div>
 
         {filteredTasks.length === 0 ? (
-          <div className='flex flex-col items-center justify-center flex-1 text-slate-500 opacity-60'>
-            <HistoryIcon className='w-12 h-12 mb-4 text-slate-400' />
-            <p>No requests found.</p>
+          <div className='flex flex-col items-center justify-center flex-1 text-slate-500 opacity-80'>
+            <HistoryIcon className='w-16 h-16 mb-4 text-slate-300' />
+            <p className="text-lg font-medium text-slate-600 mb-2">No requests found</p>
+            <p className="text-sm text-center mb-6">You haven't made any requests yet, or none match your search.</p>
+            <button 
+              onClick={() => navigate('/')}
+              className='bg-epfo-blue text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition-colors shadow-md'
+            >
+              Start your first request →
+            </button>
           </div>
         ) : (
           <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } }} className='space-y-3'>

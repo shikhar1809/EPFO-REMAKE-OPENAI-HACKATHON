@@ -14,6 +14,8 @@ export const Home: React.FC = () => {
   
   const [chatInput, setChatInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [flowChoice, setFlowChoice] = useState<'none' | 'agentic' | 'traditional'>('none');
+  const traditionalFlowRef = React.useRef<HTMLDivElement>(null);
   
   // Auto-archive completed tasks that might have been left here by using the back button
   React.useEffect(() => {
@@ -23,6 +25,12 @@ export const Home: React.FC = () => {
       }
     });
   }, [activeTasks, archiveTask]);
+
+  React.useEffect(() => {
+    if (flowChoice === 'traditional' && traditionalFlowRef.current) {
+      traditionalFlowRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [flowChoice]);
 
   const activeTaskValues = Object.values(activeTasks).filter(t => t.agentState !== 'completed');
 
@@ -118,8 +126,6 @@ export const Home: React.FC = () => {
     }
   };
 
-  const [flowChoice, setFlowChoice] = useState<'none' | 'agentic' | 'traditional'>('none');
-
   return (
     <div className='flex-1 flex flex-col bg-transparent overflow-y-auto relative'>
       
@@ -147,6 +153,27 @@ export const Home: React.FC = () => {
 
       <div className='p-6 space-y-8 max-w-2xl mx-auto w-full'>
         
+        {/* PF Balance Card */}
+        {isAuthenticated && (
+          <section className='bg-gradient-to-r from-epfo-blue to-blue-700 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden'>
+            <div className='absolute top-0 right-0 p-4 opacity-20'>
+              <Wallet className='w-24 h-24' />
+            </div>
+            <div className='relative z-10'>
+              <h2 className='text-blue-100 text-sm font-medium mb-1'>Total PF Balance</h2>
+              <div className='text-4xl font-bold mb-4 tracking-tight'>₹2,34,560</div>
+              <div className='flex gap-4'>
+                <button 
+                  onClick={() => navigate('/passbook')}
+                  className='bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors'
+                >
+                  View Passbook
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
         {flowChoice === 'none' && (
           <section className='space-y-4'>
             <h2 className='text-xl font-semibold mb-6'>How would you like to proceed?</h2>
@@ -211,39 +238,57 @@ export const Home: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleAgenticStart} className='relative bg-white rounded-3xl border-2 border-epfo-blue/30 focus-within:border-epfo-blue shadow-sm overflow-hidden transition-all'>
-                  <div className='absolute left-4 top-4'>
-                    <Bot className='w-6 h-6 text-epfo-blue' />
-                  </div>
-                  <textarea 
-                    className='w-full bg-transparent text-slate-900 placeholder-slate-400 pl-12 pr-4 pt-4 pb-16 min-h-[140px] resize-none focus:outline-none'
-                    placeholder='Try "I want to withdraw my PF" or tap the mic to speak...'
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    disabled={isAnalyzing}
-                    autoFocus
-                  />
-                  
-                  <div className='absolute bottom-3 left-4 right-3 flex justify-between items-center'>
-                    <button 
-                      type="button"
-                      onClick={toggleRecording}
-                      className={`p-3 rounded-full flex items-center gap-2 transition-all ${isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                    >
-                      <Mic className='w-5 h-5' />
-                      {isRecording && <span className='text-sm font-medium'>Listening...</span>}
-                    </button>
+                <div className="space-y-4">
+                  <form onSubmit={handleAgenticStart} className='relative bg-white/80 backdrop-blur-sm rounded-3xl border-2 border-epfo-blue/30 focus-within:border-epfo-blue shadow-sm overflow-hidden transition-all'>
+                    <div className='absolute left-4 top-4'>
+                      <Bot className='w-6 h-6 text-epfo-blue' />
+                    </div>
+                    <textarea 
+                      className='w-full bg-transparent text-slate-900 placeholder-slate-500 pl-12 pr-4 pt-4 pb-16 min-h-[140px] resize-none focus:outline-none'
+                      placeholder='Try "I want to withdraw my PF" or tap the mic to speak...'
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      disabled={isAnalyzing}
+                      autoFocus
+                    />
+                    
+                    <div className='absolute bottom-3 left-4 right-3 flex justify-between items-center'>
+                      <button 
+                        type="button"
+                        onClick={toggleRecording}
+                        className={`p-3 rounded-full flex items-center gap-2 transition-all ${isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                      >
+                        <Mic className='w-5 h-5' />
+                        {isRecording && <span className='text-sm font-medium'>Listening...</span>}
+                      </button>
 
-                    <button 
-                      type='submit' 
-                      disabled={!chatInput.trim() || isAnalyzing}
-                      className='bg-epfo-blue text-white rounded-full px-6 py-2.5 font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px]'
-                    >
-                      Send
-                    </button>
+                      <button 
+                        type='submit' 
+                        disabled={!chatInput.trim() || isAnalyzing}
+                        className='bg-epfo-blue text-white rounded-full px-6 py-2.5 font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px]'
+                      >
+                        Send
+                      </button>
+                    </div>
+                  </form>
+                  
+                  {/* Suggestion Chips */}
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {["Withdraw PF", "Check Balance", "Transfer PF", "Track Claim"].map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        onClick={() => {
+                          setChatInput(suggestion);
+                          // Auto submit after setting state is tricky without a useEffect, so we just set the input for now
+                        }}
+                        className="bg-white/80 backdrop-blur-sm border border-slate-200 text-slate-700 px-3 py-1.5 rounded-full text-sm font-medium hover:border-epfo-blue hover:text-epfo-blue transition-colors shadow-sm"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
                   </div>
-                </form>
+                </div>
               )}
             </section>
           </>
@@ -256,7 +301,7 @@ export const Home: React.FC = () => {
             <button onClick={() => setFlowChoice('none')} className='text-sm text-slate-500 hover:text-slate-800 flex items-center gap-1 mb-2'>
               ← Back to choices
             </button>
-            <section>
+            <section ref={traditionalFlowRef}>
               <h2 className='text-lg font-semibold mb-3 text-slate-800'>Self-Service</h2>
               <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }} className='grid grid-cols-2 gap-3'>
                 <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/passbook')} className='p-4 bg-white border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
