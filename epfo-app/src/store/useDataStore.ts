@@ -12,6 +12,7 @@ interface UserProfile {
 interface PassbookEntry {
   id: string;
   month: string;
+  date?: string;
   employeeShare: number;
   employerShare: number;
   pensionShare: number;
@@ -67,8 +68,18 @@ const mockProfile: UserProfile = {
 };
 
 const mockPassbook: PassbookEntry[] = [
-  { id: '1', month: 'Aug 2026', employeeShare: 1800, employerShare: 550, pensionShare: 1250 },
-  { id: '2', month: 'Jul 2026', employeeShare: 1800, employerShare: 550, pensionShare: 1250 },
+  { id: '1', month: 'Aug 2026', date: '12 Aug 2026', employeeShare: 1800, employerShare: 550, pensionShare: 1250 },
+  { id: '2', month: 'Jul 2026', date: '14 Jul 2026', employeeShare: 1800, employerShare: 550, pensionShare: 1250 },
+  { id: '3', month: 'Jun 2026', date: '11 Jun 2026', employeeShare: 1800, employerShare: 550, pensionShare: 1250 },
+  { id: '4', month: 'May 2026', date: '13 May 2026', employeeShare: 1800, employerShare: 550, pensionShare: 1250 },
+  { id: '5', month: 'Apr 2026', date: '12 Apr 2026', employeeShare: 1800, employerShare: 550, pensionShare: 1250 },
+  { id: '6', month: 'Mar 2026', date: '15 Mar 2026', employeeShare: 1800, employerShare: 550, pensionShare: 1250 },
+  { id: '7', month: 'Feb 2026', date: '12 Feb 2026', employeeShare: 1750, employerShare: 500, pensionShare: 1250 },
+  { id: '8', month: 'Jan 2026', date: '14 Jan 2026', employeeShare: 1750, employerShare: 500, pensionShare: 1250 },
+  { id: '9', month: 'Dec 2025', date: '12 Dec 2025', employeeShare: 1750, employerShare: 500, pensionShare: 1250 },
+  { id: '10', month: 'Nov 2025', date: '14 Nov 2025', employeeShare: 1750, employerShare: 500, pensionShare: 1250 },
+  { id: '11', month: 'Oct 2025', date: '12 Oct 2025', employeeShare: 1700, employerShare: 450, pensionShare: 1250 },
+  { id: '12', month: 'Sep 2025', date: '13 Sep 2025', employeeShare: 1700, employerShare: 450, pensionShare: 1250 },
 ];
 
 const generateId = () => Math.random().toString(36).substring(2, 9).toUpperCase();

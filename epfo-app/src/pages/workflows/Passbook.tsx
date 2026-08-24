@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDataStore } from '../../store/useDataStore';
-import { ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft, Download, Calendar, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const Passbook: React.FC = () => {
   const navigate = useNavigate();
   const { passbook } = useDataStore();
+  const [filterYear, setFilterYear] = useState('All');
 
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className='flex-1 flex flex-col bg-transparent'>
@@ -44,27 +45,66 @@ export const Passbook: React.FC = () => {
           </div>
         </div>
 
-        <div className='mb-4 flex justify-between items-end'>
-          <h3 className='font-medium text-slate-800'>Recent Contributions</h3>
-          <button className='text-epfo-blue text-sm flex items-center gap-1 font-medium'>
-            <Download className='w-4 h-4' /> PDF
-          </button>
+        <div className='mb-4 flex flex-col gap-3'>
+          <div className='flex justify-between items-center'>
+            <h3 className='font-bold text-slate-900'>Transaction History</h3>
+            <button className='text-epfo-blue text-xs flex items-center gap-1 font-bold bg-blue-50 px-2 py-1 rounded-lg'>
+              <Download className='w-3.5 h-3.5' /> Statement
+            </button>
+          </div>
+          
+          <div className='flex items-center gap-2'>
+            <Filter className='w-4 h-4 text-slate-400' />
+            <select 
+              className='bg-white border border-slate-200 text-slate-700 text-xs rounded-lg px-2 py-1.5 outline-none focus:border-epfo-blue font-medium'
+              value={filterYear}
+              onChange={(e) => setFilterYear(e.target.value)}
+            >
+              <option value="All">All Time</option>
+              <option value="2026">Financial Year 2026</option>
+              <option value="2025">Financial Year 2025</option>
+            </select>
+          </div>
         </div>
 
-        <div className='space-y-3'>
-          {passbook.map((entry) => (
-            <div key={entry.id} className='bg-white p-4 rounded-2xl shadow-sm border border-slate-100'>
-              <div className='flex justify-between mb-2'>
-                <span className='font-medium'>{entry.month}</span>
-                <span className='font-semibold text-green-600'>+₹ {entry.employeeShare + entry.employerShare}</span>
+        <div className='space-y-3 pb-8'>
+          {passbook
+            .filter(entry => filterYear === 'All' || entry.month.includes(filterYear))
+            .map((entry) => (
+            <div key={entry.id} className='bg-white p-4 rounded-2xl shadow-xs border border-slate-200/60 flex items-center gap-4'>
+              <div className='bg-green-50 text-green-600 p-2.5 rounded-xl shrink-0'>
+                <Calendar className='w-5 h-5' />
               </div>
-              <div className='text-xs text-slate-500 flex justify-between'>
-                <span>You: ₹{entry.employeeShare}</span>
-                <span>Employer: ₹{entry.employerShare}</span>
-                <span>Pension: ₹{entry.pensionShare}</span>
+              <div className='flex-1 min-w-0'>
+                <div className='flex justify-between items-start mb-0.5'>
+                  <span className='font-bold text-slate-900 text-sm truncate'>{entry.month} Contribution</span>
+                  <span className='font-bold text-green-600 text-sm'>+₹ {(entry.employeeShare + entry.employerShare).toLocaleString()}</span>
+                </div>
+                <div className='text-[10px] text-slate-400 mb-2'>
+                  Credited on: <span className='font-medium text-slate-500'>{entry.date || `15 ${entry.month}`}</span>
+                </div>
+                <div className='flex items-center gap-3 text-[10px] text-slate-500'>
+                  <div className='flex items-center gap-1'>
+                    <div className='w-1.5 h-1.5 rounded-full bg-green-500'></div>
+                    You: ₹{entry.employeeShare}
+                  </div>
+                  <div className='flex items-center gap-1'>
+                    <div className='w-1.5 h-1.5 rounded-full bg-blue-500'></div>
+                    Emp: ₹{entry.employerShare}
+                  </div>
+                  <div className='flex items-center gap-1'>
+                    <div className='w-1.5 h-1.5 rounded-full bg-orange-400'></div>
+                    Pen: ₹{entry.pensionShare}
+                  </div>
+                </div>
               </div>
             </div>
           ))}
+          {passbook.filter(entry => filterYear === 'All' || entry.month.includes(filterYear)).length === 0 && (
+            <div className='text-center text-slate-400 py-8 text-sm'>
+              No transactions found for {filterYear}.
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
