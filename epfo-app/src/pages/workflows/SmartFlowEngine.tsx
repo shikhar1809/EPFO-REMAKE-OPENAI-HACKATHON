@@ -5,7 +5,7 @@ import { ArrowLeft, Bot, ShieldAlert, CheckCircle2, Lock, CreditCard } from 'luc
 import { Button } from '../../components/ui/Button';
 import { ThinkingAnimation } from '../../components/ui/ThinkingAnimation';
 import { Input } from '../../components/ui/Input';
-import { Watermark } from '../../components/ui/Watermark';
+
 import { useWorkflowStore } from '../../store/useWorkflowStore';
 import { useSessionStore } from '../../store/useSessionStore';
 import toast from 'react-hot-toast';
@@ -151,10 +151,10 @@ export const SmartFlowEngine: React.FC = () => {
   };
 
   return (
-    <div className='flex-1 flex flex-col bg-slate-50 overflow-hidden relative'>
-      <Watermark />
-      <div className='bg-white px-6 py-4 flex items-center border-b border-slate-200 z-10'>
-        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-50 transition-colors'>
+    <div className='flex-1 flex flex-col bg-transparent overflow-hidden relative'>
+      
+      <div className='bg-white/70 backdrop-blur-md px-6 py-4 flex items-center border-b border-white/20 z-10'>
+        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent transition-colors'>
           <ArrowLeft className='w-5 h-5' />
         </button>
         <h1 className='text-lg font-semibold ml-2 flex items-center gap-2'>
@@ -225,7 +225,7 @@ export const SmartFlowEngine: React.FC = () => {
                   {isCurrent && task.agentState === 'needs_user' && step.step === 'check_eligibility' && (
                     <form onSubmit={handleUserProvideDetails} className='mt-3 space-y-3'>
                       <div className='text-sm text-slate-600'>To determine eligibility, verify the last 4 digits of your bank account.</div>
-                      <div className='flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200'>
+                      <div className='flex items-center gap-3 bg-transparent p-3 rounded-xl border border-slate-200'>
                         <CreditCard className='w-5 h-5 text-slate-400' />
                         <div className='tracking-widest text-slate-500'>•••• •••• ••••</div>
                         <input type='text' maxLength={4} required placeholder='XXXX' className='w-16 font-bold tracking-widest border-b-2 border-slate-300 focus:border-epfo-blue outline-none text-center bg-transparent' value={bankDigits} onChange={e => setBankDigits(e.target.value)} />

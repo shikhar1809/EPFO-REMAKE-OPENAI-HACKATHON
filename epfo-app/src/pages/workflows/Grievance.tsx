@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, MessageSquareWarning, Search, CheckCircle2 } from 'lucide-react';
@@ -25,14 +25,14 @@ export const Grievance: React.FC = () => {
     <div className='flex-1 flex flex-col bg-white overflow-hidden relative'>
       {/* Header */}
       <div className='px-6 py-5 flex items-center border-b border-slate-100 z-10 bg-white/80 backdrop-blur-md'>
-        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-50 transition-colors'>
+        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent transition-colors'>
           <ArrowLeft className='w-5 h-5' />
         </button>
         <h1 className='text-lg font-semibold ml-2'>Grievance Redressal</h1>
       </div>
 
       {/* Tabs */}
-      <div className='flex p-2 bg-slate-50 m-6 rounded-xl relative'>
+      <div className='flex p-2 bg-transparent m-6 rounded-xl relative'>
         <div 
           className='absolute inset-y-2 w-[calc(50%-8px)] bg-white rounded-lg shadow-sm transition-all duration-300'
           style={{ left: activeTab === 'register' ? '8px' : 'calc(50% + 0px)' }}
@@ -77,7 +77,7 @@ export const Grievance: React.FC = () => {
                   <div className='space-y-1.5'>
                     <label className='text-sm font-medium text-slate-700 ml-1'>Description</label>
                     <textarea 
-                      className='w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 rounded-2xl px-5 py-4 focus:outline-none focus:border-epfo-blue focus:ring-1 focus:ring-epfo-blue transition-all min-h-[120px] resize-none'
+                      className='w-full bg-transparent border border-slate-200 text-slate-900 placeholder-slate-400 rounded-2xl px-5 py-4 focus:outline-none focus:border-epfo-blue focus:ring-1 focus:ring-epfo-blue transition-all min-h-[120px] resize-none'
                       placeholder='Describe your issue clearly...'
                       required
                     />
@@ -125,7 +125,7 @@ export const Grievance: React.FC = () => {
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className='mt-8 p-5 bg-slate-50 border border-slate-200 rounded-2xl'
+                  className='mt-8 p-5 bg-transparent border border-slate-200 rounded-2xl'
                 >
                   <h3 className='text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2'>Current Status</h3>
                   <p className='text-slate-800 leading-relaxed'>{statusResult}</p>

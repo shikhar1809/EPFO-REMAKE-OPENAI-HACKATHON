@@ -5,7 +5,7 @@ import { FileText, Wallet, FolderOpen, ArrowRightLeft, LogOut, ShieldAlert, Play
 import { useSessionStore } from '../store/useSessionStore';
 import { useWorkflowStore } from '../store/useWorkflowStore';
 import { Button } from '../components/ui/Button';
-import { Watermark } from '../components/ui/Watermark';
+
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -121,9 +121,9 @@ export const Home: React.FC = () => {
   const [flowChoice, setFlowChoice] = useState<'none' | 'agentic' | 'traditional'>('none');
 
   return (
-    <div className='flex-1 flex flex-col bg-slate-50 overflow-y-auto relative'>
-      <Watermark />
-      <div className='p-6 pt-12 pb-6 bg-white border-b border-slate-100 flex justify-between items-center sticky top-0 z-10'>
+    <div className='flex-1 flex flex-col bg-transparent overflow-y-auto relative'>
+      
+      <div className='p-6 pt-12 pb-6 bg-white/70 backdrop-blur-md border-b border-white/20 flex justify-between items-center sticky top-0 z-10'>
         <div>
           <h1 className='text-2xl font-bold tracking-tight text-slate-900'>
             {isAuthenticated ? `Welcome back, ${user?.name || 'Citizen'}` : 'EPFO Portal'}
@@ -169,7 +169,7 @@ export const Home: React.FC = () => {
 
             <button 
               onClick={() => setFlowChoice('traditional')} 
-              className='w-full p-6 bg-white border border-slate-200 rounded-2xl flex items-start gap-4 hover:border-slate-300 hover:bg-slate-50 transition-all text-left shadow-sm'
+              className='w-full p-6 bg-white border border-slate-200 rounded-2xl flex items-start gap-4 hover:border-slate-300 hover:bg-transparent transition-all text-left shadow-sm'
             >
               <div className='bg-slate-100 p-3 rounded-full'>
                 <FolderOpen className='w-8 h-8 text-slate-600' />
@@ -384,7 +384,7 @@ export const Home: React.FC = () => {
                   setResumeSecurityAnswer(e.target.value);
                   setResumeError(false);
                 }}
-                className='w-full p-4 border border-slate-200 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-epfo-blue' 
+                className='w-full p-4 border border-slate-200 rounded-xl bg-transparent outline-none focus:ring-2 focus:ring-epfo-blue' 
               />
               {resumeError && <p className='text-red-500 text-xs'>Incorrect answer.</p>}
             </div>

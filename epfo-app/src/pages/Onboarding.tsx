@@ -37,7 +37,7 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
           <p className='text-slate-500'>
             To provide you with seamless 1-click services, we need to securely fetch your KYC documents from DigiLocker.
           </p>
-          <div className='bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3'>
+          <div className='bg-transparent border border-slate-200 rounded-xl p-4 flex items-start gap-3'>
             <Lock className='w-5 h-5 text-slate-400 shrink-0 mt-0.5' />
             <p className='text-xs text-slate-600'>Your documents (Aadhaar, PAN, Bank Details) are encrypted. We only use them when you explicitly approve a claim or transfer.</p>
           </div>
@@ -59,7 +59,7 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
             {['Aadhaar Card', 'PAN Card', 'Bank Passbook'].map((doc) => {
               const isFetched = fetchedDocs.includes(doc);
               return (
-                <div key={doc} className={`flex items-center gap-3 p-3 rounded-lg border ${isFetched ? 'border-green-200 bg-green-50' : 'border-slate-100 bg-slate-50 opacity-50'}`}>
+                <div key={doc} className={`flex items-center gap-3 p-3 rounded-lg border ${isFetched ? 'border-green-200 bg-green-50' : 'border-slate-100 bg-transparent opacity-50'}`}>
                   {isFetched ? <CheckCircle2 className='w-5 h-5 text-green-600' /> : <div className='w-5 h-5 rounded-full border-2 border-slate-200' />}
                   <span className={`font-medium ${isFetched ? 'text-green-800' : 'text-slate-500'}`}>{doc}</span>
                 </div>
@@ -172,7 +172,7 @@ export const Onboarding: React.FC = () => {
               else if (step === 'prerequisites') setStep('profile_setup');
               else if (step === 'vault_intro') setStep('prerequisites');
             }} 
-            className='p-2 bg-white/80 backdrop-blur-md border border-slate-200 text-slate-600 rounded-full shadow-sm hover:bg-slate-50 transition-colors'
+            className='p-2 bg-white/80 backdrop-blur-md border border-slate-200 text-slate-600 rounded-full shadow-sm hover:bg-transparent transition-colors'
           >
             <ArrowLeft className='w-4 h-4' />
           </button>
@@ -191,7 +191,7 @@ export const Onboarding: React.FC = () => {
               </div>
               <div className='space-y-3 mt-8'>
                 {languages.map((lang) => (
-                  <button key={lang.code} onClick={() => handleLanguageSelect(lang.code)} className='w-full p-4 rounded-xl border border-slate-200 text-left hover:bg-slate-50 transition-colors'>
+                  <button key={lang.code} onClick={() => handleLanguageSelect(lang.code)} className='w-full p-4 rounded-xl border border-slate-200 text-left hover:bg-transparent transition-colors'>
                     <span className='font-medium text-lg'>{lang.name}</span>
                   </button>
                 ))}
@@ -280,7 +280,7 @@ export const Onboarding: React.FC = () => {
                 </p>
               </div>
 
-              <div className='bg-slate-50 p-4 rounded-xl border border-slate-200 mt-4 space-y-3'>
+              <div className='bg-transparent p-4 rounded-xl border border-slate-200 mt-4 space-y-3'>
                 <div className='flex items-center gap-2 mb-2'>
                   <CheckCircle2 className='w-4 h-4 text-epfo-blue' />
                   <h3 className='font-semibold text-slate-800 text-sm'>Why use a UAN?</h3>
@@ -373,7 +373,7 @@ export const Onboarding: React.FC = () => {
               <div className='space-y-4 pt-4'>
                 <div className='space-y-2'>
                   <label className='text-sm font-medium text-slate-700'>Mobile Verification (OTP)</label>
-                  <input type="text" value="1234" readOnly className='w-full p-4 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 outline-none' />
+                  <input type="text" value="1234" readOnly className='w-full p-4 border border-slate-200 rounded-xl bg-transparent text-slate-500 outline-none' />
                 </div>
                 
                 <div className='space-y-2'>
@@ -382,7 +382,7 @@ export const Onboarding: React.FC = () => {
                     <div className='p-4 bg-slate-100 border border-slate-200 rounded-xl font-mono text-lg tracking-widest text-slate-700 select-none'>
                       aB3cD
                     </div>
-                    <input type="text" value="aB3cD" readOnly className='flex-1 p-4 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 outline-none' />
+                    <input type="text" value="aB3cD" readOnly className='flex-1 p-4 border border-slate-200 rounded-xl bg-transparent text-slate-500 outline-none' />
                   </div>
                 </div>
 
@@ -392,7 +392,7 @@ export const Onboarding: React.FC = () => {
                     <option value="pet">What was the name of your first pet?</option>
                     <option value="school">What was your first school?</option>
                   </select>
-                  <input type="text" value="Fluffy" readOnly className='w-full p-4 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 outline-none mt-2' />
+                  <input type="text" value="Fluffy" readOnly className='w-full p-4 border border-slate-200 rounded-xl bg-transparent text-slate-500 outline-none mt-2' />
                   <p className='text-xs text-slate-500'>You will be asked this question when resuming abandoned sessions.</p>
                 </div>
 

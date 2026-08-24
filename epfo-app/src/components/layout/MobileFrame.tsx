@@ -40,9 +40,21 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
       </div>
 
       {/* Center Mobile App Frame (9:16 approx) */}
-      <div className='w-full max-w-[400px] h-[850px] max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden relative flex flex-col'>
+      <div className='w-full max-w-[400px] h-[850px] max-h-[90vh] bg-slate-50 rounded-3xl shadow-2xl overflow-hidden relative flex flex-col'>
         
-        {children}
+        {/* Global Faded Background */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
+          <img 
+            src="/epfo-bg.png" 
+            alt="EPFO Background" 
+            className="w-full h-full object-cover opacity-50"
+          />
+        </div>
+        
+        {/* Children content needs relative z-index to sit above background */}
+        <div className="relative z-10 flex-1 flex flex-col overflow-hidden h-full">
+          {children}
+        </div>
         
         {/* Global Header & Language Switcher */}
         <div className='absolute top-4 right-4 z-[100] flex gap-2'>

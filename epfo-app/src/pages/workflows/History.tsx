@@ -14,9 +14,9 @@ export const History: React.FC = () => {
   );
 
   return (
-    <div className='flex-1 flex flex-col bg-slate-50 overflow-hidden relative'>
+    <div className='flex-1 flex flex-col bg-transparent overflow-hidden relative'>
       <div className='bg-white px-6 py-4 flex items-center border-b border-slate-200 z-10'>
-        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-50 transition-colors'>
+        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent transition-colors'>
           <ArrowLeft className='w-5 h-5' />
         </button>
         <h1 className='text-lg font-semibold ml-2 flex items-center gap-2'>

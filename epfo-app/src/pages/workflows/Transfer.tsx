@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, CircleDashed, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -7,9 +7,9 @@ export const Transfer: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className='flex-1 flex flex-col bg-slate-50'>
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className='flex-1 flex flex-col bg-transparent'>
       <div className='bg-white px-4 py-4 flex items-center sticky top-0 z-10'>
-        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-50'>
+        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent'>
           <ArrowLeft className='w-5 h-5' />
         </button>
         <h1 className='text-lg font-medium ml-2'>Job Switch / Transfer</h1>
