@@ -15,8 +15,10 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export const LifeCertificate: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   
   const [step, setStep] = useState<'status' | 'face_auth' | 'processing' | 'success' | 'doorstep'>('status');
@@ -95,8 +97,8 @@ export const LifeCertificate: React.FC = () => {
           <ArrowLeft className='w-5 h-5' />
         </button>
         <div className='ml-2 flex-1'>
-          <h1 className='text-lg font-bold text-slate-900 leading-tight'>Digital Life Certificate</h1>
-          <p className='text-xs text-slate-500 font-medium'>Jeevan Pramaan (EPS-95 Pensioners)</p>
+          <h1 className='text-lg font-bold text-slate-900 leading-tight'>{t('dlc_title')}</h1>
+          <p className='text-xs text-slate-500 font-medium'>{t('dlc_subtitle')}</p>
         </div>
       </div>
 
@@ -113,7 +115,7 @@ export const LifeCertificate: React.FC = () => {
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
                   <ShieldCheck className='w-5 h-5 text-emerald-300' />
-                  <span className='text-xs uppercase tracking-wider font-bold text-emerald-100'>Pension Status</span>
+                  <span className='text-xs uppercase tracking-wider font-bold text-emerald-100'>{t('pension_status')}</span>
                 </div>
                 <span className='bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-white'>
                   {pensioner.status}
@@ -121,18 +123,18 @@ export const LifeCertificate: React.FC = () => {
               </div>
 
               <div className='mt-4'>
-                <p className='text-xs text-emerald-100'>Pensioner Name</p>
+                <p className='text-xs text-emerald-100'>{t('pensioner_name')}</p>
                 <p className='text-xl font-bold mt-0.5 tracking-tight'>{pensioner.name}</p>
                 <p className='text-xs font-mono text-emerald-200 mt-1'>PPO: {pensioner.ppoNumber}</p>
               </div>
 
               <div className='grid grid-cols-2 gap-3 mt-5 pt-4 border-t border-white/20 text-xs'>
                 <div>
-                  <p className='text-emerald-200'>Disbursing Bank</p>
+                  <p className='text-emerald-200'>{t('disbursing_bank')}</p>
                   <p className='font-semibold text-white mt-0.5'>{pensioner.bankName} (••{pensioner.accountLast4})</p>
                 </div>
                 <div>
-                  <p className='text-emerald-200'>Next Due Date</p>
+                  <p className='text-emerald-200'>{t('next_due_date')}</p>
                   <p className='font-semibold text-white mt-0.5'>{pensioner.dueDate}</p>
                 </div>
               </div>
@@ -161,13 +163,13 @@ export const LifeCertificate: React.FC = () => {
                 </div>
                 <div className='flex-1'>
                   <div className='flex items-center gap-2'>
-                    <span className='font-bold text-slate-900 text-base'>Face-Auth via Camera</span>
+                    <span className='font-bold text-slate-900 text-base'>{t('face_auth_title')}</span>
                     <span className='bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full'>
-                      Instant (1 Min)
+                      {t('recommended')}
                     </span>
                   </div>
                   <p className='text-xs text-slate-500 mt-1'>
-                    Uses Aadhaar facial recognition. No biometric device needed.
+                    {t('face_auth_desc')}
                   </p>
                 </div>
               </button>
@@ -177,18 +179,13 @@ export const LifeCertificate: React.FC = () => {
                 onClick={() => setStep('doorstep')}
                 className='w-full bg-white/90 backdrop-blur-sm border border-slate-200 hover:border-slate-300 p-4 rounded-2xl shadow-sm text-left transition-all flex items-center gap-4 group'
               >
-                <div className='w-12 h-12 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
+                <div className='w-12 h-12 bg-amber-50 text-amber-700 rounded-xl flex items-center justify-center shrink-0'>
                   <Truck className='w-6 h-6' />
                 </div>
                 <div className='flex-1'>
-                  <div className='flex items-center gap-2'>
-                    <span className='font-bold text-slate-900 text-base'>Request Postman Visit</span>
-                    <span className='bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full'>
-                      IPPB Doorstep
-                    </span>
-                  </div>
+                  <span className='font-bold text-slate-900 text-base'>{t('doorstep_title')}</span>
                   <p className='text-xs text-slate-500 mt-1'>
-                    A local postman will visit your home with a fingerprint device (₹70 fee).
+                    {t('doorstep_desc')}
                   </p>
                 </div>
               </button>

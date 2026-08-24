@@ -14,8 +14,10 @@ import {
 import { Button } from '../../components/ui/Button';
 import { useSessionStore } from '../../store/useSessionStore';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export const MarkExit: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { stepUpAuth } = useSessionStore();
 
@@ -99,8 +101,8 @@ export const MarkExit: React.FC = () => {
           <ArrowLeft className='w-5 h-5' />
         </button>
         <div className='ml-2 flex-1'>
-          <h1 className='text-lg font-bold text-slate-900 leading-tight'>Self-Declare Date of Exit</h1>
-          <p className='text-xs text-slate-500 font-medium'>No Employer Approval Needed</p>
+          <h1 className='text-lg font-bold text-slate-900 leading-tight'>{t('mark_exit_title')}</h1>
+          <p className='text-xs text-slate-500 font-medium'>{t('mark_exit_subtitle')}</p>
         </div>
       </div>
 
@@ -115,11 +117,11 @@ export const MarkExit: React.FC = () => {
               <Info className='w-5 h-5 text-epfo-blue shrink-0 mt-0.5' />
               <div className='text-xs text-blue-950 leading-relaxed'>
                 <p className='font-bold text-blue-900 mb-0.5'>Worker Empowerment Norm</p>
-                If your previous employer has not marked your leaving date, you can self-declare it after <strong>2 months (60 days)</strong> of leaving. Aadhaar OTP will be used to attest your declaration.
+                {t('mark_exit_info')}
               </div>
             </div>
 
-            <h2 className='text-sm font-bold text-slate-800 uppercase tracking-wider px-1'>Select Employment Record</h2>
+            <h2 className='text-sm font-bold text-slate-800 uppercase tracking-wider px-1'>{t('select_establishment')}</h2>
 
             <div className='space-y-3'>
               {employments.map(emp => (

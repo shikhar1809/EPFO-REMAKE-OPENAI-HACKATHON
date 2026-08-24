@@ -100,7 +100,7 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
 };
 
 export const Onboarding: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>('language');
   
@@ -211,7 +211,8 @@ export const Onboarding: React.FC = () => {
                 <Globe className='w-8 h-8 text-epfo-blue' />
               </div>
               <div>
-                <h1 className='text-3xl font-semibold mb-2'>Select Your Language</h1>
+                <h1 className='text-3xl font-semibold mb-2 text-slate-900'>{t('onboarding_title')}</h1>
+                <p className='text-slate-500 text-sm'>{t('onboarding_subtitle')}</p>
               </div>
               <div className='space-y-3 mt-8'>
                 {languages.map((lang) => (
@@ -229,16 +230,16 @@ export const Onboarding: React.FC = () => {
                 <User className='w-8 h-8 text-indigo-600' />
               </div>
               <div>
-                <h1 className='text-3xl font-semibold mb-2'>Welcome</h1>
-                <p className='text-slate-500'>Are you a new or returning user?</p>
+                <h1 className='text-3xl font-semibold mb-2 text-slate-900'>{t('user_type_title')}</h1>
+                <p className='text-slate-500'>{t('user_type_subtitle')}</p>
               </div>
               <div className='space-y-3 mt-8'>
                 <button onClick={() => setStep('identity')} className='w-full p-4 rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm text-left hover:border-epfo-blue transition-colors flex items-center justify-between'>
-                  <span className='font-medium text-lg'>I am a new user</span>
+                  <span className='font-medium text-lg'>{t('new_user')}</span>
                   <ArrowLeft className='w-4 h-4 rotate-180 text-slate-400' />
                 </button>
                 <button onClick={() => setStep('returning_login')} className='w-full p-4 rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm text-left hover:border-epfo-blue transition-colors flex items-center justify-between'>
-                  <span className='font-medium text-lg text-epfo-blue'>I am a returning user</span>
+                  <span className='font-medium text-lg text-epfo-blue'>{t('returning_user')}</span>
                   <ArrowLeft className='w-4 h-4 rotate-180 text-epfo-blue' />
                 </button>
               </div>

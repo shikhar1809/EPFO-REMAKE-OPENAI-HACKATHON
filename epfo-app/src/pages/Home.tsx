@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FileText, Wallet, FolderOpen, ArrowRightLeft, LogOut, ShieldAlert, Play, Bot, Mic, CheckCircle2, Trash2, ShieldCheck, ArrowRight, Award, CalendarX2 } from 'lucide-react';
+import { FileText, Wallet, FolderOpen, ArrowRightLeft, LogOut, ShieldAlert, Play, Bot, Mic, CheckCircle2, Trash2, ShieldCheck, ArrowRight, Award, CalendarX2, Bell } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { useWorkflowStore } from '../store/useWorkflowStore';
+import { useNotificationStore } from '../store/useNotificationStore';
 import { Button } from '../components/ui/Button';
+import { useTranslation } from 'react-i18next';
+import { NotificationModal } from '../components/notifications/NotificationModal';
 
 
 export const Home: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated, logout, user, riskLevel } = useSessionStore();
   const { activeTasks, completedTasks, startTask, resumeTask, clearTask, archiveTask } = useWorkflowStore();
+  const { enabled: notificationsEnabled } = useNotificationStore();
   
   const [chatInput, setChatInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [flowChoice, setFlowChoice] = useState<'none' | 'agentic' | 'traditional'>('none');
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const traditionalFlowRef = React.useRef<HTMLDivElement>(null);
   
   // Auto-archive completed tasks that might have been left here by using the back button
@@ -149,26 +155,40 @@ export const Home: React.FC = () => {
       <div className='p-6 pt-12 pb-6 bg-white/70 backdrop-blur-md border-b border-white/20 flex justify-between items-center sticky top-0 z-10'>
         <div>
           <h1 className='text-2xl font-bold tracking-tight text-slate-900'>
-            {isAuthenticated ? `Welcome back, ${user?.name || 'Citizen'}` : 'EPFO Portal'}
+            {isAuthenticated ? t('welcome_back', { name: user?.name || 'Citizen' }) : t('portal_title')}
           </h1>
           {isAuthenticated && user?.uan && (
             <p className='text-sm text-slate-500 font-mono mt-1'>UAN: {user.uan}</p>
           )}
         </div>
-        <div className='flex items-center gap-3'>
+        <div className='flex items-center gap-2'>
           {isAnalyzing && (
             <div className='flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-epfo-blue rounded-full text-xs font-medium animate-pulse'>
               <Bot className='w-3.5 h-3.5' />
               Processing
             </div>
           )}
-          <button onClick={() => { logout(); navigate('/onboarding', { replace: true }); }} className='p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors shadow-sm'>
+          <button 
+            onClick={() => setIsNotificationOpen(true)}
+            className={`p-2 rounded-full transition-all shadow-sm relative ${
+              notificationsEnabled 
+                ? 'bg-blue-50 text-epfo-blue hover:bg-blue-100' 
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+            title={t('notifications')}
+          >
+            <Bell className='w-4 h-4' />
+            {notificationsEnabled && (
+              <span className='absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white'></span>
+            )}
+          </button>
+          <button onClick={() => { logout(); navigate('/onboarding', { replace: true }); }} className='p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors shadow-sm' title={t('logout')}>
             <LogOut className='w-4 h-4' />
           </button>
         </div>
       </div>
 
-      <div className='p-6 space-y-8 max-w-2xl mx-auto w-full'>
+      <div className='p-6 space-y-6 max-w-2xl mx-auto w-full'>
         
         {/* PF Balance Card */}
         {isAuthenticated && flowChoice === 'none' && (
@@ -177,50 +197,80 @@ export const Home: React.FC = () => {
               <Wallet className='w-24 h-24' />
             </div>
             <div className='relative z-10'>
-              <h2 className='text-blue-100 text-sm font-medium mb-1'>Total PF Balance</h2>
+              <h2 className='text-blue-100 text-sm font-medium mb-1'>{t('total_pf_balance')}</h2>
               <div className='text-4xl font-bold mb-4 tracking-tight'>₹2,34,560</div>
               <div className='flex gap-4'>
                 <button 
                   onClick={() => navigate('/passbook')}
                   className='bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors'
                 >
-                  View Passbook
+                  {t('view_passbook')}
                 </button>
               </div>
             </div>
           </section>
         )}
 
+        {/* WhatsApp & Email Notification Banner */}
+        {isAuthenticated && flowChoice === 'none' && (
+          <div 
+            onClick={() => setIsNotificationOpen(true)}
+            className='p-4 bg-white/85 backdrop-blur-md border border-slate-200 hover:border-epfo-blue rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all hover:shadow-md'
+          >
+            <div className='flex items-center gap-3'>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                notificationsEnabled ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'
+              }`}>
+                <Bell className='w-5 h-5' />
+              </div>
+              <div>
+                <p className='font-bold text-slate-900 text-xs flex items-center gap-1.5'>
+                  {notificationsEnabled ? t('notification_banner_active') : t('notification_banner_off')}
+                  <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
+                    notificationsEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                  }`}>
+                    {notificationsEnabled ? 'DPDP Compliant' : 'Opt-in'}
+                  </span>
+                </p>
+                <p className='text-[11px] text-slate-500 mt-0.5'>
+                  {t('notification_banner_desc')}
+                </p>
+              </div>
+            </div>
+            <ArrowRight className='w-4 h-4 text-slate-400 shrink-0' />
+          </div>
+        )}
+
         {flowChoice === 'none' && (
           <section className='space-y-4'>
-            <h2 className='text-xl font-semibold mb-6'>How would you like to proceed?</h2>
+            <h2 className='text-xl font-semibold mb-6 text-slate-900'>{t('how_to_proceed')}</h2>
             
             <button 
               onClick={() => setFlowChoice('agentic')} 
-              className='w-full p-6 bg-white border border-epfo-blue rounded-2xl flex items-start gap-4 hover:bg-blue-50 transition-all text-left group shadow-sm'
+              className='w-full p-6 bg-white/90 backdrop-blur-sm border-2 border-epfo-blue/40 rounded-2xl flex items-start gap-4 hover:bg-blue-50 transition-all text-left group shadow-sm'
             >
               <div className='bg-blue-100 p-3 rounded-full'>
                 <Bot className='w-8 h-8 text-epfo-blue' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-lg text-epfo-blue flex items-center gap-2'>
-                  Use Smart Agent
-                  <span className='bg-epfo-orange text-white text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wide'>Recommended</span>
+                  {t('smart_agent')}
+                  <span className='bg-epfo-orange text-white text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wide'>{t('recommended')}</span>
                 </h3>
-                <p className='text-slate-600 text-sm mt-1'>Simply tell us what you want to do in plain English. The agent will handle the complex forms and steps for you.</p>
+                <p className='text-slate-600 text-sm mt-1'>{t('smart_agent_desc')}</p>
               </div>
             </button>
 
             <button 
               onClick={() => setFlowChoice('traditional')} 
-              className='w-full p-6 bg-white border border-slate-200 rounded-2xl flex items-start gap-4 hover:border-slate-300 hover:bg-transparent transition-all text-left shadow-sm'
+              className='w-full p-6 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex items-start gap-4 hover:border-slate-300 hover:bg-transparent transition-all text-left shadow-sm'
             >
               <div className='bg-slate-100 p-3 rounded-full'>
                 <FolderOpen className='w-8 h-8 text-slate-600' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-lg text-slate-800'>Use Traditional Self-Service</h3>
-                <p className='text-slate-600 text-sm mt-1'>Navigate through the standard menus and forms yourself, just like the classic portal.</p>
+                <h3 className='font-semibold text-lg text-slate-800'>{t('traditional_service')}</h3>
+                <p className='text-slate-600 text-sm mt-1'>{t('traditional_service_desc')}</p>
               </div>
             </button>
           </section>
@@ -229,10 +279,10 @@ export const Home: React.FC = () => {
         {flowChoice === 'agentic' && (
           <>
             <button onClick={() => setFlowChoice('none')} className='text-sm text-slate-500 hover:text-slate-800 flex items-center gap-1 mb-2'>
-              ← Back to choices
+              {t('back_to_choices')}
             </button>
             <section>
-              <h2 className='text-lg font-semibold mb-3'>What would you like to do today?</h2>
+              <h2 className='text-lg font-semibold mb-3 text-slate-900'>{t('agent_prompt_title')}</h2>
               {isAnalyzing ? (
                 <div className='bg-white rounded-3xl border border-slate-200 p-8 flex flex-col items-center justify-center space-y-6 shadow-sm min-h-[220px]'>
                   <div className='w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-2'>
@@ -262,7 +312,7 @@ export const Home: React.FC = () => {
                     </div>
                     <textarea 
                       className='w-full bg-transparent text-slate-900 placeholder-slate-500 pl-12 pr-4 pt-4 pb-16 min-h-[140px] resize-none focus:outline-none'
-                      placeholder='Try "I want to withdraw my PF" or tap the mic to speak...'
+                      placeholder={t('agent_placeholder')}
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       onKeyDown={handleKeyDown}
@@ -277,7 +327,7 @@ export const Home: React.FC = () => {
                         className={`p-3 rounded-full flex items-center gap-2 transition-all ${isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                       >
                         <Mic className='w-5 h-5' />
-                        {isRecording && <span className='text-sm font-medium'>Listening...</span>}
+                        {isRecording && <span className='text-sm font-medium'>{t('listening')}</span>}
                       </button>
 
                       <button 
@@ -285,22 +335,28 @@ export const Home: React.FC = () => {
                         disabled={!chatInput.trim() || isAnalyzing}
                         className='bg-epfo-blue text-white rounded-full px-6 py-2.5 font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px]'
                       >
-                        Send
+                        {t('send')}
                       </button>
                     </div>
                   </form>
                   
                   {/* Suggestion Chips */}
                   <div className="flex flex-wrap gap-2 pt-2">
-                    {["Withdraw PF", "Life Certificate", "Mark Exit Date", "Merge PF Accounts", "Track Claim"].map((suggestion) => (
+                    {[
+                      { label: t('claim'), val: "Withdraw PF" },
+                      { label: t('life_certificate'), val: "Life Certificate" },
+                      { label: t('mark_exit_date'), val: "Mark Exit Date" },
+                      { label: t('transfer_merge'), val: "Merge PF Accounts" },
+                      { label: t('passbook'), val: "Check Balance" }
+                    ].map((item, idx) => (
                       <button
-                        key={suggestion}
+                        key={idx}
                         onClick={() => {
-                          setChatInput(suggestion);
+                          setChatInput(item.val);
                         }}
                         className="bg-white/80 backdrop-blur-sm border border-slate-200 text-slate-700 px-3 py-1.5 rounded-full text-xs font-medium hover:border-epfo-blue hover:text-epfo-blue transition-colors shadow-sm"
                       >
-                        {suggestion}
+                        {item.label}
                       </button>
                     ))}
                   </div>
@@ -315,34 +371,34 @@ export const Home: React.FC = () => {
         {flowChoice === 'traditional' && (
           <>
             <button onClick={() => setFlowChoice('none')} className='text-sm text-slate-500 hover:text-slate-800 flex items-center gap-1 mb-2'>
-              ← Back to choices
+              {t('back_to_choices')}
             </button>
             <section ref={traditionalFlowRef}>
-              <h2 className='text-lg font-semibold mb-3 text-slate-800'>Self-Service</h2>
+              <h2 className='text-lg font-semibold mb-3 text-slate-800'>{t('self_service')}</h2>
               <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } }} className='grid grid-cols-2 gap-3'>
                 <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/passbook')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
                   <Wallet className='w-6 h-6 text-epfo-blue' />
-                  <span className='font-medium text-sm'>Passbook</span>
+                  <span className='font-medium text-sm'>{t('passbook')}</span>
                 </motion.button>
                 <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/claim')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
                   <FileText className='w-6 h-6 text-epfo-blue' />
-                  <span className='font-medium text-sm'>Claim</span>
+                  <span className='font-medium text-sm'>{t('claim')}</span>
                 </motion.button>
                 <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/transfer')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
                   <ArrowRightLeft className='w-6 h-6 text-epfo-blue' />
-                  <span className='font-medium text-sm'>Transfer & Merge</span>
+                  <span className='font-medium text-sm'>{t('transfer_merge')}</span>
                 </motion.button>
                 <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/documents')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
                   <FolderOpen className='w-6 h-6 text-epfo-blue' />
-                  <span className='font-medium text-sm'>Vault</span>
+                  <span className='font-medium text-sm'>{t('vault')}</span>
                 </motion.button>
                 <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/life-certificate')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
                   <Award className='w-6 h-6 text-emerald-600' />
-                  <span className='font-medium text-sm text-center leading-tight'>Life Certificate</span>
+                  <span className='font-medium text-sm text-center leading-tight'>{t('life_certificate')}</span>
                 </motion.button>
                 <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/mark-exit')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
                   <CalendarX2 className='w-6 h-6 text-amber-600' />
-                  <span className='font-medium text-sm text-center leading-tight'>Mark Exit Date</span>
+                  <span className='font-medium text-sm text-center leading-tight'>{t('mark_exit_date')}</span>
                 </motion.button>
               </motion.div>
             </section>
@@ -353,7 +409,7 @@ export const Home: React.FC = () => {
         {flowChoice === 'none' && activeTaskValues.length > 0 && (
           <section>
             <h2 className='text-lg font-semibold mb-3 text-slate-800 flex items-center gap-2'>
-              Active Tasks
+              {t('active_tasks')}
               <span className='bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full font-bold'>{activeTaskValues.length}</span>
             </h2>
             <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }} className='space-y-3'>
@@ -365,7 +421,7 @@ export const Home: React.FC = () => {
                   </div>
                   <div className='flex items-center gap-2'>
                     <Button onClick={() => handleResume(task.taskId)} className='shrink-0 gap-2 pl-3'>
-                      <Play className='w-4 h-4 fill-current' /> Resume
+                      <Play className='w-4 h-4 fill-current' /> {t('resume')}
                     </Button>
                     <button onClick={() => clearTask(task.taskId)} className='p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors'>
                       <Trash2 className='w-5 h-5' />
@@ -382,13 +438,13 @@ export const Home: React.FC = () => {
           <section>
             <div className='flex items-center justify-between mb-3'>
               <h2 className='text-lg font-semibold text-slate-800 flex items-center gap-2'>
-                Past Requests
+                {t('past_requests')}
                 {completedTasks && completedTasks.length > 0 && (
                   <span className='bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-bold'>{completedTasks.length}</span>
                 )}
               </h2>
               <button onClick={() => navigate('/history')} className='text-sm text-epfo-blue font-medium flex items-center gap-1 hover:underline'>
-                View all <ArrowRight className="w-4 h-4"/>
+                {t('view_all')} <ArrowRight className="w-4 h-4"/>
               </button>
             </div>
             
@@ -411,7 +467,7 @@ export const Home: React.FC = () => {
             ) : (
               <button onClick={() => navigate('/history')} className='w-full p-4 bg-white border border-slate-200 border-dashed rounded-2xl flex items-center justify-center gap-2 text-slate-500 hover:text-epfo-blue hover:border-epfo-blue/50 hover:bg-blue-50/30 transition-colors'>
                 <FolderOpen className='w-5 h-5' />
-                <span className='font-medium text-sm'>No recent requests. View history.</span>
+                <span className='font-medium text-sm'>{t('no_active_tasks')}</span>
               </button>
             )}
           </section>
@@ -459,12 +515,18 @@ export const Home: React.FC = () => {
             </div>
 
             <div className='flex gap-3'>
-              <Button variant='outline' className='flex-1' onClick={() => setResumeTaskId(null)}>Cancel</Button>
-              <Button className='flex-1' onClick={confirmResume}>Verify & Resume</Button>
+              <Button variant='outline' className='flex-1' onClick={() => setResumeTaskId(null)}>{t('cancel')}</Button>
+              <Button className='flex-1' onClick={confirmResume}>{t('verify_and_continue')}</Button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Notification Settings & DPDP Consent Modal */}
+      <NotificationModal 
+        isOpen={isNotificationOpen}
+        onClose={() => setIsNotificationOpen(false)}
+      />
     </div>
   );
 }

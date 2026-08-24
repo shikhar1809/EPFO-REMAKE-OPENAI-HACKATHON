@@ -77,16 +77,16 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
           <div className='flex items-center bg-white/80 backdrop-blur-md border border-slate-200 rounded-full px-3 py-1.5 shadow-sm'>
             <Globe className='w-3.5 h-3.5 text-slate-500 mr-1.5' />
             <select 
-              className='bg-transparent text-xs font-medium text-slate-700 focus:outline-none appearance-none cursor-pointer pr-2'
-              value={i18n.language || 'en'}
+              className='bg-transparent text-xs font-semibold text-slate-700 focus:outline-none appearance-none cursor-pointer pr-2'
+              value={(i18n.language || 'en').split('-')[0]}
               onChange={handleLanguageChange}
             >
-              <option value='en'>EN</option>
-              <option value='hi'>HI</option>
-              <option value='mr'>MR</option>
-              <option value='bn'>BN</option>
-              <option value='te'>TE</option>
-              <option value='ta'>TA</option>
+              <option value='en'>English (EN)</option>
+              <option value='hi'>हिंदी (HI)</option>
+              <option value='mr'>मराठी (MR)</option>
+              <option value='bn'>বাংলা (BN)</option>
+              <option value='te'>తెలుగు (TE)</option>
+              <option value='ta'>தமிழ் (TA)</option>
             </select>
           </div>
         </div>

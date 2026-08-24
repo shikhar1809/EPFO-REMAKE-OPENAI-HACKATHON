@@ -7,7 +7,10 @@ import { Input } from '../../components/ui/Input';
 import { useVaultStore } from '../../store/useVaultStore';
 import { useSessionStore } from '../../store/useSessionStore';
 
+import { useTranslation } from 'react-i18next';
+
 export const Claim: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { getDocumentsByType } = useVaultStore();
   const { stepUpAuth } = useSessionStore();
@@ -73,7 +76,7 @@ export const Claim: React.FC = () => {
         <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent'>
           <ArrowLeft className='w-5 h-5' />
         </button>
-        <h1 className='text-lg font-medium ml-2'>File a Claim (Form 31/19)</h1>
+        <h1 className='text-lg font-medium ml-2'>{t('claim_heading')}</h1>
       </div>
 
       <div className='p-6 flex-1 overflow-y-auto pb-24'>
@@ -81,8 +84,8 @@ export const Claim: React.FC = () => {
         {step === 1 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className='space-y-6'>
             <div className='bg-blue-50 border border-blue-100 p-4 rounded-2xl'>
-              <h3 className='font-semibold text-blue-900'>Bank Verification</h3>
-              <p className='text-sm text-blue-800 mt-1'>As per EPFO guidelines, please enter the last 4 digits of your linked bank account to proceed.</p>
+              <h3 className='font-semibold text-blue-900'>{t('bank_verify_title')}</h3>
+              <p className='text-sm text-blue-800 mt-1'>{t('bank_verify_desc')}</p>
             </div>
             <form onSubmit={handleBankVerify} className='space-y-4'>
               <div className='flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm'>
@@ -98,32 +101,32 @@ export const Claim: React.FC = () => {
                   required
                 />
               </div>
-              <Button type='submit' className='w-full py-4 text-lg'>Verify Account</Button>
+              <Button type='submit' className='w-full py-4 text-lg'>{t('verify')}</Button>
             </form>
           </motion.div>
         )}
 
         {step === 2 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className='space-y-6'>
-            <h2 className='text-xl font-semibold'>Claim Details</h2>
+            <h2 className='text-xl font-semibold'>{t('claim_type_label')}</h2>
             <form onSubmit={handleDetailsSubmit} className='space-y-4'>
               <div className='space-y-2'>
-                <label className='text-sm font-medium text-slate-700'>I want to apply for</label>
+                <label className='text-sm font-medium text-slate-700'>{t('claim_type_label')}</label>
                 <select 
                   className='w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none text-slate-800 shadow-sm font-medium'
                   value={claimType}
                   onChange={e => setClaimType(e.target.value)}
                 >
-                  <option value="31">Form 31 - PF Advance</option>
-                  <option value="19">Form 19 - Full Final Settlement</option>
-                  <option value="10C">Form 10C - Pension Withdrawal</option>
+                  <option value="31">{t('form_31')}</option>
+                  <option value="19">{t('form_19')}</option>
+                  <option value="10C">{t('form_10c')}</option>
                 </select>
               </div>
 
               {claimType === '31' && (
                 <>
                   <div className='space-y-2 mt-4'>
-                    <label className='text-sm font-medium text-slate-700'>Purpose of Advance</label>
+                    <label className='text-sm font-medium text-slate-700'>{t('purpose_label')}</label>
                     <select 
                       className='w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none text-slate-800 shadow-sm'
                       value={purpose}
@@ -138,7 +141,7 @@ export const Claim: React.FC = () => {
                     </select>
                   </div>
                   <div className='space-y-2 mt-4'>
-                    <label className='text-sm font-medium text-slate-700'>Amount Required (₹)</label>
+                    <label className='text-sm font-medium text-slate-700'>{t('amount_label')}</label>
                     <input 
                       className="w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none shadow-sm"
                       type='number' 
@@ -152,7 +155,7 @@ export const Claim: React.FC = () => {
               )}
 
               <div className='space-y-2 mt-4'>
-                <label className='text-sm font-medium text-slate-700 flex items-center gap-2'><HomeIcon className='w-4 h-4' /> Employee Address</label>
+                <label className='text-sm font-medium text-slate-700 flex items-center gap-2'><HomeIcon className='w-4 h-4' /> {t('address_label')}</label>
                 <textarea 
                   className='w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none resize-none h-24 shadow-sm'
                   placeholder='Full residential address'
