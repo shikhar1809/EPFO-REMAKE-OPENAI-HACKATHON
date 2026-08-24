@@ -152,38 +152,38 @@ export const Home: React.FC = () => {
           </section>
         )}
 
-        {/* Compact Need More Help ? Section */}
-        <section className='space-y-2'>
+        {/* Spacious Need More Help ? Section */}
+        <section className='space-y-2.5 pt-1'>
           <div className='px-0.5'>
-            <h2 className='text-[11px] font-bold text-slate-800 uppercase tracking-wider'>
+            <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>
               Need More Help?
             </h2>
           </div>
 
-          <div className='grid grid-cols-2 gap-2.5'>
+          <div className='grid grid-cols-2 gap-3.5'>
             
             {/* SMART FLOW */}
             <button 
               onClick={handleSmartFlowLaunch}
-              className='p-3.5 bg-gradient-to-br from-blue-50/95 via-white to-blue-50/50 border-2 border-epfo-blue/50 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-2xs hover:shadow-sm transition-all'
+              className='p-4 sm:p-4.5 bg-gradient-to-br from-blue-50/95 via-white to-blue-50/50 border-2 border-epfo-blue/50 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all min-h-[165px]'
             >
               <div>
-                <div className='flex items-center justify-between mb-2'>
-                  <div className='w-8 h-8 bg-epfo-blue text-white rounded-xl flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform'>
-                    <Bot className='w-4 h-4' />
+                <div className='flex items-center justify-between mb-2.5'>
+                  <div className='w-9 h-9 bg-epfo-blue text-white rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform'>
+                    <Bot className='w-5 h-5' />
                   </div>
-                  <span className='bg-epfo-orange text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase'>
+                  <span className='bg-epfo-orange text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase'>
                     {t('recommended')}
                   </span>
                 </div>
                 <h3 className='font-bold text-sm text-epfo-blue leading-tight'>
                   Smart Flow
                 </h3>
-                <p className='text-[11px] text-slate-600 mt-1 leading-snug'>
-                  AI assistant guides your claims & transfers.
+                <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
+                  AI assistant guides your claims, transfers & certificates.
                 </p>
               </div>
-              <div className='mt-2.5 text-[11px] font-bold text-epfo-blue flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+              <div className='mt-3 text-xs font-bold text-epfo-blue flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
                 Launch Smart Flow →
               </div>
             </button>
@@ -191,20 +191,20 @@ export const Home: React.FC = () => {
             {/* TRADITIONAL FLOW */}
             <button 
               onClick={handleTraditionalClick}
-              className='p-3.5 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-2xs hover:shadow-sm transition-all'
+              className='p-4 sm:p-4.5 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all min-h-[165px]'
             >
               <div>
-                <div className='w-8 h-8 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center mb-2 group-hover:scale-105 transition-transform'>
-                  <FolderOpen className='w-4 h-4' />
+                <div className='w-9 h-9 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform'>
+                  <FolderOpen className='w-5 h-5' />
                 </div>
                 <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-slate-700'>
                   Traditional Flow
                 </h3>
-                <p className='text-[11px] text-slate-600 mt-1 leading-snug'>
-                  Classic portal forms, claims & filing.
+                <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
+                  Direct access to classic portal forms, claims & filing.
                 </p>
               </div>
-              <div className='mt-2.5 text-[11px] font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+              <div className='mt-3 text-xs font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
                 Open Portal →
               </div>
             </button>
