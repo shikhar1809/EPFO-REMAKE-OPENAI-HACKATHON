@@ -15,6 +15,7 @@ import { History } from './pages/workflows/History';
 import { Onboarding } from './pages/Onboarding';
 import { LifeCertificate } from './pages/workflows/LifeCertificate';
 import { MarkExit } from './pages/workflows/MarkExit';
+import { ServerStatus } from './pages/ServerStatus';
 import { Toaster } from 'react-hot-toast';
 import './i18n/config';
 
@@ -62,6 +63,7 @@ function App() {
               <Route path='/grievance' element={<Grievance />} />
               <Route path='/life-certificate' element={<PrivateRoute><LifeCertificate /></PrivateRoute>} />
               <Route path='/mark-exit' element={<PrivateRoute><MarkExit /></PrivateRoute>} />
+              <Route path='/server-status' element={<ServerStatus />} />
             </Routes>
           </SceneTransition>
         </OnboardWrapper>
