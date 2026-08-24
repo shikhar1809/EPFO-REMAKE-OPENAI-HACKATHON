@@ -22,7 +22,7 @@ export const UanActivation: React.FC = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='flex-1 flex flex-col bg-white'>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='flex-1 flex flex-col bg-transparent'>
       <div className='px-4 py-4 flex items-center sticky top-0 z-10'>
         <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent'>
           <ArrowLeft className='w-5 h-5' />

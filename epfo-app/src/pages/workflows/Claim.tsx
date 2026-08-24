@@ -58,7 +58,7 @@ export const Claim: React.FC = () => {
 
   if (!aadhaar || !bank) {
     return (
-      <div className='flex-1 flex flex-col bg-white p-6 justify-center items-center text-center'>
+      <div className='flex-1 flex flex-col bg-transparent p-6 justify-center items-center text-center'>
         <XCircle className='w-16 h-16 text-red-500 mb-4' />
         <h2 className='text-xl font-semibold mb-2'>Missing Prerequisites</h2>
         <p className='text-slate-500 mb-8'>You must have a verified Aadhaar and Bank Account in your Document Vault before filing a claim.</p>

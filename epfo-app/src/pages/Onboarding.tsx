@@ -159,7 +159,7 @@ export const Onboarding: React.FC = () => {
   };
 
   return (
-    <div className='flex-1 flex flex-col bg-white overflow-y-auto relative'>
+    <div className='flex-1 flex flex-col bg-transparent overflow-y-auto relative'>
       {step !== 'language' && (
         <div className='sticky top-4 left-4 z-50 self-start ml-4 mt-4 -mb-10'>
           <button 

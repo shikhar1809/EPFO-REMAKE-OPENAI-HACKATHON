@@ -22,7 +22,7 @@ export const Grievance: React.FC = () => {
   };
 
   return (
-    <div className='flex-1 flex flex-col bg-white overflow-hidden relative'>
+    <div className='flex-1 flex flex-col bg-transparent overflow-hidden relative'>
       {/* Header */}
       <div className='px-6 py-5 flex items-center border-b border-slate-100 z-10 bg-white/80 backdrop-blur-md'>
         <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent transition-colors'>
