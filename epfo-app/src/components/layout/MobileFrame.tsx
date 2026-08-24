@@ -54,41 +54,42 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
         </div>
 
         {/* Dedicated Top App Utility Bar */}
-        <div className='relative z-20 px-3.5 py-2 bg-white/90 backdrop-blur-md border-b border-slate-200/70 flex items-center justify-between shadow-xs shrink-0'>
+        <div className='relative z-20 px-3 py-1.5 bg-white/90 backdrop-blur-md border-b border-slate-200/70 flex items-center justify-between gap-1.5 shadow-xs shrink-0'>
           
           {/* Top-Left Live Server Health Status */}
           <ServerStatusBadge />
 
-          <div className='flex items-center gap-2'>
-            <div className='flex items-center bg-slate-100 rounded-full px-2 py-0.5 border border-slate-200'>
+          <div className='flex items-center gap-1.5 shrink-0'>
+            <div className='flex items-center bg-slate-100 rounded-full px-1.5 py-0.5 border border-slate-200'>
               <button 
                 onClick={() => handleFontSize(-1)}
-                className='px-1.5 py-0.5 text-xs font-bold text-slate-700 hover:text-epfo-blue transition-colors'
+                className='px-1 py-0.5 text-xs font-bold text-slate-700 hover:text-epfo-blue transition-colors'
               >
                 A-
               </button>
               <div className='w-px h-3 bg-slate-300 mx-0.5'></div>
               <button 
                 onClick={() => handleFontSize(1)}
-                className='px-1.5 py-0.5 text-xs font-bold text-slate-700 hover:text-epfo-blue transition-colors'
+                className='px-1 py-0.5 text-xs font-bold text-slate-700 hover:text-epfo-blue transition-colors'
               >
                 A+
               </button>
             </div>
 
-            <div className='flex items-center bg-slate-100 rounded-full px-2.5 py-1 border border-slate-200'>
-              <Globe className='w-3 h-3 text-slate-500 mr-1' />
+            {/* Language Switcher Dropdown */}
+            <div className='relative flex items-center bg-slate-100 rounded-full px-2 py-0.5 border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-200 transition-colors'>
+              <Globe className='w-3 h-3 text-slate-500 mr-1 shrink-0' />
               <select 
-                className='bg-transparent text-xs font-semibold text-slate-700 focus:outline-none appearance-none cursor-pointer'
-                value={(i18n.language || 'en').split('-')[0]}
+                value={i18n.language || 'en'} 
                 onChange={handleLanguageChange}
+                className='bg-transparent border-none outline-none cursor-pointer pr-1 text-[11px] font-bold'
               >
-                <option value='en'>EN</option>
-                <option value='hi'>हिंदी</option>
-                <option value='mr'>मराठी</option>
-                <option value='bn'>বাংলা</option>
-                <option value='te'>తెలుగు</option>
-                <option value='ta'>தமிழ்</option>
+                <option value="en">EN</option>
+                <option value="hi">HI</option>
+                <option value="mr">MR</option>
+                <option value="bn">BN</option>
+                <option value="te">TE</option>
+                <option value="ta">TA</option>
               </select>
             </div>
           </div>

@@ -6,8 +6,10 @@ export type ServerHealthState = 'healthy' | 'medium' | 'heavy';
 interface ServerStatusStore {
   status: ServerHealthState;
   latencyMs: number;
-  setStatus: (status: ServerHealthState) => void;
+  isManualOverride: boolean;
+  setStatus: (status: ServerHealthState, isManual?: boolean) => void;
   cycleStatus: () => void;
+  resetToHealthy: () => void;
 }
 
 export const useServerStatusStore = create<ServerStatusStore>()(
@@ -15,19 +17,23 @@ export const useServerStatusStore = create<ServerStatusStore>()(
     (set, get) => ({
       status: 'healthy',
       latencyMs: 42,
-      setStatus: (status: ServerHealthState) => {
+      isManualOverride: false,
+      setStatus: (status: ServerHealthState, isManual = true) => {
         const latencyMs = status === 'healthy' ? 42 : status === 'medium' ? 480 : 2450;
-        set({ status, latencyMs });
+        set({ status, latencyMs, isManualOverride: isManual });
       },
       cycleStatus: () => {
         const current = get().status;
         if (current === 'healthy') {
-          set({ status: 'medium', latencyMs: 480 });
+          set({ status: 'medium', latencyMs: 480, isManualOverride: false });
         } else if (current === 'medium') {
-          set({ status: 'heavy', latencyMs: 2450 });
+          set({ status: 'heavy', latencyMs: 2450, isManualOverride: false });
         } else {
-          set({ status: 'healthy', latencyMs: 42 });
+          set({ status: 'healthy', latencyMs: 42, isManualOverride: false });
         }
+      },
+      resetToHealthy: () => {
+        set({ status: 'healthy', latencyMs: 42, isManualOverride: false });
       }
     }),
     {

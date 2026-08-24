@@ -1,10 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useServerStatusStore, type ServerHealthState } from '../../store/useServerStatusStore';
 import { Activity, Server, Zap, ShieldCheck, X } from 'lucide-react';
+import { Button } from '../ui/Button';
 
 export const ServerStatusBadge: React.FC = () => {
-  const { status, latencyMs, setStatus } = useServerStatusStore();
+  const { status, latencyMs, isManualOverride, setStatus } = useServerStatusStore();
   const [isOpen, setIsOpen] = useState(false);
+
+  // Periodic Demo Load Fluctuation (Demo Simulation)
+  useEffect(() => {
+    let timer1: ReturnType<typeof setTimeout>;
+    let timer2: ReturnType<typeof setTimeout>;
+    let timer3: ReturnType<typeof setTimeout>;
+
+    const runSimulationLoop = () => {
+      // 32s Healthy -> 10s Medium -> 8s Heavy -> Healthy
+      timer1 = setTimeout(() => {
+        setStatus('medium', false);
+        
+        timer2 = setTimeout(() => {
+          setStatus('heavy', false);
+          
+          timer3 = setTimeout(() => {
+            setStatus('healthy', false);
+            runSimulationLoop();
+          }, 8000); // Heavy for 8s
+        }, 10000); // Medium for 10s
+      }, 32000); // Healthy for 32s
+    };
+
+    runSimulationLoop();
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, [setStatus]);
 
   const getStatusConfig = (currentStatus: ServerHealthState) => {
     switch (currentStatus) {
@@ -12,9 +44,9 @@ export const ServerStatusBadge: React.FC = () => {
         return {
           dotColor: 'bg-emerald-500',
           pulseColor: 'bg-emerald-400',
-          badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100',
-          shortLabel: 'Healthy • No Lag',
-          fullTitle: 'Server: Healthy (Optimal)',
+          badgeBg: 'bg-emerald-50/95 text-emerald-800 border-emerald-200 hover:bg-emerald-100',
+          labelText: 'SERVER STATUS - HEALTH , NO LAG DETECTED',
+          fullTitle: 'EPFO Server: Healthy (Optimal)',
           desc: 'Green • No load, zero lag (Instant API responses)',
           latency: `${latencyMs}ms`,
         };
@@ -22,19 +54,19 @@ export const ServerStatusBadge: React.FC = () => {
         return {
           dotColor: 'bg-amber-500',
           pulseColor: 'bg-amber-400',
-          badgeBg: 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100',
-          shortLabel: 'Med Load • Delay',
-          fullTitle: 'Server: Moderate Load',
-          desc: 'Yellow • Medium traffic load with mild latency delays',
+          badgeBg: 'bg-amber-50/95 text-amber-800 border-amber-200 hover:bg-amber-100',
+          labelText: 'SERVER STATUS - MEDIUM LOAD , MEDIUM DELAY',
+          fullTitle: 'EPFO Server: Medium Load',
+          desc: 'Yellow • Medium traffic load with moderate latency delay',
           latency: `${latencyMs}ms`,
         };
       case 'heavy':
         return {
           dotColor: 'bg-rose-500',
           pulseColor: 'bg-rose-400',
-          badgeBg: 'bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100',
-          shortLabel: 'Heavy Load • Lag',
-          fullTitle: 'Server: Heavy Congestion',
+          badgeBg: 'bg-rose-50/95 text-rose-800 border-rose-200 hover:bg-rose-100',
+          labelText: 'SERVER STATUS - HEAVY LOAD , HIGH DELAY & SKIPPING',
+          fullTitle: 'EPFO Server: Heavy Congestion',
           desc: 'Red • Peak server load, high delay and packet skipping',
           latency: `${latencyMs}ms`,
         };
@@ -48,14 +80,14 @@ export const ServerStatusBadge: React.FC = () => {
       {/* Top-Left Live Status Pill */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border transition-all cursor-pointer select-none text-[10px] font-bold ${config.badgeBg}`}
-        title="Click to view EPFO Live Server Telemetry"
+        className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border transition-all cursor-pointer select-none text-[9px] sm:text-[10px] font-extrabold tracking-tight shrink-0 shadow-2xs ${config.badgeBg}`}
+        title="Click to view EPFO Live Server Telemetry & Simulator"
       >
-        <span className="relative flex h-2 w-2">
+        <span className="relative flex h-2 w-2 shrink-0">
           <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${config.pulseColor}`}></span>
           <span className={`relative inline-flex rounded-full h-2 w-2 ${config.dotColor}`}></span>
         </span>
-        <span className="tracking-tight">{config.shortLabel}</span>
+        <span className="truncate max-w-[210px] sm:max-w-none">{config.labelText}</span>
       </button>
 
       {/* Telemetry & Load Simulator Modal */}
@@ -71,7 +103,7 @@ export const ServerStatusBadge: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm text-slate-900">EPFO Server Telemetry</h3>
-                  <p className="text-[11px] text-slate-500">Live Gateway & Load Status</p>
+                  <p className="text-[11px] text-slate-500">Live Gateway & Load Monitor</p>
                 </div>
               </div>
               <button 
@@ -82,7 +114,7 @@ export const ServerStatusBadge: React.FC = () => {
               </button>
             </div>
 
-            {/* Current Active Status Card */}
+            {/* Current Active Status Banner */}
             <div className={`p-3.5 rounded-2xl border ${config.badgeBg} flex items-center justify-between`}>
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5 font-bold text-xs">
@@ -91,93 +123,106 @@ export const ServerStatusBadge: React.FC = () => {
                 </div>
                 <p className="text-[11px] opacity-90">{config.desc}</p>
               </div>
-              <span className="text-xs font-mono font-bold px-2 py-1 bg-white/80 rounded-lg shadow-2xs">
+              <span className="text-xs font-mono font-bold px-2 py-1 bg-white/80 rounded-lg shadow-2xs shrink-0 ml-2">
                 {config.latency}
               </span>
             </div>
 
-            {/* Switch Server Load Mode (Simulation & Testing) */}
+            {/* Manual Override & Simulation Buttons */}
             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                Simulate Server Load Condition:
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Simulate Server Load (Demo)
+                </label>
+                {isManualOverride && (
+                  <span className="text-[10px] text-blue-600 font-semibold">Manual Active</span>
+                )}
+              </div>
 
               <div className="grid grid-cols-3 gap-2">
-                {/* 1. Green */}
+                {/* 🟢 HEALTHY */}
                 <button
-                  onClick={() => setStatus('healthy')}
-                  className={`p-2.5 rounded-xl border flex flex-col items-center text-center transition-all ${
+                  onClick={() => setStatus('healthy', true)}
+                  className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center gap-1 ${
                     status === 'healthy'
-                      ? 'bg-emerald-50 border-emerald-500 text-emerald-800 ring-2 ring-emerald-500/20 font-bold'
-                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-emerald-50/50'
+                      ? 'bg-emerald-500 text-white border-emerald-600 shadow-sm'
+                      : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
                   }`}
                 >
-                  <span className="w-3 h-3 rounded-full bg-emerald-500 mb-1.5"></span>
-                  <span className="text-xs font-bold leading-tight">Healthy</span>
-                  <span className="text-[10px] text-slate-500 mt-0.5">No Lag</span>
+                  <span className="text-sm">🟢</span>
+                  <span className="text-[10px] font-bold leading-tight">Health</span>
+                  <span className="text-[9px] opacity-80 font-mono">No Lag</span>
                 </button>
 
-                {/* 2. Yellow */}
+                {/* 🟡 MEDIUM */}
                 <button
-                  onClick={() => setStatus('medium')}
-                  className={`p-2.5 rounded-xl border flex flex-col items-center text-center transition-all ${
+                  onClick={() => setStatus('medium', true)}
+                  className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center gap-1 ${
                     status === 'medium'
-                      ? 'bg-amber-50 border-amber-500 text-amber-800 ring-2 ring-amber-500/20 font-bold'
-                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-amber-50/50'
+                      ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                      : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100'
                   }`}
                 >
-                  <span className="w-3 h-3 rounded-full bg-amber-500 mb-1.5"></span>
-                  <span className="text-xs font-bold leading-tight">Medium</span>
-                  <span className="text-[10px] text-slate-500 mt-0.5">Mild Delay</span>
+                  <span className="text-sm">🟡</span>
+                  <span className="text-[10px] font-bold leading-tight">Med Load</span>
+                  <span className="text-[9px] opacity-80 font-mono">Delay</span>
                 </button>
 
-                {/* 3. Red */}
+                {/* 🔴 HEAVY */}
                 <button
-                  onClick={() => setStatus('heavy')}
-                  className={`p-2.5 rounded-xl border flex flex-col items-center text-center transition-all ${
+                  onClick={() => setStatus('heavy', true)}
+                  className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center gap-1 ${
                     status === 'heavy'
-                      ? 'bg-rose-50 border-rose-500 text-rose-800 ring-2 ring-rose-500/20 font-bold'
-                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-rose-50/50'
+                      ? 'bg-rose-500 text-white border-rose-600 shadow-sm'
+                      : 'bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100'
                   }`}
                 >
-                  <span className="w-3 h-3 rounded-full bg-rose-500 mb-1.5"></span>
-                  <span className="text-xs font-bold leading-tight">Heavy</span>
-                  <span className="text-[10px] text-slate-500 mt-0.5">High Delay</span>
+                  <span className="text-sm">🔴</span>
+                  <span className="text-[10px] font-bold leading-tight">Heavy Load</span>
+                  <span className="text-[9px] opacity-80 font-mono">High Delay</span>
                 </button>
               </div>
             </div>
 
-            {/* Subsystem Health Breakdown */}
-            <div className="bg-slate-50 rounded-2xl p-3 border border-slate-100 space-y-2 text-xs">
-              <div className="flex items-center justify-between text-slate-700">
-                <span className="flex items-center gap-1.5 font-medium">
-                  <Server className="w-3.5 h-3.5 text-slate-500" /> EPFO Member Gateway
-                </span>
-                <span className={`font-bold ${status === 'heavy' ? 'text-rose-600' : 'text-emerald-600'}`}>
-                  {status === 'heavy' ? 'High Traffic' : '99.99% Online'}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-slate-700">
-                <span className="flex items-center gap-1.5 font-medium">
-                  <ShieldCheck className="w-3.5 h-3.5 text-slate-500" /> UIDAI Aadhaar Auth Engine
-                </span>
-                <span className="font-bold text-emerald-600">Connected</span>
-              </div>
-              <div className="flex items-center justify-between text-slate-700">
-                <span className="flex items-center gap-1.5 font-medium">
-                  <Zap className="w-3.5 h-3.5 text-slate-500" /> NPCI Direct Settlement
-                </span>
-                <span className="font-bold text-emerald-600">Active</span>
+            {/* Subsystem Telemetry Details */}
+            <div className="space-y-1.5 pt-2 border-t border-slate-100">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Core Subsystems
+              </p>
+              
+              <div className="space-y-1.5 text-xs">
+                <div className="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
+                  <span className="text-slate-700 font-medium flex items-center gap-1.5">
+                    <Server className="w-3.5 h-3.5 text-slate-400" /> EPFO Unified Member Gateway
+                  </span>
+                  <span className="font-bold text-emerald-600 text-[11px]">99.98% UP</span>
+                </div>
+                
+                <div className="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
+                  <span className="text-slate-700 font-medium flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-slate-400" /> UIDAI Aadhaar eKYC Pipeline
+                  </span>
+                  <span className={`font-bold text-[11px] ${status === 'heavy' ? 'text-amber-600' : 'text-emerald-600'}`}>
+                    {status === 'heavy' ? '420ms (Queued)' : 'Operational'}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
+                  <span className="text-slate-700 font-medium flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-slate-400" /> NPCI Direct Settlement
+                  </span>
+                  <span className="font-bold text-emerald-600 text-[11px]">Normal</span>
+                </div>
               </div>
             </div>
 
-            {/* Close Button */}
-            <button
+            <Button
+              variant="outline"
+              className="w-full py-2 text-xs font-bold text-slate-600"
               onClick={() => setIsOpen(false)}
-              className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors"
             >
               Close Telemetry
-            </button>
+            </Button>
 
           </div>
         </div>
