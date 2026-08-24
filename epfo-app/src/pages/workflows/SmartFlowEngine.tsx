@@ -5,6 +5,7 @@ import { ArrowLeft, Bot, ShieldAlert, CheckCircle2, Lock, CreditCard } from 'luc
 import { Button } from '../../components/ui/Button';
 import { ThinkingAnimation } from '../../components/ui/ThinkingAnimation';
 import { Input } from '../../components/ui/Input';
+import { Watermark } from '../../components/ui/Watermark';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
 import { useSessionStore } from '../../store/useSessionStore';
 import toast from 'react-hot-toast';
@@ -151,6 +152,7 @@ export const SmartFlowEngine: React.FC = () => {
 
   return (
     <div className='flex-1 flex flex-col bg-slate-50 overflow-hidden relative'>
+      <Watermark />
       <div className='bg-white px-6 py-4 flex items-center border-b border-slate-200 z-10'>
         <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-50 transition-colors'>
           <ArrowLeft className='w-5 h-5' />

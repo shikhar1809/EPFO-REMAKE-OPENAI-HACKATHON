@@ -5,6 +5,7 @@ import { FileText, Wallet, FolderOpen, ArrowRightLeft, LogOut, ShieldAlert, Play
 import { useSessionStore } from '../store/useSessionStore';
 import { useWorkflowStore } from '../store/useWorkflowStore';
 import { Button } from '../components/ui/Button';
+import { Watermark } from '../components/ui/Watermark';
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -120,7 +121,8 @@ export const Home: React.FC = () => {
   const [flowChoice, setFlowChoice] = useState<'none' | 'agentic' | 'traditional'>('none');
 
   return (
-    <div className='flex-1 flex flex-col bg-slate-50 overflow-y-auto'>
+    <div className='flex-1 flex flex-col bg-slate-50 overflow-y-auto relative'>
+      <Watermark />
       <div className='p-6 pt-12 pb-6 bg-white border-b border-slate-100 flex justify-between items-center sticky top-0 z-10'>
         <div>
           <h1 className='text-2xl font-bold tracking-tight text-slate-900'>
