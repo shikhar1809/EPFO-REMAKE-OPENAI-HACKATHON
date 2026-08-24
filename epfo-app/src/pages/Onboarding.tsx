@@ -104,7 +104,7 @@ export const Onboarding: React.FC = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>('language');
   
-  const { verifyUAN, loginWithPhone, completeProfile } = useSessionStore();
+  const { verifyUAN, loginWithPhone, completeProfile, user } = useSessionStore();
   
   const [uanInput, setUanInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
@@ -149,7 +149,7 @@ export const Onboarding: React.FC = () => {
       setIsVerifying(false);
       if (success) {
         if (step === 'returning_login') {
-          completeProfile({ name: 'Returning User' });
+          completeProfile({ name: user?.name || 'Citizen' });
           localStorage.setItem('onboarded', 'true');
           navigate('/');
         } else {
@@ -177,7 +177,7 @@ export const Onboarding: React.FC = () => {
   };
 
   const finishOnboarding = () => {
-    completeProfile({ name: 'Citizen' });
+    completeProfile({ name: profileName.trim() || user?.name || 'Citizen' });
     localStorage.setItem('onboarded', 'true');
     navigate('/');
   };
