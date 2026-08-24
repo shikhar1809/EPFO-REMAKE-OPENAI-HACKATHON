@@ -114,7 +114,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, on
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className='bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full max-h-[85vh] overflow-y-auto relative'
+        className='bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-[380px] w-[92vw] max-h-[75vh] overflow-y-auto relative mx-auto'
       >
         {/* Modal Header */}
         <div className='sticky top-0 bg-white/95 backdrop-blur-md px-5 py-4 border-b border-slate-100 flex items-center justify-between z-10'>
