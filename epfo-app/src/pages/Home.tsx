@@ -10,7 +10,6 @@ import {
   Play, 
   Bot, 
   Mic, 
-  CheckCircle2, 
   Trash2, 
   ShieldCheck, 
   ArrowRight, 
@@ -30,7 +29,7 @@ export const Home: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated, logout, user, riskLevel } = useSessionStore();
-  const { activeTasks, completedTasks, startTask, resumeTask, clearTask, archiveTask } = useWorkflowStore();
+  const { activeTasks, startTask, resumeTask, clearTask, archiveTask } = useWorkflowStore();
   const { enabled: notificationsEnabled } = useNotificationStore();
   
   const [chatInput, setChatInput] = useState('');
@@ -482,44 +481,61 @@ export const Home: React.FC = () => {
           </section>
         )}
 
-        {/* Past Requests History */}
-        <section className='space-y-2 pt-1'>
-          <div className='flex items-center justify-between px-1'>
-            <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5'>
-              {t('past_requests')}
-              {completedTasks && completedTasks.length > 0 && (
-                <span className='bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold'>
-                  {completedTasks.length}
-                </span>
-              )}
-            </h2>
-            <button onClick={() => navigate('/history')} className='text-xs text-epfo-blue font-bold flex items-center gap-1 hover:underline'>
-              {t('view_all')} <ArrowRight className="w-3.5 h-3.5"/>
+        {/* NEED MORE HELP ? Section */}
+        <section className='space-y-3 pt-2'>
+          <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider px-1'>
+            Need More Help?
+          </h2>
+
+          <div className='grid grid-cols-2 gap-3'>
+            {/* 1. SMART FLOW */}
+            <button 
+              onClick={() => {
+                const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+                if (searchInput) {
+                  searchInput.focus();
+                  searchInput.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className='p-4 bg-gradient-to-br from-blue-50/90 to-white/95 backdrop-blur-md border-2 border-epfo-blue/40 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all'
+            >
+              <div>
+                <div className='w-10 h-10 bg-blue-100 text-epfo-blue rounded-xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform'>
+                  <Bot className='w-5 h-5' />
+                </div>
+                <h3 className='font-bold text-sm text-epfo-blue leading-tight'>
+                  Smart Flow
+                </h3>
+                <p className='text-xs text-slate-500 mt-1 leading-relaxed'>
+                  AI assistant guides your claims, life certificate & transfers.
+                </p>
+              </div>
+              <div className='mt-3 text-xs font-bold text-epfo-blue flex items-center gap-1'>
+                Launch Smart Flow →
+              </div>
+            </button>
+
+            {/* 2. TRADITIONAL FLOW */}
+            <button 
+              onClick={() => navigate('/grievance')}
+              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all'
+            >
+              <div>
+                <div className='w-10 h-10 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform'>
+                  <FolderOpen className='w-5 h-5' />
+                </div>
+                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-slate-700'>
+                  Traditional Flow
+                </h3>
+                <p className='text-xs text-slate-500 mt-1 leading-relaxed'>
+                  EPFiGMS grievance portal, FAQs & classic self-service support.
+                </p>
+              </div>
+              <div className='mt-3 text-xs font-bold text-slate-700 flex items-center gap-1'>
+                Help & Grievance →
+              </div>
             </button>
           </div>
-          
-          {completedTasks && completedTasks.length > 0 ? (
-            <div className='space-y-2'>
-              {completedTasks.slice(0, 2).map(task => (
-                <div key={task.taskId} className='bg-white/95 p-3.5 rounded-2xl border border-slate-200 shadow-2xs flex justify-between items-center cursor-pointer hover:border-slate-300 transition-all' onClick={() => navigate('/history')}>
-                  <div className='flex items-center gap-3'>
-                    <div className='bg-green-50 p-2 rounded-full text-green-600'>
-                      <CheckCircle2 className='w-4 h-4' />
-                    </div>
-                    <div>
-                      <p className='font-bold text-xs text-slate-900'>{task.intent}</p>
-                      <p className='text-[11px] text-slate-500 mt-0.5'>Completed on {new Date(task.lastCheckpoint).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <button onClick={() => navigate('/history')} className='w-full p-3.5 bg-white/90 border border-slate-200 border-dashed rounded-2xl flex items-center justify-center gap-2 text-slate-500 hover:text-epfo-blue hover:border-epfo-blue/50 transition-colors text-xs font-medium'>
-              <FolderOpen className='w-4 h-4' />
-              <span>{t('no_active_tasks')}</span>
-            </button>
-          )}
         </section>
 
         {/* Security Alert (Step-up Auth / Hijacking prevention) */}
