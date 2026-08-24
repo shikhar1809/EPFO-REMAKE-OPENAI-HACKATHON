@@ -47,7 +47,7 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
           <img 
             src="/epfo-bg.png" 
             alt="EPFO Background" 
-            className="w-full h-full object-cover opacity-50"
+            className="w-full h-full object-cover opacity-25"
           />
         </div>
         
