@@ -1,5 +1,4 @@
-import React from 'react';
-import { Building2, Users, Shield, Landmark } from 'lucide-react';
+import { Users, Shield, Landmark } from 'lucide-react';
 
 export const Watermark = () => (
   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none flex items-center justify-center opacity-[0.03]">
