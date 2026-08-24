@@ -21,7 +21,8 @@ import {
   HelpCircle,
   Lock,
   Sparkles,
-  Send
+  Send,
+  AlertTriangle
 } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { useWorkflowStore } from '../store/useWorkflowStore';
@@ -252,6 +253,29 @@ export const Home: React.FC = () => {
                 </div>
 
 
+              </section>
+            )}
+
+            {/* Multiple Accounts Action Required */}
+            {isAuthenticated && (
+              <section className='bg-orange-50 border border-orange-200 rounded-2xl p-4 shadow-sm relative overflow-hidden'>
+                <div className='flex items-start gap-3'>
+                  <div className='bg-orange-100 p-2 rounded-xl text-orange-600 shrink-0'>
+                    <AlertTriangle className='w-5 h-5' />
+                  </div>
+                  <div>
+                    <h3 className='font-bold text-orange-900 text-sm'>Action Required: Multiple Accounts</h3>
+                    <p className='text-xs text-orange-800 mt-1 leading-snug'>
+                      We found ₹45,000 in an old UAN. Merge it to your current account to earn maximum interest.
+                    </p>
+                    <button 
+                      onClick={() => handleAgenticStart(undefined, 'I want to merge my old PF account')}
+                      className='mt-3 bg-orange-600 hover:bg-orange-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5'
+                    >
+                      <Bot className='w-3.5 h-3.5' /> Merge with Smart Flow
+                    </button>
+                  </div>
+                </div>
               </section>
             )}
 
