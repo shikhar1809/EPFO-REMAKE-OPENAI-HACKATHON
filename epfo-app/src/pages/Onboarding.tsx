@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Lock } from 'lucide-react';
 import { ProfileSuccessAnim, VaultSuccessAnim } from '../components/ui/SuccessAnimations';
 import { SyncAnimation } from '../components/ui/SyncAnimation';
+import { VaultIntroAnimation } from '../components/animations/VaultIntroAnimation';
 
 const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
   const [vaultState, setVaultState] = useState<'intro' | 'fetching' | 'done'>('intro');
@@ -26,23 +27,39 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
   };
 
   return (
-    <motion.div key="vault_intro" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='space-y-6 my-auto'>
-      <div className='bg-amber-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4'>
-        <FileText className='w-8 h-8 text-amber-600' />
+    <motion.div key="vault_intro" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='space-y-4 my-auto'>
+      
+      {/* Animated DigiLocker Vault Hero Animation */}
+      {vaultState === 'intro' && (
+        <VaultIntroAnimation />
+      )}
+
+      {vaultState !== 'intro' && (
+        <div className='bg-amber-50 p-3.5 rounded-2xl w-14 h-14 flex items-center justify-center mb-2'>
+          <FileText className='w-7 h-7 text-amber-600' />
+        </div>
+      )}
+
+      <div>
+        <h1 className='text-2xl font-bold text-slate-900'>Document Vault</h1>
+        <p className='text-xs text-slate-500 mt-1'>
+          Government DigiLocker & KYC Integration
+        </p>
       </div>
-      <h1 className='text-3xl font-semibold mb-2'>Document Vault</h1>
       
       {vaultState === 'intro' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-4'>
-          <p className='text-slate-500'>
-            To provide you with seamless 1-click services, we need to securely fetch your KYC documents from DigiLocker.
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-3.5'>
+          <p className='text-xs text-slate-600 leading-relaxed'>
+            To provide you with seamless 1-click services, we securely fetch and encrypt your KYC documents from DigiLocker.
           </p>
-          <div className='bg-transparent border border-slate-200 rounded-xl p-4 flex items-start gap-3'>
-            <Lock className='w-5 h-5 text-slate-400 shrink-0 mt-0.5' />
-            <p className='text-xs text-slate-600'>Your documents (Aadhaar, PAN, Bank Details) are encrypted. We only use them when you explicitly approve a claim or transfer.</p>
+          <div className='bg-slate-50 border border-slate-200 rounded-2xl p-3.5 flex items-start gap-3'>
+            <Lock className='w-4 h-4 text-slate-500 shrink-0 mt-0.5' />
+            <p className='text-[11px] text-slate-600 leading-snug'>
+              Your documents (Aadhaar, PAN, Bank Details) are 256-bit encrypted. We only share verified cryptographic hashes when you explicitly approve a claim or transfer.
+            </p>
           </div>
-          <div className='pt-4'>
-            <Button className='w-full py-4 text-lg bg-green-600 hover:bg-green-700' onClick={startDigiLockerFetch}>
+          <div className='pt-2'>
+            <Button className='w-full py-3.5 text-sm font-bold bg-green-600 hover:bg-green-700 shadow-md' onClick={startDigiLockerFetch}>
               Connect with DigiLocker
             </Button>
           </div>
