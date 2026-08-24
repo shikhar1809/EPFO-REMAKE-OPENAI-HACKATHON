@@ -307,32 +307,42 @@ export const Home: React.FC = () => {
         )}
 
         {/* History / Completed Tasks */}
-        {flowChoice === 'none' && completedTasks && completedTasks.length > 0 && (
+        {flowChoice === 'none' && (
           <section>
-            <h2 className='text-lg font-semibold mb-3 text-slate-800 flex items-center gap-2'>
-              Past Requests
-              <span className='bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-bold'>{completedTasks.length}</span>
-            </h2>
-            <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }} className='space-y-3'>
-              {completedTasks.slice(0, 3).map(task => (
-                <motion.div variants={{ hidden: { opacity: 0, x: -10 }, visible: { opacity: 1, x: 0 } }} key={task.taskId} className='bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center opacity-80 hover:opacity-100 transition-opacity'>
-                  <div className='flex items-center gap-3'>
-                    <div className='bg-green-50 p-2 rounded-full text-green-600'>
-                      <CheckCircle2 className='w-5 h-5' />
+            <div className='flex items-center justify-between mb-3'>
+              <h2 className='text-lg font-semibold text-slate-800 flex items-center gap-2'>
+                Past Requests
+                {completedTasks && completedTasks.length > 0 && (
+                  <span className='bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-bold'>{completedTasks.length}</span>
+                )}
+              </h2>
+              <button onClick={() => navigate('/history')} className='text-sm text-epfo-blue font-medium flex items-center gap-1 hover:underline'>
+                View all <ArrowRight className="w-4 h-4"/>
+              </button>
+            </div>
+            
+            {completedTasks && completedTasks.length > 0 ? (
+              <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }} className='space-y-3'>
+                {completedTasks.slice(0, 3).map(task => (
+                  <motion.div variants={{ hidden: { opacity: 0, x: -10 }, visible: { opacity: 1, x: 0 } }} key={task.taskId} className='bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center opacity-80 hover:opacity-100 transition-opacity cursor-pointer' onClick={() => navigate('/history')}>
+                    <div className='flex items-center gap-3'>
+                      <div className='bg-green-50 p-2 rounded-full text-green-600'>
+                        <CheckCircle2 className='w-5 h-5' />
+                      </div>
+                      <div>
+                        <p className='font-medium text-slate-900'>{task.intent}</p>
+                        <p className='text-xs text-slate-500 mt-0.5'>Completed on {new Date(task.lastCheckpoint).toLocaleDateString()}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className='font-medium text-slate-900'>{task.intent}</p>
-                      <p className='text-xs text-slate-500 mt-0.5'>Completed on {new Date(task.lastCheckpoint).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-              {completedTasks.length > 3 && (
-                <button onClick={() => navigate('/history')} className='w-full py-3 mt-1 text-sm font-medium text-epfo-blue bg-blue-50/50 hover:bg-blue-50 border border-blue-100 rounded-xl transition-colors flex justify-center items-center gap-2'>
-                  View all {completedTasks.length} past requests <ArrowRight className="w-4 h-4"/>
-                </button>
-              )}
-            </motion.div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <button onClick={() => navigate('/history')} className='w-full p-4 bg-white border border-slate-200 border-dashed rounded-2xl flex items-center justify-center gap-2 text-slate-500 hover:text-epfo-blue hover:border-epfo-blue/50 hover:bg-blue-50/30 transition-colors'>
+                <FolderOpen className='w-5 h-5' />
+                <span className='font-medium text-sm'>No recent requests. View history.</span>
+              </button>
+            )}
           </section>
         )}
 
