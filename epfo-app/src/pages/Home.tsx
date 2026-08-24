@@ -171,7 +171,7 @@ export const Home: React.FC = () => {
       <div className='p-6 space-y-8 max-w-2xl mx-auto w-full'>
         
         {/* PF Balance Card */}
-        {isAuthenticated && (
+        {isAuthenticated && flowChoice === 'none' && (
           <section className='bg-gradient-to-r from-epfo-blue to-blue-700 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden'>
             <div className='absolute top-0 right-0 p-4 opacity-20'>
               <Wallet className='w-24 h-24' />
