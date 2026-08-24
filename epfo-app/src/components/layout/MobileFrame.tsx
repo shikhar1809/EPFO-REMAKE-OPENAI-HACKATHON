@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
+import { ServerStatusBadge } from '../common/ServerStatusBadge';
 
 export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { i18n } = useTranslation();
@@ -23,9 +24,10 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const handleFontSize = (dir: number) => {
     setFontScale(prev => {
-      const next = Math.max(14, Math.min(22, prev + (dir * 2)));
-      localStorage.setItem('fontScale', next.toString());
-      return next;
+      const next = prev + dir * 2;
+      const clamped = Math.min(Math.max(next, 12), 24);
+      localStorage.setItem('fontScale', clamped.toString());
+      return clamped;
     });
   };
 
@@ -52,11 +54,10 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
         </div>
 
         {/* Dedicated Top App Utility Bar */}
-        <div className='relative z-20 px-4 py-2 bg-white/90 backdrop-blur-md border-b border-slate-200/70 flex items-center justify-between shadow-xs shrink-0'>
-          <div className='flex items-center gap-1.5'>
-            <div className='w-2 h-2 rounded-full bg-emerald-500 animate-pulse'></div>
-            <span className='text-[11px] font-bold text-slate-800 tracking-wider uppercase'>EPFO Services</span>
-          </div>
+        <div className='relative z-20 px-3.5 py-2 bg-white/90 backdrop-blur-md border-b border-slate-200/70 flex items-center justify-between shadow-xs shrink-0'>
+          
+          {/* Top-Left Live Server Health Status */}
+          <ServerStatusBadge />
 
           <div className='flex items-center gap-2'>
             <div className='flex items-center bg-slate-100 rounded-full px-2 py-0.5 border border-slate-200'>
