@@ -7,34 +7,34 @@ export const ServerStatusBadge: React.FC = () => {
   const { status, latencyMs, isManualOverride, setStatus } = useServerStatusStore();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Periodic Demo Load Fluctuation (Demo Simulation)
+  // Subtle Demo Load Fluctuation (Randomly toggles between Green and Yellow only, never Red)
   useEffect(() => {
-    let timer1: ReturnType<typeof setTimeout>;
-    let timer2: ReturnType<typeof setTimeout>;
-    let timer3: ReturnType<typeof setTimeout>;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
-    const runSimulationLoop = () => {
-      // 32s Healthy -> 10s Medium -> 8s Heavy -> Healthy
-      timer1 = setTimeout(() => {
-        setStatus('medium', false);
-        
-        timer2 = setTimeout(() => {
-          setStatus('heavy', false);
-          
-          timer3 = setTimeout(() => {
-            setStatus('healthy', false);
-            runSimulationLoop();
-          }, 8000); // Heavy for 8s
-        }, 10000); // Medium for 10s
-      }, 32000); // Healthy for 32s
+    const scheduleNextToggle = () => {
+      // If currently healthy, wait 45s - 75s, then switch to medium
+      // If currently medium or heavy, stay for 10s - 15s, then switch to healthy
+      const current = useServerStatusStore.getState().status;
+      
+      if (current === 'healthy') {
+        const healthyDuration = 45000 + Math.random() * 30000; // 45s to 75s
+        timeoutId = setTimeout(() => {
+          setStatus('medium', false);
+          scheduleNextToggle();
+        }, healthyDuration);
+      } else {
+        const mediumDuration = 10000 + Math.random() * 5000; // 10s to 15s
+        timeoutId = setTimeout(() => {
+          setStatus('healthy', false);
+          scheduleNextToggle();
+        }, mediumDuration);
+      }
     };
 
-    runSimulationLoop();
+    scheduleNextToggle();
 
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
+      clearTimeout(timeoutId);
     };
   }, [setStatus]);
 
@@ -45,7 +45,7 @@ export const ServerStatusBadge: React.FC = () => {
           dotColor: 'bg-emerald-500',
           pulseColor: 'bg-emerald-400',
           badgeBg: 'bg-emerald-50/95 text-emerald-800 border-emerald-200 hover:bg-emerald-100',
-          labelText: 'SERVER STATUS - HEALTH , NO LAG DETECTED',
+          labelText: 'SERVER STATUS - HEALTHY , NO LAG DETECTED',
           fullTitle: 'EPFO Server: Healthy (Optimal)',
           desc: 'Green • No load, zero lag (Instant API responses)',
           latency: `${latencyMs}ms`,
@@ -150,7 +150,7 @@ export const ServerStatusBadge: React.FC = () => {
                   }`}
                 >
                   <span className="text-sm">🟢</span>
-                  <span className="text-[10px] font-bold leading-tight">Health</span>
+                  <span className="text-[10px] font-bold leading-tight">HEALTHY</span>
                   <span className="text-[9px] opacity-80 font-mono">No Lag</span>
                 </button>
 
@@ -164,8 +164,8 @@ export const ServerStatusBadge: React.FC = () => {
                   }`}
                 >
                   <span className="text-sm">🟡</span>
-                  <span className="text-[10px] font-bold leading-tight">Med Load</span>
-                  <span className="text-[9px] opacity-80 font-mono">Delay</span>
+                  <span className="text-[10px] font-bold leading-tight">MEDIUM LOAD</span>
+                  <span className="text-[9px] opacity-80 font-mono">Medium Delay</span>
                 </button>
 
                 {/* 🔴 HEAVY */}
@@ -178,7 +178,7 @@ export const ServerStatusBadge: React.FC = () => {
                   }`}
                 >
                   <span className="text-sm">🔴</span>
-                  <span className="text-[10px] font-bold leading-tight">Heavy Load</span>
+                  <span className="text-[10px] font-bold leading-tight">HEAVY LOAD</span>
                   <span className="text-[9px] opacity-80 font-mono">High Delay</span>
                 </button>
               </div>
