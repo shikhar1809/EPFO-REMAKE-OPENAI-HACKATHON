@@ -87,8 +87,8 @@ const generateId = () => Math.random().toString(36).substring(2, 9).toUpperCase(
 export const useDataStore = create<DataState>()(
   persist(
     (set) => ({
-      profile: null,
-      passbook: [],
+      profile: mockProfile,
+      passbook: mockPassbook,
       claims: [
         { id: 'CLM-001', type: 'Form 31 (Advance)', status: 'Approved', date: '2026-05-12', amount: 50000 }
       ],
