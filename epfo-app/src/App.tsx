@@ -13,6 +13,8 @@ import { DocumentVault } from './pages/workflows/DocumentVault';
 import { SmartFlowEngine } from './pages/workflows/SmartFlowEngine';
 import { History } from './pages/workflows/History';
 import { Onboarding } from './pages/Onboarding';
+import { LifeCertificate } from './pages/workflows/LifeCertificate';
+import { MarkExit } from './pages/workflows/MarkExit';
 import { Toaster } from 'react-hot-toast';
 import './i18n/config';
 
@@ -58,6 +60,8 @@ function App() {
               <Route path='/smart-flow' element={<PrivateRoute><SmartFlowEngine /></PrivateRoute>} />
               <Route path='/history' element={<PrivateRoute><History /></PrivateRoute>} />
               <Route path='/grievance' element={<Grievance />} />
+              <Route path='/life-certificate' element={<PrivateRoute><LifeCertificate /></PrivateRoute>} />
+              <Route path='/mark-exit' element={<PrivateRoute><MarkExit /></PrivateRoute>} />
             </Routes>
           </SceneTransition>
         </OnboardWrapper>

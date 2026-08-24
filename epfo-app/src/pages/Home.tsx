@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FileText, Wallet, FolderOpen, ArrowRightLeft, LogOut, ShieldAlert, Play, Bot, Mic, CheckCircle2, Trash2, ShieldCheck, ArrowRight } from 'lucide-react';
+import { FileText, Wallet, FolderOpen, ArrowRightLeft, LogOut, ShieldAlert, Play, Bot, Mic, CheckCircle2, Trash2, ShieldCheck, ArrowRight, Award, CalendarX2 } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { useWorkflowStore } from '../store/useWorkflowStore';
 import { Button } from '../components/ui/Button';
@@ -44,16 +44,18 @@ export const Home: React.FC = () => {
   const toggleRecording = () => {
     if (!isRecording) {
       setIsRecording(true);
-      // Simulate listening for a bit then transcribing
+      // Simulate Voice Transcription
       setTimeout(() => {
-        setChatInput(prev => prev ? prev + ' I want to withdraw my PF' : 'I want to withdraw my PF');
+        setChatInput("I want to submit my life certificate");
         setIsRecording(false);
-      }, 2000);
+      }, 2500);
+    } else {
+      setIsRecording(false);
     }
   };
 
-  const handleAgenticStart = (e: React.FormEvent | React.KeyboardEvent) => {
-    if ('preventDefault' in e) e.preventDefault();
+  const handleAgenticStart = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!chatInput.trim()) return;
 
     setIsAnalyzing(true);
@@ -67,8 +69,23 @@ export const Home: React.FC = () => {
       setIsAnalyzing(false);
       setAnalyzePhase(null);
       const intent = chatInput;
-      const taskType = intent.toLowerCase().includes('withdraw') ? 'withdraw_pf' : 
-                       intent.toLowerCase().includes('transfer') ? 'transfer_pf' : 'general_inquiry';
+      const lowerIntent = intent.toLowerCase();
+
+      // Quick routes for specialized flows
+      if (lowerIntent.includes('life') || lowerIntent.includes('certificate') || lowerIntent.includes('pramaan') || lowerIntent.includes('pension')) {
+        setChatInput('');
+        navigate('/life-certificate');
+        return;
+      }
+
+      if (lowerIntent.includes('exit') || lowerIntent.includes('leaving') || lowerIntent.includes('quit') || lowerIntent.includes('closed')) {
+        setChatInput('');
+        navigate('/mark-exit');
+        return;
+      }
+
+      const taskType = lowerIntent.includes('withdraw') ? 'withdraw_pf' : 
+                       (lowerIntent.includes('transfer') || lowerIntent.includes('merge')) ? 'transfer_pf' : 'general_inquiry';
       
       let plan: any[] = [];
       if (taskType === 'withdraw_pf') {
@@ -275,14 +292,13 @@ export const Home: React.FC = () => {
                   
                   {/* Suggestion Chips */}
                   <div className="flex flex-wrap gap-2 pt-2">
-                    {["Withdraw PF", "Check Balance", "Transfer PF", "Track Claim"].map((suggestion) => (
+                    {["Withdraw PF", "Life Certificate", "Mark Exit Date", "Merge PF Accounts", "Track Claim"].map((suggestion) => (
                       <button
                         key={suggestion}
                         onClick={() => {
                           setChatInput(suggestion);
-                          // Auto submit after setting state is tricky without a useEffect, so we just set the input for now
                         }}
-                        className="bg-white/80 backdrop-blur-sm border border-slate-200 text-slate-700 px-3 py-1.5 rounded-full text-sm font-medium hover:border-epfo-blue hover:text-epfo-blue transition-colors shadow-sm"
+                        className="bg-white/80 backdrop-blur-sm border border-slate-200 text-slate-700 px-3 py-1.5 rounded-full text-xs font-medium hover:border-epfo-blue hover:text-epfo-blue transition-colors shadow-sm"
                       >
                         {suggestion}
                       </button>
@@ -303,22 +319,30 @@ export const Home: React.FC = () => {
             </button>
             <section ref={traditionalFlowRef}>
               <h2 className='text-lg font-semibold mb-3 text-slate-800'>Self-Service</h2>
-              <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }} className='grid grid-cols-2 gap-3'>
-                <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/passbook')} className='p-4 bg-white border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
+              <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } }} className='grid grid-cols-2 gap-3'>
+                <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/passbook')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
                   <Wallet className='w-6 h-6 text-epfo-blue' />
                   <span className='font-medium text-sm'>Passbook</span>
                 </motion.button>
-                <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/claim')} className='p-4 bg-white border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
+                <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/claim')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
                   <FileText className='w-6 h-6 text-epfo-blue' />
                   <span className='font-medium text-sm'>Claim</span>
                 </motion.button>
-                <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/transfer')} className='p-4 bg-white border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
+                <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/transfer')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
                   <ArrowRightLeft className='w-6 h-6 text-epfo-blue' />
-                  <span className='font-medium text-sm'>Transfer</span>
+                  <span className='font-medium text-sm'>Transfer & Merge</span>
                 </motion.button>
-                <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/documents')} className='p-4 bg-white border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
+                <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/documents')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
                   <FolderOpen className='w-6 h-6 text-epfo-blue' />
                   <span className='font-medium text-sm'>Vault</span>
+                </motion.button>
+                <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/life-certificate')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
+                  <Award className='w-6 h-6 text-emerald-600' />
+                  <span className='font-medium text-sm text-center leading-tight'>Life Certificate</span>
+                </motion.button>
+                <motion.button variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => handleAction('/mark-exit')} className='p-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-epfo-blue hover:bg-blue-50 transition-colors shadow-sm'>
+                  <CalendarX2 className='w-6 h-6 text-amber-600' />
+                  <span className='font-medium text-sm text-center leading-tight'>Mark Exit Date</span>
                 </motion.button>
               </motion.div>
             </section>
