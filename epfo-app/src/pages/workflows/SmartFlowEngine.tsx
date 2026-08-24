@@ -153,14 +153,23 @@ export const SmartFlowEngine: React.FC = () => {
   return (
     <div className='flex-1 flex flex-col bg-transparent overflow-hidden relative'>
       
-      <div className='bg-white/70 backdrop-blur-md px-6 py-4 flex items-center border-b border-white/20 z-10'>
-        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent transition-colors'>
-          <ArrowLeft className='w-5 h-5' />
-        </button>
-        <h1 className='text-lg font-semibold ml-2 flex items-center gap-2'>
-          <Bot className='w-5 h-5 text-epfo-blue' />
-          Agent Workflow
-        </h1>
+      <div className='bg-white/80 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-slate-200/80 z-10'>
+        <div className='flex items-center'>
+          <button onClick={() => navigate(-1)} className='p-1.5 -ml-1 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'>
+            <ArrowLeft className='w-5 h-5' />
+          </button>
+          <h1 className='text-base font-bold text-slate-900 ml-1.5 flex items-center gap-2'>
+            <Bot className='w-5 h-5 text-epfo-blue' />
+            Agent Workflow
+          </h1>
+        </div>
+
+        {/* Live Session ID Badge */}
+        <div className='flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-xl text-slate-700 font-mono text-[11px] shadow-2xs select-none'>
+          <span className='w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse' />
+          <span className='text-[10px] text-slate-400 font-sans uppercase font-bold tracking-tight'>SESSION ID:</span>
+          <span className='font-bold text-slate-900 tracking-wider'>#{task.taskId.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase()}</span>
+        </div>
       </div>
 
       <div className='flex-1 flex flex-col p-6 pb-40 overflow-y-auto relative'>
