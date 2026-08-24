@@ -9,14 +9,12 @@ import {
   ShieldAlert, 
   Play, 
   Bot, 
-  Mic, 
   Trash2, 
   ShieldCheck, 
   ArrowRight, 
   Award, 
   CalendarX2, 
-  Bell,
-  Search
+  Bell
 } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { useWorkflowStore } from '../store/useWorkflowStore';
@@ -32,8 +30,6 @@ export const Home: React.FC = () => {
   const { activeTasks, startTask, resumeTask, clearTask, archiveTask } = useWorkflowStore();
   const { enabled: notificationsEnabled } = useNotificationStore();
   
-  const [chatInput, setChatInput] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   
   // Auto-archive completed tasks
@@ -47,82 +43,22 @@ export const Home: React.FC = () => {
 
   const activeTaskValues = Object.values(activeTasks).filter(t => t.agentState !== 'completed');
 
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analyzePhase, setAnalyzePhase] = useState<'fetching' | 'generating' | 'starting' | null>(null);
-
-  const toggleRecording = () => {
-    if (!isRecording) {
-      setIsRecording(true);
-      setTimeout(() => {
-        setChatInput("I want to submit my life certificate");
-        setIsRecording(false);
-      }, 2500);
-    } else {
-      setIsRecording(false);
-    }
+  const handleSmartFlowLaunch = () => {
+    startTask("EPFO Smart Assistant", "withdraw_pf", [
+      { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
+      { step: 'check_eligibility', description: 'Check if you are eligible', status: 'pending' as const },
+      { step: 'gather_documents', description: 'Get your documents from DigiLocker', status: 'pending' as const },
+      { step: 'review_claim', description: 'Review your claim details', status: 'pending' as const },
+      { step: 'submit_claim', description: 'Final review and submit', status: 'pending' as const },
+    ]);
+    navigate('/smart-flow');
   };
 
-  const handleAgenticStart = (e: React.FormEvent, directPrompt?: string) => {
-    if (e) e.preventDefault();
-    const query = directPrompt || chatInput;
-    if (!query.trim()) return;
-
-    setIsAnalyzing(true);
-    setAnalyzePhase('fetching');
-    
-    setTimeout(() => setAnalyzePhase('generating'), 1000);
-    setTimeout(() => setAnalyzePhase('starting'), 2000);
-
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      setAnalyzePhase(null);
-      const intent = query;
-      const lowerIntent = intent.toLowerCase();
-
-      // Quick routes for specialized flows
-      if (lowerIntent.includes('life') || lowerIntent.includes('certificate') || lowerIntent.includes('pramaan') || lowerIntent.includes('pension')) {
-        setChatInput('');
-        navigate('/life-certificate');
-        return;
-      }
-
-      if (lowerIntent.includes('exit') || lowerIntent.includes('leaving') || lowerIntent.includes('quit') || lowerIntent.includes('closed')) {
-        setChatInput('');
-        navigate('/mark-exit');
-        return;
-      }
-
-      const taskType = lowerIntent.includes('withdraw') ? 'withdraw_pf' : 
-                       (lowerIntent.includes('transfer') || lowerIntent.includes('merge')) ? 'transfer_pf' : 'general_inquiry';
-      
-      let plan: any[] = [];
-      if (taskType === 'withdraw_pf') {
-        plan = [
-          { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
-          { step: 'check_eligibility', description: 'Check if you are eligible', status: 'pending' as const },
-          { step: 'gather_documents', description: 'Get your documents from DigiLocker', status: 'pending' as const },
-          { step: 'review_claim', description: 'Review your claim details', status: 'pending' as const },
-          { step: 'submit_claim', description: 'Final review and submit', status: 'pending' as const },
-        ];
-      } else if (taskType === 'transfer_pf') {
-        plan = [
-          { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
-          { step: 'fetch_employment', description: 'Find your previous employment details', status: 'pending' as const },
-          { step: 'initiate_transfer', description: 'Start the transfer to your new employer', status: 'pending' as const },
-          { step: 'submit_transfer', description: 'Final review and submit', status: 'pending' as const },
-        ];
-      } else {
-        plan = [
-          { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
-          { step: 'process_inquiry', description: 'Analyze your request', status: 'pending' as const },
-          { step: 'resolve_inquiry', description: 'Provide the right solution', status: 'pending' as const }
-        ];
-      }
-
-      startTask(intent, taskType, plan);
-      setChatInput('');
-      navigate(`/smart-flow`);
-    }, 2800);
+  const handleTraditionalScroll = () => {
+    const section = document.getElementById('self-service-directory');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const [resumeTaskId, setResumeTaskId] = useState<string | null>(null);
@@ -141,13 +77,6 @@ export const Home: React.FC = () => {
       }
     } else {
       setResumeError(true);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAgenticStart(e);
     }
   };
 
@@ -230,105 +159,72 @@ export const Home: React.FC = () => {
           </section>
         )}
 
-        {/* Smart AI Assistant Container */}
-        <section className='bg-gradient-to-br from-blue-50/90 via-indigo-50/60 to-white/90 backdrop-blur-md rounded-3xl p-5 border border-blue-100 shadow-sm space-y-4'>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <div className='w-8 h-8 bg-epfo-blue text-white rounded-xl flex items-center justify-center shadow-sm'>
-                <Bot className='w-5 h-5' />
-              </div>
-              <div>
-                <h2 className='text-base font-bold text-slate-900 leading-tight'>
-                  {t('smart_agent')}
-                </h2>
-                <p className='text-xs text-slate-500'>
-                  Instant guidance & automated form filling
-                </p>
-              </div>
-            </div>
-            <span className='bg-epfo-orange text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-2xs'>
-              {t('recommended')}
-            </span>
+        {/* Prominent Center Choice Section: NEED MORE HELP ? */}
+        <section className='space-y-3 pt-1'>
+          <div className='px-1'>
+            <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>
+              Need More Help?
+            </h2>
+            <p className='text-xs text-slate-500 mt-0.5'>
+              Choose between guided AI assistance or traditional self-service
+            </p>
           </div>
 
-          {isAnalyzing ? (
-            <div className='bg-white rounded-2xl border border-blue-100 p-5 flex flex-col items-center justify-center space-y-3 shadow-inner min-h-[140px]'>
-              <div className='w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center'>
-                <Bot className='w-5 h-5 text-epfo-blue animate-pulse' />
+          <div className='grid grid-cols-2 gap-3.5'>
+            
+            {/* SMART FLOW */}
+            <button 
+              onClick={handleSmartFlowLaunch}
+              className='p-5 bg-gradient-to-br from-blue-50/95 via-white to-blue-50/50 border-2 border-epfo-blue/50 hover:border-epfo-blue rounded-3xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all hover:scale-[1.02]'
+            >
+              <div>
+                <div className='flex items-center justify-between mb-3'>
+                  <div className='w-11 h-11 bg-epfo-blue text-white rounded-2xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform'>
+                    <Bot className='w-6 h-6' />
+                  </div>
+                  <span className='bg-epfo-orange text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase'>
+                    {t('recommended')}
+                  </span>
+                </div>
+                <h3 className='font-bold text-base text-epfo-blue leading-tight'>
+                  Smart Flow
+                </h3>
+                <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
+                  AI assistant guides your claims, transfers & certificates step-by-step.
+                </p>
               </div>
-              <div className='w-full max-w-xs space-y-2 text-xs'>
-                <div className='flex items-center gap-2.5'>
-                  <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
-                  <span className={`font-medium ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Understanding request</span>
-                </div>
-                <div className='flex items-center gap-2.5'>
-                  <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
-                  <span className={`font-medium ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Generating steps</span>
-                </div>
-                <div className='flex items-center gap-2.5'>
-                  <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
-                  <span className={`font-medium ${analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Launching workflow</span>
-                </div>
+              <div className='mt-4 text-xs font-bold text-epfo-blue flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+                Launch Smart Flow →
               </div>
-            </div>
-          ) : (
-            <form onSubmit={handleAgenticStart} className='space-y-3'>
-              <div className='relative flex items-center bg-white rounded-2xl border border-slate-200 focus-within:border-epfo-blue shadow-sm overflow-hidden transition-all'>
-                <div className='pl-3.5 text-slate-400'>
-                  <Search className='w-4 h-4' />
-                </div>
-                <input 
-                  type='text'
-                  className='w-full py-3.5 pl-2.5 pr-20 bg-transparent text-slate-900 placeholder-slate-400 outline-none text-xs font-medium'
-                  placeholder='e.g. "I want to withdraw ₹50,000 for medical emergency"'
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                />
-                <div className='absolute right-2 flex items-center gap-1.5'>
-                  <button 
-                    type="button"
-                    onClick={toggleRecording}
-                    className={`p-2 rounded-full transition-all ${isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}
-                    title='Voice input'
-                  >
-                    <Mic className='w-4 h-4' />
-                  </button>
-                  <button 
-                    type='submit' 
-                    disabled={!chatInput.trim()}
-                    className='bg-epfo-blue hover:bg-blue-700 text-white rounded-xl px-3 py-1.5 text-xs font-bold transition-colors disabled:opacity-40 flex items-center justify-center'
-                  >
-                    {t('send')}
-                  </button>
-                </div>
-              </div>
+            </button>
 
-              {/* 1-Tap Quick Action Chips */}
-              <div className='flex flex-wrap gap-2 pt-1'>
-                {[
-                  { label: "⚡ Withdraw PF", query: "I want to withdraw PF advance" },
-                  { label: "🪪 Life Certificate", query: "Submit Digital Life Certificate" },
-                  { label: "📅 Mark Exit Date", query: "I want to mark my exit date" },
-                  { label: "🔄 Merge Accounts", query: "Merge previous PF accounts" }
-                ].map((item, idx) => (
-                  <button
-                    key={idx}
-                    type='button'
-                    onClick={(e) => handleAgenticStart(e, item.query)}
-                    className='bg-white/95 border border-slate-200 hover:border-epfo-blue hover:text-epfo-blue text-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all shadow-2xs'
-                  >
-                    {item.label}
-                  </button>
-                ))}
+            {/* TRADITIONAL FLOW */}
+            <button 
+              onClick={handleTraditionalScroll}
+              className='p-5 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-3xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all hover:scale-[1.02]'
+            >
+              <div>
+                <div className='w-11 h-11 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform'>
+                  <FolderOpen className='w-6 h-6' />
+                </div>
+                <h3 className='font-bold text-base text-slate-900 leading-tight group-hover:text-slate-700'>
+                  Traditional Flow
+                </h3>
+                <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
+                  Direct access to Passbook, Forms, Grievances & manual filing.
+                </p>
               </div>
-            </form>
-          )}
+              <div className='mt-4 text-xs font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+                Browse Services ↓
+              </div>
+            </button>
+
+          </div>
         </section>
 
-        {/* Self-Service Grid (Clear, Spacious 2-Column Cards) */}
-        <section className='space-y-3 pt-1'>
-          <h2 className='text-sm font-bold text-slate-800 uppercase tracking-wider px-1'>
+        {/* Self-Service Grid */}
+        <section id='self-service-directory' className='space-y-3 pt-2'>
+          <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider px-1'>
             {t('self_service')}
           </h2>
 
@@ -480,63 +376,6 @@ export const Home: React.FC = () => {
             </div>
           </section>
         )}
-
-        {/* NEED MORE HELP ? Section */}
-        <section className='space-y-3 pt-2'>
-          <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider px-1'>
-            Need More Help?
-          </h2>
-
-          <div className='grid grid-cols-2 gap-3'>
-            {/* 1. SMART FLOW */}
-            <button 
-              onClick={() => {
-                const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
-                if (searchInput) {
-                  searchInput.focus();
-                  searchInput.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className='p-4 bg-gradient-to-br from-blue-50/90 to-white/95 backdrop-blur-md border-2 border-epfo-blue/40 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all'
-            >
-              <div>
-                <div className='w-10 h-10 bg-blue-100 text-epfo-blue rounded-xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform'>
-                  <Bot className='w-5 h-5' />
-                </div>
-                <h3 className='font-bold text-sm text-epfo-blue leading-tight'>
-                  Smart Flow
-                </h3>
-                <p className='text-xs text-slate-500 mt-1 leading-relaxed'>
-                  AI assistant guides your claims, life certificate & transfers.
-                </p>
-              </div>
-              <div className='mt-3 text-xs font-bold text-epfo-blue flex items-center gap-1'>
-                Launch Smart Flow →
-              </div>
-            </button>
-
-            {/* 2. TRADITIONAL FLOW */}
-            <button 
-              onClick={() => navigate('/grievance')}
-              className='p-4 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all'
-            >
-              <div>
-                <div className='w-10 h-10 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform'>
-                  <FolderOpen className='w-5 h-5' />
-                </div>
-                <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-slate-700'>
-                  Traditional Flow
-                </h3>
-                <p className='text-xs text-slate-500 mt-1 leading-relaxed'>
-                  EPFiGMS grievance portal, FAQs & classic self-service support.
-                </p>
-              </div>
-              <div className='mt-3 text-xs font-bold text-slate-700 flex items-center gap-1'>
-                Help & Grievance →
-              </div>
-            </button>
-          </div>
-        </section>
 
         {/* Security Alert (Step-up Auth / Hijacking prevention) */}
         {riskLevel !== 'low' && (
