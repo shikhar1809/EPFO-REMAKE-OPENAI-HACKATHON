@@ -122,22 +122,20 @@ export const Home: React.FC = () => {
       setAnalyzePhase(null);
       const lower = query.toLowerCase();
 
-      // Quick routes for specialized flows
-      if (lower.includes('life') || lower.includes('certificate') || lower.includes('pramaan')) {
-        setChatInput('');
-        navigate('/life-certificate');
-        return;
-      }
-
-      if (lower.includes('exit') || lower.includes('leaving') || lower.includes('quit')) {
-        setChatInput('');
-        navigate('/mark-exit');
-        return;
-      }
-
-      const taskType = lower.includes('withdraw') || lower.includes('advance') || lower.includes('claim') ? 'withdraw_pf' : 
-                       (lower.includes('transfer') || lower.includes('merge')) ? 'transfer_pf' : 'general_inquiry';
+      let taskType = 'general_inquiry';
       
+      if (lower.includes('life') || lower.includes('certificate') || lower.includes('pramaan')) {
+        taskType = 'life_certificate';
+      } else if (lower.includes('exit') || lower.includes('leaving') || lower.includes('quit')) {
+        taskType = 'mark_exit';
+      } else if (lower.includes('withdraw') || lower.includes('advance') || lower.includes('claim')) {
+        taskType = 'withdraw_pf';
+      } else if (lower.includes('transfer') || lower.includes('merge')) {
+        taskType = 'transfer_pf';
+      } else if (lower.includes('grievance') || lower.includes('complaint') || lower.includes('reject')) {
+        taskType = 'grievance';
+      }
+
       let plan: any[] = [];
       if (taskType === 'withdraw_pf') {
         plan = [
@@ -153,6 +151,27 @@ export const Home: React.FC = () => {
           { step: 'fetch_employment', description: 'Locate previous Member IDs & establishments', status: 'pending' as const },
           { step: 'initiate_transfer', description: 'Authorize transfer to current account', status: 'pending' as const },
           { step: 'submit_transfer', description: 'Attestation & OTP submission', status: 'pending' as const },
+        ];
+      } else if (taskType === 'life_certificate') {
+        plan = [
+          { step: 'verify_identity', description: 'Verify pensioner identity', status: 'active' as const },
+          { step: 'fetch_pension_details', description: 'Retrieve PPO and bank details', status: 'pending' as const },
+          { step: 'capture_face', description: 'Perform UIDAI face authentication', status: 'pending' as const },
+          { step: 'submit_certificate', description: 'Generate & submit Jeevan Pramaan', status: 'pending' as const }
+        ];
+      } else if (taskType === 'mark_exit') {
+        plan = [
+          { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
+          { step: 'fetch_employment', description: 'Retrieve employment records', status: 'pending' as const },
+          { step: 'select_exit_reason', description: 'Select establishment and reason for exit', status: 'pending' as const },
+          { step: 'submit_exit', description: 'Aadhaar OTP sign & confirm exit', status: 'pending' as const }
+        ];
+      } else if (taskType === 'grievance') {
+        plan = [
+          { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' as const },
+          { step: 'analyze_issue', description: 'Analyze rejection reason or delay', status: 'pending' as const },
+          { step: 'register_grievance', description: 'Register EPFiGMS ticket automatically', status: 'pending' as const },
+          { step: 'generate_reference', description: 'Generate tracking reference number', status: 'pending' as const }
         ];
       } else {
         plan = [
