@@ -451,9 +451,10 @@ export const SmartFlowEngine: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className='bg-blue-50 border border-blue-100 p-5 rounded-2xl text-center'>
-                <p className='font-bold text-blue-900'>Thank you! ❤️</p>
-                <p className='text-xs text-blue-700 mt-1'>Your feedback has been recorded.</p>
+              <div className='bg-blue-50 border border-blue-100 p-6 rounded-2xl flex flex-col items-center justify-center gap-2 shadow-inner'>
+                <AssistantAvatar state='thank_you' className='!w-12 !h-12 mb-2 shadow-md' />
+                <p className='font-bold text-blue-900 text-lg'>Thank you!</p>
+                <p className='text-sm text-blue-700'>Your feedback has been recorded.</p>
               </div>
             )}
           </motion.div>

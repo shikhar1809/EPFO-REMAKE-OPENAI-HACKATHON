@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../utils/cn';
-import { Settings, CheckCircle2 } from 'lucide-react';
+import { Settings, CheckCircle2, Heart } from 'lucide-react';
 
-export type AvatarState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'reading' | 'generating' | 'processing' | 'success';
+export type AvatarState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'reading' | 'generating' | 'processing' | 'success' | 'thank_you';
 
 interface AssistantAvatarProps {
   state?: AvatarState;
@@ -42,7 +42,8 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
     reading: { x: ['-20%', '20%', '-20%'], y: '0%', transition: { duration: 1.5, repeat: Infinity, ease: 'linear' } },
     generating: { x: '0%', y: '25%', transition: { duration: 0.2 } }, // Looking down at the tracks
     processing: { x: '0%', y: '0%', transition: { duration: 0.2 } },
-    success: { x: '0%', y: '-10%', transition: { duration: 0.2 } }
+    success: { x: '0%', y: '-10%', transition: { duration: 0.2 } },
+    thank_you: { x: '0%', y: '-10%', transition: { duration: 0.2 } }
   };
 
   return (
@@ -138,7 +139,7 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
         )}
 
         {/* SCENE: Success (Badge & Blush) */}
-        {state === 'success' && (
+        {(state === 'success' || state === 'thank_you') && (
           <motion.div
             key="success-prop"
             initial={{ scale: 0 }}
@@ -147,6 +148,20 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
             className="absolute -bottom-[20%] -right-[20%] z-30 bg-green-500 rounded-full p-[5%] border-2 border-[#222]"
           >
             <CheckCircle2 className="w-[100%] h-[100%] text-white" />
+          </motion.div>
+        )}
+
+
+        {/* SCENE: Thank You (Heart) */}
+        {state === 'thank_you' && (
+          <motion.div
+            key="thank-you-prop"
+            initial={{ scale: 0, y: 5 }}
+            animate={{ scale: [1, 1.2, 1], y: [0, -5, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-[50%] -right-[30%] z-30"
+          >
+            <Heart className="w-[120%] h-[120%] text-red-500 fill-red-500" />
           </motion.div>
         )}
 
@@ -161,7 +176,7 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
       >
         {/* Left Cheek Blush (Success) */}
         <AnimatePresence>
-          {state === 'success' && (
+          {(state === 'success' || state === 'thank_you') && (
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }}
               className="absolute -left-[10%] top-[80%] w-[30%] h-[50%] bg-pink-500 rounded-full blur-[1px]" 
@@ -170,20 +185,20 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
         </AnimatePresence>
 
         <motion.div 
-          animate={{ scaleY: (blink || state === 'success') ? 0.1 : 1 }}
+          animate={{ scaleY: (blink || (state === 'success' || state === 'thank_you')) ? 0.1 : 1 }}
           transition={{ duration: 0.05 }}
           className="w-[16%] h-0 pb-[25%] bg-white rounded-full relative" 
         />
         
         <motion.div 
-          animate={{ scaleY: (blink || state === 'success') ? 0.1 : 1 }}
+          animate={{ scaleY: (blink || (state === 'success' || state === 'thank_you')) ? 0.1 : 1 }}
           transition={{ duration: 0.05 }}
           className="w-[16%] h-0 pb-[25%] bg-white rounded-full relative" 
         />
 
         {/* Right Cheek Blush (Success) */}
         <AnimatePresence>
-          {state === 'success' && (
+          {(state === 'success' || state === 'thank_you') && (
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }}
               className="absolute -right-[10%] top-[80%] w-[30%] h-[50%] bg-pink-500 rounded-full blur-[1px]" 
