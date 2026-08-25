@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Bot, ShieldAlert, CheckCircle2, Lock, CreditCard, Star } from 'lucide-react';
+import { ArrowLeft, ShieldAlert, CheckCircle2, Lock, CreditCard, Star } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { ThinkingAnimation } from '../../components/ui/ThinkingAnimation';
 import { Input } from '../../components/ui/Input';
@@ -9,6 +9,7 @@ import { Input } from '../../components/ui/Input';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
 import { useSessionStore } from '../../store/useSessionStore';
 import toast from 'react-hot-toast';
+import { AssistantAvatar } from '../../components/ui/AssistantAvatar';
 
 export const SmartFlowEngine: React.FC = () => {
   const navigate = useNavigate();
@@ -162,7 +163,7 @@ export const SmartFlowEngine: React.FC = () => {
             <ArrowLeft className='w-5 h-5' />
           </button>
           <h1 className='text-base font-bold text-slate-900 ml-1.5 flex items-center gap-2'>
-            <Bot className='w-5 h-5 text-epfo-blue' />
+            <AssistantAvatar className='!w-6 !h-6 shadow-sm mr-1' />
             Agent Workflow
           </h1>
         </div>
@@ -185,7 +186,7 @@ export const SmartFlowEngine: React.FC = () => {
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
               />
-              <Bot className='w-10 h-10 text-epfo-blue animate-pulse' />
+              <AssistantAvatar state="thinking" className='!w-12 !h-12 shadow-xl ring-4 ring-blue-50 animate-pulse' />
             </div>
             <motion.div 
               key={initStage}
@@ -207,7 +208,10 @@ export const SmartFlowEngine: React.FC = () => {
                 transition={{ duration: 2, repeat: (task.agentState === 'needs_user' || task.agentState === 'sensitive_action') ? Infinity : 0 }}
                 className={`bg-white p-4 rounded-2xl border ${task.agentState === 'needs_user' ? 'border-epfo-blue bg-blue-50/30' : 'border-slate-200'} shadow-sm flex items-start gap-3 mt-4`}
               >
-                <Bot className={`w-6 h-6 shrink-0 ${task.agentState === 'needs_user' ? 'text-epfo-blue' : 'text-slate-500'}`} />
+                <AssistantAvatar 
+                  state={task.agentState === 'in_progress' ? 'thinking' : task.agentState === 'needs_user' ? 'speaking' : 'idle'}
+                  className={`!w-6 !h-6 shrink-0 ${task.agentState === 'needs_user' ? 'text-epfo-blue' : 'text-slate-500'}`} 
+                />
                 <div className="flex-1">
                   <p className='font-medium text-slate-800 flex items-center justify-between'>
                     <span className='capitalize text-epfo-blue'>{task.agentState.replace('_', ' ')}</span>

@@ -6,7 +6,7 @@ import {
   LogOut, 
   ShieldAlert, 
   Play, 
-  Bot, 
+  
   Trash2, 
   ShieldCheck, 
   ArrowRight, 
@@ -212,7 +212,7 @@ export const Home: React.FC = () => {
             }`}
             title={t('notifications')}
           >
-            <Bell className='w-3.5 h-3.5' />
+            <Bell className='!w-4 !h-4' />
             {notificationsEnabled && (
               <span className='absolute top-1 right-1 w-2 h-2 bg-emerald-500 rounded-full ring-1 ring-white'></span>
             )}
@@ -222,7 +222,7 @@ export const Home: React.FC = () => {
             className='p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors shadow-2xs' 
             title={t('logout')}
           >
-            <LogOut className='w-3.5 h-3.5' />
+            <LogOut className='!w-4 !h-4' />
           </button>
         </div>
       </div>
@@ -262,7 +262,7 @@ export const Home: React.FC = () => {
               <section className='bg-orange-50 border border-orange-200 rounded-2xl p-4 shadow-sm relative overflow-hidden'>
                 <div className='flex items-start gap-3'>
                   <div className='bg-orange-100 p-2 rounded-xl text-orange-600 shrink-0'>
-                    <AlertTriangle className='w-5 h-5' />
+                    <AlertTriangle className='!w-7 !h-7' />
                   </div>
                   <div>
                     <h3 className='font-bold text-orange-900 text-sm'>Action Required: Multiple Accounts</h3>
@@ -273,7 +273,7 @@ export const Home: React.FC = () => {
                       onClick={() => handleAgenticStart(undefined, 'I want to merge my old PF account')}
                       className='mt-3 bg-orange-600 hover:bg-orange-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5'
                     >
-                      <Bot className='w-3.5 h-3.5' /> Merge with Smart Flow
+                      <AssistantAvatar className='!w-4 !h-4' /> Merge with Smart Flow
                     </button>
                   </div>
                 </div>
@@ -298,7 +298,7 @@ export const Home: React.FC = () => {
                   <div>
                     <div className='flex items-center justify-between mb-2.5'>
                       <div className='w-9 h-9 bg-epfo-blue text-white rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform'>
-                        <Bot className='w-5 h-5' />
+                        <AssistantAvatar className='!w-7 !h-7' />
                       </div>
                       <span className='bg-epfo-orange text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase'>
                         {t('recommended')}
@@ -323,7 +323,7 @@ export const Home: React.FC = () => {
                 >
                   <div>
                     <div className='w-9 h-9 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform'>
-                      <FolderOpen className='w-5 h-5' />
+                      <FolderOpen className='!w-7 !h-7' />
                     </div>
                     <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-slate-700'>
                       Traditional Flow
@@ -367,7 +367,7 @@ export const Home: React.FC = () => {
                           className='p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors'
                           title='Delete task'
                         >
-                          <Trash2 className='w-3.5 h-3.5' />
+                          <Trash2 className='!w-4 !h-4' />
                         </button>
                       </div>
                     </div>
@@ -392,7 +392,7 @@ export const Home: React.FC = () => {
               onClick={() => setFlowChoice('none')} 
               className='text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1 font-semibold transition-colors'
             >
-              <ArrowLeft className='w-3.5 h-3.5' /> {t('back_to_choices') || 'Back to Dashboard'}
+              <ArrowLeft className='!w-4 !h-4' /> {t('back_to_choices') || 'Back to Dashboard'}
             </button>
 
             {/* Smart Agent Greeting & Prompt Section */}
@@ -401,7 +401,7 @@ export const Home: React.FC = () => {
               {isAnalyzing ? (
                 <div className='bg-slate-50 rounded-2xl border border-blue-100 p-6 flex flex-col items-center justify-center space-y-4 shadow-inner min-h-[180px]'>
                   <div className='w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center'>
-                    <Bot className='w-6 h-6 text-epfo-blue animate-pulse' />
+                    <AssistantAvatar state='thinking' className='!w-8 !h-8 text-epfo-blue animate-pulse' />
                   </div>
                   <div className='w-full max-w-xs space-y-2 text-xs'>
                     <div className='flex items-center gap-2.5'>
@@ -464,7 +464,7 @@ export const Home: React.FC = () => {
             {/* Frequently Asked Questions / Quick Intents (FAQs) */}
             <section className='space-y-2 pt-1'>
               <div className='flex items-center gap-1.5 px-1'>
-                <Sparkles className='w-3.5 h-3.5 text-epfo-blue' />
+                <Sparkles className='!w-4 !h-4 text-epfo-blue' />
                 <h3 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>
                   Common Questions & Workflows
                 </h3>
@@ -533,7 +533,7 @@ export const Home: React.FC = () => {
               onClick={() => setFlowChoice('none')} 
               className='text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1 font-semibold transition-colors'
             >
-              <ArrowLeft className='w-3.5 h-3.5' /> {t('back_to_choices') || 'Back to Dashboard'}
+              <ArrowLeft className='!w-4 !h-4' /> {t('back_to_choices') || 'Back to Dashboard'}
             </button>
 
             <div className='px-1'>
@@ -581,7 +581,7 @@ export const Home: React.FC = () => {
         {riskLevel !== 'low' && (
           <section>
             <div className='bg-red-50 border border-red-200 p-4 rounded-2xl flex gap-3 items-start'>
-              <ShieldAlert className='w-5 h-5 text-red-600 shrink-0 mt-0.5' />
+              <ShieldAlert className='!w-7 !h-7 text-red-600 shrink-0 mt-0.5' />
               <div>
                 <h3 className='font-medium text-red-900'>Security Notice</h3>
                 <p className='text-sm text-red-700 mt-1'>Suspicious activity detected. You may be required to re-authenticate for sensitive actions.</p>
@@ -596,7 +596,7 @@ export const Home: React.FC = () => {
         <div className='fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4'>
           <div className='bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-6'>
             <div className='flex items-center gap-3 text-epfo-blue'>
-              <ShieldCheck className='w-6 h-6' />
+              <ShieldCheck className='!w-8 !h-8' />
               <h2 className='text-xl font-bold'>Security Check</h2>
             </div>
             <p className='text-sm text-slate-600'>To resume this session, please answer your security question.</p>
