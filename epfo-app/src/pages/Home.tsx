@@ -31,6 +31,7 @@ import { Button } from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 import { NotificationModal } from '../components/notifications/NotificationModal';
 import toast from 'react-hot-toast';
+import { AssistantAvatar } from '../components/ui/AssistantAvatar';
 
 export const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -432,21 +433,24 @@ export const Home: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                /* Chatbox Textarea with Voice & Action Button */
+                /* Chatbox Textarea with Voice & Action */
                 <form onSubmit={handleAgenticStart} className='space-y-3'>
-                  <div className='relative bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-epfo-blue focus-within:bg-white transition-all shadow-2xs overflow-hidden'>
-                    <textarea 
-                      className='w-full p-3.5 pb-12 bg-transparent text-slate-900 placeholder-slate-400 outline-none text-xs font-medium resize-none min-h-[90px]'
-                      placeholder='Type what you need in simple words (e.g. "I want to withdraw ₹50,000 for medical emergency", "Submit life certificate", "Merge my old PF accounts")...'
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleAgenticStart(e);
-                        }
-                      }}
-                    />
+                  <div className='relative bg-slate-50 rounded-3xl border border-slate-200 focus-within:border-epfo-blue focus-within:bg-white transition-all shadow-md focus-within:shadow-lg overflow-hidden'>
+                    <div className='flex items-start p-3'>
+                      <AssistantAvatar state={isAnalyzing ? 'thinking' : 'listening'} className='mt-1 mr-2 shadow-sm' />
+                      <textarea 
+                        className='w-full p-2 pb-8 bg-transparent text-slate-900 placeholder-slate-400 outline-none text-xs font-medium resize-none min-h-[90px]'
+                        placeholder='Type what you need in simple words (e.g. "I want to withdraw ₹50,000 for medical emergency", "Reset password", "Where is my claim?")...'
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleAgenticStart(e);
+                          }
+                        }}
+                      />
+                    </div>
                     
                     <div className='absolute bottom-2.5 right-2.5 flex items-center gap-1.5'>
                       <button 

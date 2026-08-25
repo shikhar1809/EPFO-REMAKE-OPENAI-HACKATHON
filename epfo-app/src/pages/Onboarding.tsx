@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Globe, ArrowLeft, User } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useSessionStore } from '../store/useSessionStore';
+import toast from 'react-hot-toast';
 
 type Step = 'language' | 'user_type' | 'returning_login' | 'identity' | 'verify_uan' | 'mobile_login' | 'profile_setup' | 'prerequisites' | 'vault_intro';
 
@@ -123,6 +124,8 @@ export const Onboarding: React.FC = () => {
   const [phoneInput, setPhoneInput] = useState('9876543210');
   const [otpInput, setOtpInput] = useState('1234');
   const [showOtp, setShowOtp] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
   const [profileName, setProfileName] = useState('Rameshwar Sharma');
   const [mpinInput, setMpinInput] = useState('1234');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -168,9 +171,21 @@ export const Onboarding: React.FC = () => {
         } else {
           setStep('profile_setup');
         }
+      } else {
+        setFailedAttempts(prev => {
+          const next = prev + 1;
+          if (next >= 3) setIsLocked(true);
+          return next;
+        });
+        toast.error('Invalid OTP');
       }
     } else {
-      alert('Invalid OTP. Please use 1234.');
+      setFailedAttempts(prev => {
+        const next = prev + 1;
+        if (next >= 3) setIsLocked(true);
+        return next;
+      });
+      toast.error('Invalid OTP. Attempt ' + (failedAttempts + 1) + ' of 3');
     }
   };
 
@@ -261,61 +276,90 @@ export const Onboarding: React.FC = () => {
 
           {step === 'returning_login' && (
             <motion.div key="returning_login" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='space-y-6 my-auto'>
-              <div className='bg-blue-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4'>
-                <ShieldCheck className='w-8 h-8 text-epfo-blue' />
-              </div>
-              <div>
-                <h1 className='text-3xl font-semibold mb-2'>Welcome Back</h1>
-                <p className='text-slate-500'>Enter your 12-digit UAN to continue.</p>
-              </div>
               
-              <div className='space-y-4 mt-8'>
-                <input 
-                  type="text"
-                  maxLength={12}
-                  className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all'
-                  placeholder="Enter 12-digit UAN"
-                  value={uanInput}
-                  onChange={(e) => setUanInput(e.target.value.replace(/\D/g, ''))}
-                  disabled={showOtp}
-                />
-
-                {showOtp && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+              {!isLocked ? (
+                <>
+                  <div className='bg-blue-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4'>
+                    <ShieldCheck className='w-8 h-8 text-epfo-blue' />
+                  </div>
+                  <div>
+                    <h1 className='text-3xl font-semibold mb-2'>Welcome Back</h1>
+                    <p className='text-slate-500'>Enter your 12-digit UAN to continue.</p>
+                  </div>
+                  
+                  <div className='space-y-4 mt-8'>
                     <input 
                       type="text"
-                      className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all mt-4'
-                      placeholder="Enter OTP (Use 1234)"
-                      value={otpInput}
-                      onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                      maxLength={12}
+                      className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all'
+                      placeholder="Enter 12-digit UAN"
+                      value={uanInput}
+                      onChange={(e) => setUanInput(e.target.value.replace(/\D/g, ''))}
+                      disabled={showOtp}
                     />
-                  </motion.div>
-                )}
-                
-                <Button 
-                  className='w-full py-4 text-lg' 
-                  onClick={handleUanVerification}
-                  disabled={(uanInput.length !== 12) || (showOtp && otpInput.length < 4) || isVerifying}
-                  isLoading={isVerifying}
-                >
-                  {showOtp ? 'Verify OTP & Login' : 'Get OTP'}
-                </Button>
 
-                <div className='pt-6 relative'>
-                  <div className='absolute inset-0 flex items-center'><div className='w-full border-t border-slate-200'></div></div>
-                  <div className='relative flex justify-center text-sm'><span className='px-2 bg-slate-50 text-slate-500'>OR</span></div>
-                </div>
-                
-                <Button variant='outline' className='w-full py-4' onClick={() => setStep('mobile_login')}>
-                  Login via Mobile OTP
-                </Button>
-                <div className='pt-2 border-t border-slate-100'>
-                  <Button variant='outline' className='w-full py-4' onClick={() => navigate('/uan-activation')}>
-                    Activate UAN
-                  </Button>
-                </div>
-                <p className='text-xs text-center text-slate-500'>Use mobile login to access Grievance, Tracking, or to find your UAN.</p>
-              </div>
+                    {showOtp && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                        <input 
+                          type="text"
+                          className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all mt-4'
+                          placeholder="Enter OTP (Use 1234)"
+                          value={otpInput}
+                          onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                        />
+                      </motion.div>
+                    )}
+                    
+                    <Button 
+                      className='w-full py-4 text-lg' 
+                      onClick={handleUanVerification}
+                      disabled={(uanInput.length !== 12) || (showOtp && otpInput.length < 4) || isVerifying}
+                      isLoading={isVerifying}
+                    >
+                      {showOtp ? 'Verify OTP & Login' : 'Get OTP'}
+                    </Button>
+
+                    <div className='pt-6 relative'>
+                      <div className='absolute inset-0 flex items-center'><div className='w-full border-t border-slate-200'></div></div>
+                      <div className='relative flex justify-center text-sm'><span className='px-2 bg-slate-50 text-slate-500'>OR</span></div>
+                    </div>
+                    
+                    <Button variant='outline' className='w-full py-4' onClick={() => setStep('mobile_login')}>
+                      Login via Mobile OTP
+                    </Button>
+                    <div className='pt-2 border-t border-slate-100'>
+                      <Button variant='outline' className='w-full py-4' onClick={() => navigate('/uan-activation')}>
+                        Activate UAN
+                      </Button>
+                    </div>
+                    <p className='text-xs text-center text-slate-500'>Use mobile login to access Grievance, Tracking, or to find your UAN.</p>
+                  </div>
+                </>
+              ) : (
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className='space-y-6 text-center pt-8'>
+                  <div className='bg-red-50 p-6 rounded-full w-24 h-24 flex items-center justify-center mb-4 mx-auto'>
+                    <Lock className='w-12 h-12 text-red-500' />
+                  </div>
+                  <div>
+                    <h1 className='text-2xl font-bold mb-2 text-slate-900'>Account Locked</h1>
+                    <p className='text-slate-500 px-4'>
+                      For your security, OTP login has been disabled after 3 failed attempts.
+                    </p>
+                  </div>
+                  
+                  <div className='bg-orange-50 border border-orange-200 p-5 rounded-2xl text-left mt-6'>
+                    <h3 className='font-semibold text-orange-900 mb-2'>Unlock Options</h3>
+                    <p className='text-sm text-orange-800 mb-4'>
+                      Unlike the old portal, you don't need a working OTP loop to fix this. Verify your identity securely via:
+                    </p>
+                    <div className='space-y-3'>
+                      <Button className='w-full bg-orange-600 hover:bg-orange-700' onClick={() => {setIsLocked(false); setFailedAttempts(0); toast.success('Unlocked via DigiLocker FaceRD');}}>
+                        Unlock via DigiLocker / FaceRD
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </motion.div>
           )}
 

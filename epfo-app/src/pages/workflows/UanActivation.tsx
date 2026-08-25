@@ -65,7 +65,19 @@ export const UanActivation: React.FC = () => {
               <Input placeholder='Enter OTP' defaultValue='123456' maxLength={6} className='text-center text-xl tracking-widest' />
             </div>
 
-            <Button className='w-full mt-8' onClick={handleNext} isLoading={loading}>Activate Account</Button>
+            <div className='mt-4 flex flex-col gap-3'>
+              <button className='text-sm text-epfo-blue font-medium hover:underline text-left'>
+                Didn't receive OTP? Resend via WhatsApp
+              </button>
+              <div className='bg-orange-50 border border-orange-200 p-3 rounded-lg mt-2'>
+                <p className='text-xs text-orange-800 mb-2 font-medium'>SMS Gateway Down? Don't get locked out.</p>
+                <button className='text-sm bg-white text-orange-700 border border-orange-200 px-3 py-1.5 rounded w-full hover:bg-orange-100 transition-colors'>
+                  Authenticate via Aadhaar FaceRD app
+                </button>
+              </div>
+            </div>
+
+            <Button className='w-full mt-8 py-4 text-lg' onClick={handleNext} isLoading={loading}>Activate Account</Button>
           </motion.div>
         )}
       </div>
