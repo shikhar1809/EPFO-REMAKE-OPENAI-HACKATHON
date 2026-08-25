@@ -3,7 +3,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../utils/cn';
 import { Settings, CheckCircle2, Heart } from 'lucide-react';
 
-export type AvatarState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'reading' | 'generating' | 'processing' | 'success' | 'thank_you';
+export type AvatarState = 
+  | 'idle' 
+  | 'listening' 
+  | 'thinking' 
+  | 'speaking' 
+  | 'reading' 
+  | 'generating' 
+  | 'processing' 
+  | 'success' 
+  | 'thank_you'
+  | 'checking'       // eligibility check — magnifying glass
+  | 'fetching'       // fetching KYC docs — folder with flying paper
+  | 'reviewing'      // review claim — pen writing on clipboard
+  | 'authenticating' // aadhaar OTP — shield + phone signal
+  ;
 
 interface AssistantAvatarProps {
   state?: AvatarState;
@@ -34,16 +48,23 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
     };
   }, []);
 
+  const successStates = ['success', 'thank_you'];
+
   const eyeVariants: any = {
     idle: { x: '0%', y: '0%', transition: { duration: 0.2 } },
     listening: { x: '0%', y: '20%', transition: { duration: 0.2 } },
     thinking: { x: '20%', y: '-20%', transition: { duration: 0.2 } },
     speaking: { x: '0%', y: '0%', transition: { duration: 0.2 } },
     reading: { x: ['-20%', '20%', '-20%'], y: '0%', transition: { duration: 1.5, repeat: Infinity, ease: 'linear' } },
-    generating: { x: '0%', y: '25%', transition: { duration: 0.2 } }, // Looking down at the tracks
+    generating: { x: '0%', y: '25%', transition: { duration: 0.2 } },
     processing: { x: '0%', y: '0%', transition: { duration: 0.2 } },
     success: { x: '0%', y: '-10%', transition: { duration: 0.2 } },
-    thank_you: { x: '0%', y: '-10%', transition: { duration: 0.2 } }
+    thank_you: { x: '0%', y: '-10%', transition: { duration: 0.2 } },
+    // Reactive eye positions for context states
+    checking: { x: ['-15%', '15%', '-15%'], y: '-15%', transition: { duration: 0.8, repeat: Infinity, ease: 'easeInOut' } }, // scanning left-right looking through magnifier
+    fetching: { x: '0%', y: '-20%', transition: { duration: 0.2 } },  // looking up at floating doc
+    reviewing: { x: ['-5%', '5%', '-5%'], y: '10%', transition: { duration: 1, repeat: Infinity, ease: 'linear' } }, // eyes scanning written text
+    authenticating: { x: '0%', y: '0%', transition: { duration: 0.2 } },
   };
 
   return (
@@ -89,7 +110,7 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
             >
               {/* Moving Ties (Wooden Planks) */}
               <motion.div
-                animate={{ y: [0, 12] }} // moves down one "tie" length to loop seamlessly
+                animate={{ y: [0, 12] }}
                 transition={{ duration: 0.3, repeat: Infinity, ease: 'linear' }}
                 className="absolute top-0 w-[140%] flex flex-col gap-[8px]"
               >
@@ -139,7 +160,7 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
         )}
 
         {/* SCENE: Success (Badge & Blush) */}
-        {(state === 'success' || state === 'thank_you') && (
+        {successStates.includes(state) && (
           <motion.div
             key="success-prop"
             initial={{ scale: 0 }}
@@ -151,8 +172,7 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
           </motion.div>
         )}
 
-
-        {/* SCENE: Thank You (Heart) */}
+        {/* SCENE: Thank You (Heart floating above) */}
         {state === 'thank_you' && (
           <motion.div
             key="thank-you-prop"
@@ -165,6 +185,127 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
           </motion.div>
         )}
 
+        {/* SCENE: Checking eligibility (Magnifying glass scanning) */}
+        {state === 'checking' && (
+          <motion.div
+            key="checking-prop"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            className="absolute -top-[50%] -left-[15%] z-30"
+          >
+            {/* Magnifying glass */}
+            <motion.div
+              animate={{ x: [0, 8, 0], rotate: [0, 10, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+              className="relative w-[120%] h-[120%] flex items-center justify-center"
+            >
+              {/* Circle of the glass */}
+              <div className="w-[70%] h-[70%] rounded-full border-[2px] border-yellow-400 bg-yellow-400/20" />
+              {/* Handle */}
+              <div className="absolute bottom-[0%] right-[0%] w-[8%] h-[45%] bg-yellow-400 rounded-full" style={{ transform: 'rotate(45deg)', transformOrigin: 'top center' }} />
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* SCENE: Fetching document from KYC (Folder with flying paper) */}
+        {state === 'fetching' && (
+          <motion.div
+            key="fetching-prop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute -bottom-[15%] z-30 w-[90%] flex justify-center"
+          >
+            {/* Folder body */}
+            <div className="relative w-[80%] h-[45%] bg-amber-400 rounded-b-sm rounded-tr-sm">
+              <div className="absolute -top-[30%] left-0 w-[45%] h-[35%] bg-amber-400 rounded-t-sm" />
+              {/* Flying document out of folder */}
+              <motion.div
+                animate={{ y: [0, -12, -18], opacity: [1, 1, 0], rotate: [0, -8, -15] }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'easeOut' }}
+                className="absolute -top-[80%] left-[25%] w-[45%] h-[65%] bg-white rounded-[1px] border border-slate-300 flex flex-col gap-[12%] p-[10%]"
+              >
+                <div className="w-full h-[12%] bg-slate-300 rounded-full" />
+                <div className="w-[70%] h-[12%] bg-slate-300 rounded-full" />
+                <div className="w-[90%] h-[12%] bg-slate-300 rounded-full" />
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* SCENE: Reviewing claim (Pen writing on clipboard) */}
+        {state === 'reviewing' && (
+          <motion.div
+            key="reviewing-prop"
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 10, opacity: 0 }}
+            className="absolute -bottom-[10%] z-30 w-[110%] flex justify-center"
+          >
+            {/* Clipboard */}
+            <div className="relative w-[85%] h-[50%] bg-slate-100 rounded-[2px] border border-slate-300 flex flex-col gap-[10%] p-[8%]">
+              {/* Clip at top */}
+              <div className="absolute -top-[15%] left-[35%] w-[30%] h-[20%] bg-slate-500 rounded-sm" />
+              {/* Lines being written */}
+              <motion.div
+                animate={{ width: ['10%', '90%', '10%'] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                className="h-[12%] bg-blue-400 rounded-full"
+              />
+              <div className="w-[80%] h-[12%] bg-slate-300 rounded-full" />
+              <div className="w-[60%] h-[12%] bg-slate-300 rounded-full" />
+              {/* Pen writing */}
+              <motion.div
+                animate={{ x: ['5%', '75%', '5%'], y: [0, 0, 12] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                className="absolute top-[20%] w-[8%] h-[40%] bg-blue-600 rounded-full"
+                style={{ rotate: '25deg' }}
+              />
+            </div>
+          </motion.div>
+        )}
+
+        {/* SCENE: Authenticating Aadhaar OTP (Phone with signal waves) */}
+        {state === 'authenticating' && (
+          <motion.div
+            key="authenticating-prop"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            className="absolute -top-[55%] right-[-15%] z-30 flex items-center gap-[5%]"
+          >
+            {/* Signal waves */}
+            <div className="flex items-center gap-[3px]">
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  animate={{ scaleY: [0.3, 1, 0.3], opacity: [0.4, 1, 0.4] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
+                  className="w-[3px] bg-blue-400 rounded-full"
+                  style={{ height: `${(i + 1) * 4}px` }}
+                />
+              ))}
+            </div>
+            {/* Phone body */}
+            <div className="relative w-[14px] h-[22px] bg-slate-700 rounded-[2px] border border-slate-500 flex flex-col items-center justify-center gap-[2px]">
+              {/* Screen showing OTP digits */}
+              <div className="w-[80%] h-[50%] bg-blue-900 rounded-[1px] flex items-center justify-center gap-[2px]">
+                {['*','*','*','*'].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ opacity: [0, 1] }}
+                    transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 1, delay: i * 0.25 }}
+                    className="w-[15%] h-[15%] bg-green-400 rounded-full"
+                  />
+                ))}
+              </div>
+              {/* Home button */}
+              <div className="w-[25%] h-[8%] bg-slate-500 rounded-full" />
+            </div>
+          </motion.div>
+        )}
+
       </AnimatePresence>
 
       {/* THE EYES (Always present) */}
@@ -174,9 +315,9 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
         animate={state}
         className="flex gap-[12%] z-10 w-full justify-center relative"
       >
-        {/* Left Cheek Blush (Success) */}
+        {/* Left Cheek Blush (Success / Thank You) */}
         <AnimatePresence>
-          {(state === 'success' || state === 'thank_you') && (
+          {successStates.includes(state) && (
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }}
               className="absolute -left-[10%] top-[80%] w-[30%] h-[50%] bg-pink-500 rounded-full blur-[1px]" 
@@ -185,20 +326,20 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
         </AnimatePresence>
 
         <motion.div 
-          animate={{ scaleY: (blink || (state === 'success' || state === 'thank_you')) ? 0.1 : 1 }}
+          animate={{ scaleY: (blink || successStates.includes(state)) ? 0.1 : 1 }}
           transition={{ duration: 0.05 }}
           className="w-[16%] h-0 pb-[25%] bg-white rounded-full relative" 
         />
         
         <motion.div 
-          animate={{ scaleY: (blink || (state === 'success' || state === 'thank_you')) ? 0.1 : 1 }}
+          animate={{ scaleY: (blink || successStates.includes(state)) ? 0.1 : 1 }}
           transition={{ duration: 0.05 }}
           className="w-[16%] h-0 pb-[25%] bg-white rounded-full relative" 
         />
 
-        {/* Right Cheek Blush (Success) */}
+        {/* Right Cheek Blush (Success / Thank You) */}
         <AnimatePresence>
-          {(state === 'success' || state === 'thank_you') && (
+          {successStates.includes(state) && (
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }}
               className="absolute -right-[10%] top-[80%] w-[30%] h-[50%] bg-pink-500 rounded-full blur-[1px]" 

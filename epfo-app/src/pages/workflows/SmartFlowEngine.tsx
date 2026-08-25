@@ -205,6 +205,27 @@ export const SmartFlowEngine: React.FC = () => {
     }
   };
 
+  // Maps active step + workflow state → specific avatar animation
+  const getAvatarState = (): any => {
+    if (!hasStartedFlow) return 'success';
+    const step = activeStep?.step;
+    if (task.agentState === 'sensitive_action') return 'authenticating';
+    if (task.agentState === 'needs_user') {
+      if (step === 'check_eligibility') return 'checking';
+      if (step === 'review_claim') return 'reviewing';
+      return 'speaking';
+    }
+    if (task.agentState === 'in_progress') {
+      if (step === 'check_eligibility' || step === 'verify_uan') return 'checking';
+      if (step === 'fetch_documents' || step === 'kyc_check' || step === 'gather_documents') return 'fetching';
+      if (step === 'review_claim' || step === 'prepare_claim') return 'reviewing';
+      if (step === 'submit_claim' || step === 'submit_transfer') return 'processing';
+      return 'processing';
+    }
+    if (task.agentState === 'planned') return 'idle';
+    return 'idle';
+  };
+
   return (
     <div className='flex-1 flex flex-col bg-transparent overflow-hidden relative'>
       
@@ -321,8 +342,8 @@ export const SmartFlowEngine: React.FC = () => {
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <AssistantAvatar 
-                      state={task.agentState === 'in_progress' ? 'processing' : task.agentState === 'needs_user' || task.agentState === 'sensitive_action' ? 'speaking' : 'idle'}
-                      className={`!w-8 !h-8 shrink-0 ${task.agentState === 'needs_user' || task.agentState === 'sensitive_action' ? 'text-epfo-blue' : 'text-slate-600'}`} 
+                      state={getAvatarState()}
+                      className={`!w-8 !h-8 shrink-0`}
                     />
                     <div className="flex-1">
                       <h3 className='font-bold text-slate-900 text-lg flex items-center justify-between'>
