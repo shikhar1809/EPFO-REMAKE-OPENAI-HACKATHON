@@ -445,12 +445,12 @@ export const SmartFlowEngine: React.FC = () => {
 
       {(!isInitializing && !isDone && !hasStartedFlow && task.agentState === 'planned') && (
         <div className='absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50'>
-          <Button className='w-full py-4 text-lg' onClick={handleStartFlow}>Start Flow</Button>
+          <Button className='w-full py-4 text-lg' onClick={handleStartFlow}>START FLOW</Button>
         </div>
       )}
       {(!isInitializing && !isDone && hasStartedFlow && task.agentState === 'planned') && (
         <div className='absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50'>
-          <Button className='w-full py-4 text-lg' onClick={handleAgentAction}>Let Agent Execute Step</Button>
+          <Button className='w-full py-4 text-lg' onClick={handleAgentAction}>START FLOW</Button>
         </div>
       )}
       {isDone && (
