@@ -271,9 +271,9 @@ export const Home: React.FC = () => {
                     </p>
                     <button 
                       onClick={() => handleAgenticStart(undefined, 'I want to merge my old PF account')}
-                      className='mt-3 bg-orange-600 hover:bg-orange-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5'
+                      className='mt-3 bg-orange-600 hover:bg-orange-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors'
                     >
-                      <AssistantAvatar className='!w-4 !h-4' /> Merge with Smart Flow
+                      Merge with Smart Flow
                     </button>
                   </div>
                 </div>
