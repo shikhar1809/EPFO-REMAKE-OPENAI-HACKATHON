@@ -185,8 +185,11 @@ export const SmartFlowEngine: React.FC = () => {
                 className='absolute inset-0 border-4 border-epfo-blue border-t-transparent rounded-full'
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                />
+              <AssistantAvatar 
+                state={initStage < 2 ? 'reading' : initStage === 2 ? 'generating' : initStage === 3 ? 'success' : 'processing'} 
+                className='!w-12 !h-12 shadow-xl ring-4 ring-blue-50' 
               />
-              <AssistantAvatar state="thinking" className='!w-12 !h-12 shadow-xl ring-4 ring-blue-50 animate-pulse' />
             </div>
             <motion.div 
               key={initStage}

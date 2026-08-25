@@ -400,9 +400,12 @@ export const Home: React.FC = () => {
               {/* Analyzing / Plan Generation State */}
               {isAnalyzing ? (
                 <div className='bg-slate-50 rounded-2xl border border-blue-100 p-6 flex flex-col items-center justify-center space-y-4 shadow-inner min-h-[180px]'>
-                  <div className='w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center'>
-                    <AssistantAvatar state='thinking' className='!w-8 !h-8 text-epfo-blue animate-pulse' />
-                  </div>
+                    <div className='w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center'>
+                      <AssistantAvatar 
+                        state={analyzePhase === 'fetching' ? 'reading' : analyzePhase === 'generating' ? 'generating' : 'processing'} 
+                        className='!w-8 !h-8 text-epfo-blue shadow-md' 
+                      />
+                    </div>
                   <div className='w-full max-w-xs space-y-2 text-xs'>
                     <div className='flex items-center gap-2.5'>
                       <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />

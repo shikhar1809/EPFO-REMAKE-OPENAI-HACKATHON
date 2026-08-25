@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 
-export type AvatarState = 'idle' | 'listening' | 'thinking' | 'speaking';
+export type AvatarState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'reading' | 'generating' | 'processing' | 'success';
 
 interface AssistantAvatarProps {
   state?: AvatarState;
@@ -52,6 +52,26 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
       x: 0,
       y: [0, -1, 0],
       transition: { duration: 0.4, repeat: Infinity }
+    },
+    reading: {
+      x: [-2, 2, -2, 2],
+      y: 0,
+      transition: { duration: 1.5, repeat: Infinity, ease: "linear" as const }
+    },
+    generating: {
+      rotate: [0, 180, 360],
+      scale: [1, 1.2, 1],
+      transition: { duration: 1, repeat: Infinity, ease: "linear" as const }
+    },
+    processing: {
+      x: [-1, 1, -1],
+      y: [-1, 1, -1],
+      transition: { duration: 0.3, repeat: Infinity }
+    },
+    success: {
+      scaleY: [1, 0.2, 1, 0.2, 1],
+      y: [0, -2, 0],
+      transition: { duration: 0.8 }
     }
   };
 
