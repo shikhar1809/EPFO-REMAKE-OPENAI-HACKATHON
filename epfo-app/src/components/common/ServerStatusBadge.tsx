@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useServerStatusStore, type ServerHealthState } from '../../store/useServerStatusStore';
 
 export const ServerStatusBadge: React.FC = () => {
-  const navigate = useNavigate();
   const { status, setStatus } = useServerStatusStore();
 
   // Subtle Demo Load Fluctuation (Randomly toggles between Green and Yellow only, never Red)
