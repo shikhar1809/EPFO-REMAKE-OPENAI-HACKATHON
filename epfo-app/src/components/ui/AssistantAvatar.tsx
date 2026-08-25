@@ -208,27 +208,45 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
           </motion.div>
         )}
 
-        {/* SCENE: Fetching document from KYC (Folder with flying paper) */}
+        {/* SCENE: Fetching document from KYC (Vault opening with flying paper) */}
         {state === 'fetching' && (
           <motion.div
             key="fetching-prop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute -bottom-[15%] z-30 w-[90%] flex justify-center"
+            className="absolute -bottom-[20%] z-30 w-[100%] flex justify-center perspective-[200px]"
           >
-            {/* Folder body */}
-            <div className="relative w-[80%] h-[45%] bg-amber-400 rounded-b-sm rounded-tr-sm">
-              <div className="absolute -top-[30%] left-0 w-[45%] h-[35%] bg-amber-400 rounded-t-sm" />
-              {/* Flying document out of folder */}
+            {/* Vault Body */}
+            <div className="relative w-[75%] aspect-[1.1] bg-slate-300 rounded-[2px] border border-slate-500 flex items-center justify-center">
+              
+              {/* Inside of Vault */}
+              <div className="absolute inset-[10%] bg-slate-800 rounded-[1px] shadow-inner" />
+
+              {/* Flying document out of vault */}
               <motion.div
-                animate={{ y: [0, -12, -18], opacity: [1, 1, 0], rotate: [0, -8, -15] }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'easeOut' }}
-                className="absolute -top-[80%] left-[25%] w-[45%] h-[65%] bg-white rounded-[1px] border border-slate-300 flex flex-col gap-[12%] p-[10%]"
+                animate={{ y: [0, -12, -22], opacity: [0, 1, 0], scale: [0.7, 1, 1.1], rotate: [0, -8, -15] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
+                className="absolute z-10 w-[50%] h-[70%] bg-white rounded-[1px] border border-slate-300 flex flex-col gap-[12%] p-[10%] shadow-sm"
               >
-                <div className="w-full h-[12%] bg-slate-300 rounded-full" />
+                <div className="w-full h-[12%] bg-amber-500 rounded-full" />
                 <div className="w-[70%] h-[12%] bg-slate-300 rounded-full" />
                 <div className="w-[90%] h-[12%] bg-slate-300 rounded-full" />
+              </motion.div>
+
+              {/* Vault Door (Opens on Y-axis) */}
+              <motion.div
+                animate={{ rotateY: [0, -110, -110, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ transformOrigin: 'left center' }}
+                className="absolute inset-0 z-20 bg-slate-200 border border-slate-400 rounded-[2px] flex items-center justify-center shadow-xs"
+              >
+                {/* Vault Door Dial */}
+                <div className="w-[45%] h-[45%] rounded-full bg-slate-300 border border-slate-500 flex items-center justify-center shadow-sm">
+                  <div className="w-[30%] h-[30%] rounded-full bg-slate-800" />
+                </div>
+                {/* Door Handle */}
+                <div className="absolute right-[12%] top-[30%] w-[10%] h-[40%] bg-slate-400 border border-slate-500 rounded-full" />
               </motion.div>
             </div>
           </motion.div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, ShieldCheck, FileText, Lock, Plus, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ShieldCheck, FileText, Vault, Plus, XCircle } from 'lucide-react';
 
 import { useVaultStore } from '../../store/useVaultStore';
 
@@ -35,7 +35,7 @@ export const DocumentVault: React.FC = () => {
             <ArrowLeft className='w-5 h-5' />
           </button>
           <h1 className='text-lg font-semibold ml-2 flex items-center gap-2'>
-            <Lock className='w-5 h-5 text-amber-600' />
+            <Vault className='w-5 h-5 text-amber-600' />
             Document Vault
           </h1>
         </div>

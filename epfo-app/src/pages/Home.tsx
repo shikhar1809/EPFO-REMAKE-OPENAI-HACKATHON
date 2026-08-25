@@ -19,7 +19,7 @@ import {
   Award,
   CalendarX2,
   HelpCircle,
-  Lock,
+  Vault,
   Sparkles,
   Send,
   AlertTriangle
@@ -575,7 +575,7 @@ export const Home: React.FC = () => {
                 { title: "Transfer & Merge", desc: "One Member One EPF auto-merge", path: "/transfer", icon: ArrowRightLeft, color: "text-indigo-600 bg-indigo-50" },
                 { title: "Life Certificate", desc: "Face-Auth Jeevan Pramaan", path: "/life-certificate", icon: Award, color: "text-teal-600 bg-teal-50" },
                 { title: "Mark Exit Date", desc: "Self-declare leaving date (>60d)", path: "/mark-exit", icon: CalendarX2, color: "text-amber-600 bg-amber-50" },
-                { title: "Document Vault", desc: "DigiLocker KYC & Bank references", path: "/documents", icon: Lock, color: "text-purple-600 bg-purple-50" },
+                { title: "Document Vault", desc: "DigiLocker KYC & Bank references", path: "/documents", icon: Vault, color: "text-purple-600 bg-purple-50" },
                 { title: "EPFiGMS Grievance", desc: "Register & track official complaints", path: "/grievance", icon: HelpCircle, color: "text-rose-600 bg-rose-50" }
               ].map((item, idx) => {
                 const IconComponent = item.icon;
