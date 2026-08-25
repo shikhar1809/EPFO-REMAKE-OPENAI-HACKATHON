@@ -397,20 +397,6 @@ export const Home: React.FC = () => {
 
             {/* Smart Agent Greeting & Prompt Section */}
             <section className='bg-white/95 backdrop-blur-md rounded-3xl p-5 border border-slate-200/90 shadow-sm space-y-4'>
-              <div className='flex items-center gap-3'>
-                <div className='w-11 h-11 bg-epfo-blue text-white rounded-2xl flex items-center justify-center shadow-sm shrink-0'>
-                  <Bot className='w-6 h-6' />
-                </div>
-                <div>
-                  <h2 className='text-base font-bold text-slate-900'>
-                    {t('smart_agent') || 'EPFO Smart Assistant'}
-                  </h2>
-                  <p className='text-xs text-slate-500'>
-                    How can I assist you with your provident fund today?
-                  </p>
-                </div>
-              </div>
-
               {/* Analyzing / Plan Generation State */}
               {isAnalyzing ? (
                 <div className='bg-slate-50 rounded-2xl border border-blue-100 p-6 flex flex-col items-center justify-center space-y-4 shadow-inner min-h-[180px]'>
