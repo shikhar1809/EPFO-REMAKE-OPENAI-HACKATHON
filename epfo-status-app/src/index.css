@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+.senior-mode * {
+  font-weight: 600 !important;
+}

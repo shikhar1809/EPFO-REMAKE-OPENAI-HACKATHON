@@ -1,0 +1,1 @@
+{"name": "support-epfo-remake-openai", "framework": "vite", "buildCommand": "npm run build", "outputDirectory": "dist"}
