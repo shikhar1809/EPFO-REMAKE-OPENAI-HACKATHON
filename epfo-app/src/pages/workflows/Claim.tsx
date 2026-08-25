@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, ShieldCheck, Lock, CreditCard, Home as HomeIcon, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ShieldCheck, Lock, CreditCard, Home as HomeIcon, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { useVaultStore } from '../../store/useVaultStore';
@@ -26,6 +26,9 @@ export const Claim: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [operationId, setOperationId] = useState<string | null>(null);
 
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationWarnings, setValidationWarnings] = useState<string[]>([]);
+
   // Check vault for prerequisites
   const aadhaar = getDocumentsByType('aadhaar')[0];
   const bank = getDocumentsByType('bank_account')[0];
@@ -41,7 +44,16 @@ export const Claim: React.FC = () => {
 
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStep(3);
+    setIsValidating(true);
+    setValidationWarnings([]);
+    
+    // Simulate smart pre-validation to avoid claim rejections (Problem #3)
+    setTimeout(() => {
+      // Intentionally flag a minor warning for demo purposes
+      setValidationWarnings(['Name mismatch detected between Aadhaar and Bank (Minor). We recommend uploading a cancelled cheque if not done already.']);
+      setIsValidating(false);
+      setStep(3);
+    }, 2500);
   };
 
   const handleSubmit = async () => {
@@ -170,7 +182,13 @@ export const Claim: React.FC = () => {
                 <p className='text-sm text-green-800'>Bank Passbook/Cheque is already verified in your Document Vault.</p>
               </div>
 
-              <Button type='submit' className='w-full mt-4 py-4 text-lg'>Proceed to Review</Button>
+              <Button type='submit' className='w-full mt-4 py-4 text-lg' disabled={isValidating}>
+                {isValidating ? (
+                  <span className='flex items-center justify-center gap-2'>
+                    <Loader2 className='w-5 h-5 animate-spin' /> Running Pre-Submission Checks...
+                  </span>
+                ) : 'Proceed to Review'}
+              </Button>
             </form>
           </motion.div>
         )}
@@ -178,6 +196,22 @@ export const Claim: React.FC = () => {
         {step === 3 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className='space-y-6'>
             <h2 className='text-xl font-semibold'>Review & Authenticate</h2>
+            
+            {validationWarnings.length > 0 && (
+              <div className='bg-red-50 p-4 rounded-xl border border-red-200 flex flex-col gap-2'>
+                <div className='flex gap-2 items-center text-red-700 font-semibold'>
+                  <AlertTriangle className='w-5 h-5 shrink-0' />
+                  Pre-Submission Warning
+                </div>
+                {validationWarnings.map((w, idx) => (
+                  <p key={idx} className='text-sm text-red-800'>{w}</p>
+                ))}
+                <p className='text-xs text-red-600 font-medium mt-1'>
+                  Fixing this before submission reduces your chances of claim rejection from 34% to &lt;2%.
+                </p>
+              </div>
+            )}
+
             <div className='bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4'>
               <div className='flex justify-between border-b border-slate-100 pb-3'>
                 <span className='text-slate-500'>Claim Type</span>

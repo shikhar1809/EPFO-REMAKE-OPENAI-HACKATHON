@@ -10,6 +10,8 @@ export const Grievance: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'register' | 'track'>('register');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [statusResult, setStatusResult] = useState<string | null>(null);
+  const [isResolvedByEPFO, setIsResolvedByEPFO] = useState(false);
+  const [userClosedTicket, setUserClosedTicket] = useState<boolean | null>(null);
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +20,10 @@ export const Grievance: React.FC = () => {
 
   const handleTrack = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusResult('Your grievance (TKT-9921) is currently Under Review by the regional office. Expected resolution in 3 days.');
+    // Simulate EPFO marking it as resolved (Problem #8)
+    setStatusResult('EPFO Response: "Dear Member, your KYC has been successfully updated in our system. Ticket closed."');
+    setIsResolvedByEPFO(true);
+    setUserClosedTicket(null);
   };
 
   return (
@@ -125,10 +130,45 @@ export const Grievance: React.FC = () => {
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className='mt-8 p-5 bg-transparent border border-slate-200 rounded-2xl'
+                  className='mt-8 flex flex-col gap-4'
                 >
-                  <h3 className='text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2'>Current Status</h3>
-                  <p className='text-slate-800 leading-relaxed'>{statusResult}</p>
+                  <div className='p-5 bg-white border border-slate-200 shadow-sm rounded-2xl'>
+                    <h3 className='text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2'>
+                      <CheckCircle2 className='w-4 h-4 text-green-500' />
+                      Current Status: Resolved by EPFO
+                    </h3>
+                    <p className='text-slate-800 leading-relaxed font-medium'>{statusResult}</p>
+                  </div>
+
+                  {isResolvedByEPFO && userClosedTicket === null && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='bg-blue-50 border border-blue-200 p-5 rounded-2xl'>
+                      <h4 className='text-blue-900 font-semibold mb-2'>Did this actually solve your issue?</h4>
+                      <p className='text-sm text-blue-800 mb-4'>Tickets are no longer auto-closed. You must confirm the issue is fixed.</p>
+                      <div className='flex gap-3'>
+                        <Button className='flex-1 bg-green-600 hover:bg-green-700 text-white' onClick={() => setUserClosedTicket(true)}>
+                          Yes, it's fixed
+                        </Button>
+                        <Button className='flex-1 bg-white text-slate-700 border-slate-300 hover:bg-slate-50 border' onClick={() => setUserClosedTicket(false)}>
+                          No, Reopen Ticket
+                        </Button>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {userClosedTicket === true && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='bg-green-50 border border-green-200 p-4 rounded-xl flex items-center gap-3'>
+                      <CheckCircle2 className='w-5 h-5 text-green-600 shrink-0' />
+                      <p className='text-sm text-green-800 font-medium'>Ticket permanently closed. Thank you for confirming!</p>
+                    </motion.div>
+                  )}
+
+                  {userClosedTicket === false && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='bg-orange-50 border border-orange-200 p-4 rounded-xl flex flex-col gap-3'>
+                      <p className='text-sm text-orange-800 font-medium'>Ticket reopened and escalated to Level 2 Support.</p>
+                      <textarea className='w-full p-3 rounded-lg border border-orange-200 text-sm' placeholder='Please explain what is still not working...'></textarea>
+                      <Button className='bg-orange-600 hover:bg-orange-700 text-white'>Submit Escalation</Button>
+                    </motion.div>
+                  )}
                 </motion.div>
               )}
             </motion.div>
