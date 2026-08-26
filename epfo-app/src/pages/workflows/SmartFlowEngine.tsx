@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ShieldAlert, CheckCircle2, Lock, CreditCard, Star } from 'lucide-react';
+import { ArrowLeft, ShieldAlert, CheckCircle2, Lock, CreditCard, Star, Sparkles } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { FlowInfoCard } from '../../components/ui/FlowInfoCard';
 import { ThinkingAnimation } from '../../components/ui/ThinkingAnimation';
@@ -14,6 +14,7 @@ import { useWorkflowStore } from '../../store/useWorkflowStore';
 import type { Phase } from '../../store/useWorkflowStore';
 import { PhaseTransition } from '../../components/ui/PhaseTransition';
 import { useSessionStore } from '../../store/useSessionStore';
+import { detectCompoundIntent, classifyIntent, generatePlan, buildMultiPhaseTask } from '../../lib/flowDetection';
 import toast from 'react-hot-toast';
 import { AssistantAvatar } from '../../components/ui/AssistantAvatar';
 
@@ -58,6 +59,8 @@ export const SmartFlowEngine: React.FC = () => {
   const msgIdRef = useRef(0);
   const prevPhaseIndexRef = useRef<number | undefined>(task?.currentPhaseIndex);
   const [showPhaseTransition, setShowPhaseTransition] = useState(false);
+  const [refineInput, setRefineInput] = useState('');
+  const [isRefining, setIsRefining] = useState(false);
 
   const addMessage = useCallback((text: string, type: AgentMessage['type'] = 'agent') => {
     const id = `msg-${++msgIdRef.current}`;
@@ -293,6 +296,46 @@ export const SmartFlowEngine: React.FC = () => {
     }, 1500);
   };
 
+  const handleRefineIntent = () => {
+    const query = refineInput.trim();
+    if (!query) return;
+    setIsRefining(true);
+
+    setTimeout(() => {
+      const detectedFlows = detectCompoundIntent(query);
+      if (detectedFlows && detectedFlows.length >= 2) {
+        const { phases, combinedPlan } = buildMultiPhaseTask(detectedFlows);
+        updateTaskState(task.taskId, {
+          intent: query,
+          taskType: 'multi_phase',
+          plan: combinedPlan,
+          phases,
+          currentPhaseIndex: 0,
+          currentStep: combinedPlan[0].step,
+          completedSteps: [],
+          agentState: 'planned',
+        });
+        toast.success(`Detected ${detectedFlows.length}-phase compound workflow! Plan updated.`, { duration: 3000 });
+      } else {
+        const taskType = classifyIntent(query);
+        const plan = generatePlan(taskType);
+        updateTaskState(task.taskId, {
+          intent: query,
+          taskType,
+          plan,
+          phases: undefined,
+          currentPhaseIndex: undefined,
+          currentStep: plan[0].step,
+          completedSteps: [],
+          agentState: 'planned',
+        });
+        toast.success(`Updated to: ${taskType.replace(/_/g, ' ')}`, { duration: 3000 });
+      }
+      setIsRefining(false);
+      setRefineInput('');
+    }, 1200);
+  };
+
   const formatTimeTaken = () => {
     if (!flowStartTime || !flowEndTime) return "under a minute";
     const seconds = Math.floor((flowEndTime - flowStartTime) / 1000);
@@ -516,6 +559,35 @@ export const SmartFlowEngine: React.FC = () => {
                       </div>
                     ))
                   )}
+                </div>
+
+                {/* Refine Intent — type a new or compound request */}
+                <div className='mt-6 p-4 bg-gradient-to-r from-slate-50 to-blue-50/50 border border-slate-200/80 rounded-2xl'>
+                  <p className='text-xs font-bold text-slate-600 mb-2 flex items-center gap-1.5'>
+                    <Sparkles className='w-3.5 h-3.5 text-epfo-blue' />
+                    Want something else? Type a new request
+                  </p>
+                  <div className='flex gap-2'>
+                    <input
+                      type='text'
+                      value={refineInput}
+                      onChange={(e) => setRefineInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleRefineIntent(); }}
+                      placeholder='e.g. "Fix KYC then mark exit and withdraw PF" or "Merge old accounts and transfer"'
+                      className='flex-1 px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-epfo-blue focus:border-epfo-blue placeholder-slate-400'
+                      disabled={isRefining}
+                    />
+                    <button
+                      onClick={handleRefineIntent}
+                      disabled={!refineInput.trim() || isRefining}
+                      className='px-3 py-2 bg-epfo-blue text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-40'
+                    >
+                      {isRefining ? 'Analyzing...' : 'Parse'}
+                    </button>
+                  </div>
+                  <p className='text-[10px] text-slate-400 mt-1.5'>
+                    The agent auto-detects multi-step compound requests. Try: "Merge old PF, update nominee, and withdraw"
+                  </p>
                 </div>
               </>
             )}

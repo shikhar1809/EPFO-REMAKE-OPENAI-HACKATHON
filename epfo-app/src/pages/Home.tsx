@@ -37,105 +37,7 @@ import { useTranslation } from 'react-i18next';
 import { NotificationModal } from '../components/notifications/NotificationModal';
 import toast from 'react-hot-toast';
 import { AssistantAvatar } from '../components/ui/AssistantAvatar';
-
-const PHASE_META: Record<string, { label: string; description: string }> = {
-  kyc_mismatch: { label: 'Fix KYC Mismatch', description: 'Correct your name/DOB mismatch between EPFO and Aadhaar' },
-  withdraw_pf: { label: 'Withdraw PF', description: 'File your PF withdrawal claim (Form 31/19/10C)' },
-  merge_accounts: { label: 'Merge Accounts', description: 'Consolidate duplicate UAN accounts under one UAN' },
-  transfer_pf: { label: 'Transfer PF', description: 'Transfer PF balance from old employer to current' },
-  mark_exit: { label: 'Mark Exit Date', description: 'Self-declare your date of exit from employment' },
-  life_certificate: { label: 'Life Certificate', description: 'Renew your digital life certificate for pension' },
-  grievance: { label: 'File Grievance', description: 'Register and track an EPFO grievance' },
-};
-
-const COMPOUND_PATTERNS: { pattern: RegExp; flows: string[] }[] = [
-  { pattern: /fix.*(kyc|mismatch|aadhaar).*(and|then|also|after).*(withdraw|claim|pf)/i, flows: ['kyc_mismatch', 'withdraw_pf'] },
-  { pattern: /(kyc|mismatch|aadhaar).*(and|then|also).*(withdraw|claim|pf)/i, flows: ['kyc_mismatch', 'withdraw_pf'] },
-  { pattern: /merge.*(and|then|also).*(transfer|claim)/i, flows: ['merge_accounts', 'transfer_pf'] },
-  { pattern: /(mark|set).*exit.*(and|then|also).*(claim|withdraw|transfer)/i, flows: ['mark_exit', 'withdraw_pf'] },
-  { pattern: /exit.*(and|then).*(claim|withdraw|transfer)/i, flows: ['mark_exit', 'withdraw_pf'] },
-  { pattern: /life.*(certificate|pramaan).*(and|then|also).*(withdraw|pension)/i, flows: ['life_certificate', 'withdraw_pf'] },
-  { pattern: /(grievance|complain).*(and|then|also).*(withdraw|claim)/i, flows: ['grievance', 'withdraw_pf'] },
-];
-
-function generatePlan(taskType: string): { step: string; description: string; status: 'pending' | 'active' | 'completed' }[] {
-  switch (taskType) {
-    case 'withdraw_pf':
-      return [
-        { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' },
-        { step: 'check_eligibility', description: 'Check advance / final claim eligibility', status: 'pending' },
-        { step: 'gather_documents', description: 'Fetch KYC & Bank details from DigiLocker', status: 'pending' },
-        { step: 'review_claim', description: 'Review claim purpose & amount', status: 'pending' },
-        { step: 'submit_claim', description: 'Aadhaar OTP sign & final submission', status: 'pending' },
-      ];
-    case 'transfer_pf':
-      return [
-        { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' },
-        { step: 'fetch_employment', description: 'Locate previous Member IDs & establishments', status: 'pending' },
-        { step: 'initiate_transfer', description: 'Authorize transfer to current account', status: 'pending' },
-        { step: 'submit_transfer', description: 'Attestation & OTP submission', status: 'pending' },
-      ];
-    case 'life_certificate':
-      return [
-        { step: 'verify_identity', description: 'Verify pensioner identity', status: 'active' },
-        { step: 'fetch_pension_details', description: 'Retrieve PPO and bank details', status: 'pending' },
-        { step: 'capture_face', description: 'Perform UIDAI face authentication', status: 'pending' },
-        { step: 'submit_certificate', description: 'Generate & submit Jeevan Pramaan', status: 'pending' },
-      ];
-    case 'mark_exit':
-      return [
-        { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' },
-        { step: 'fetch_employment', description: 'Retrieve employment records', status: 'pending' },
-        { step: 'select_exit_reason', description: 'Select establishment and reason for exit', status: 'pending' },
-        { step: 'submit_exit', description: 'Aadhaar OTP sign & confirm exit', status: 'pending' },
-      ];
-    case 'grievance':
-      return [
-        { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' },
-        { step: 'analyze_issue', description: 'Analyze rejection reason or delay', status: 'pending' },
-        { step: 'register_grievance', description: 'Register EPFiGMS ticket automatically', status: 'pending' },
-        { step: 'generate_reference', description: 'Generate tracking reference number', status: 'pending' },
-      ];
-    case 'kyc_mismatch':
-      return [
-        { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' },
-        { step: 'analyze_mismatch', description: 'Compare EPFO vs Aadhaar records', status: 'pending' },
-        { step: 'draft_declaration', description: 'Draft Joint Declaration for correction', status: 'pending' },
-        { step: 'submit_declaration', description: 'Aadhaar OTP sign & submit to EPFO', status: 'pending' },
-      ];
-    case 'merge_accounts':
-      return [
-        { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' },
-        { step: 'fetch_linked_accounts', description: 'Discover duplicate UANs via Aadhaar', status: 'pending' },
-        { step: 'select_accounts_to_merge', description: 'Select accounts to consolidate', status: 'pending' },
-        { step: 'submit_merge_request', description: 'Aadhaar OTP sign & submit merge', status: 'pending' },
-      ];
-    default:
-      return [
-        { step: 'verify_identity', description: 'Verify your identity securely', status: 'active' },
-        { step: 'process_inquiry', description: 'Analyze your request & calculate rules', status: 'pending' },
-        { step: 'resolve_inquiry', description: 'Provide accurate guidance or grievance path', status: 'pending' },
-      ];
-  }
-}
-
-function detectCompoundIntent(query: string): string[] | null {
-  const lower = query.toLowerCase();
-  for (const { pattern, flows } of COMPOUND_PATTERNS) {
-    if (pattern.test(lower)) return flows;
-  }
-  return null;
-}
-
-function classifyIntent(query: string): string {
-  const lower = query.toLowerCase();
-  if (lower.includes('life') || lower.includes('certificate') || lower.includes('pramaan')) return 'life_certificate';
-  if (lower.includes('exit') || lower.includes('leaving') || lower.includes('quit')) return 'mark_exit';
-  if (lower.includes('withdraw') || lower.includes('advance') || lower.includes('claim')) return 'withdraw_pf';
-  if (lower.includes('transfer') || lower.includes('merge')) return 'transfer_pf';
-  if (lower.includes('grievance') || lower.includes('complaint') || lower.includes('reject')) return 'grievance';
-  return 'general_inquiry';
-}
+import { detectCompoundIntent, classifyIntent, generatePlan, PHASE_META } from '../lib/flowDetection';
 
 export const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -822,7 +724,7 @@ export const Home: React.FC = () => {
                       <AssistantAvatar state={isAnalyzing ? 'thinking' : 'listening'} className='mt-1 mr-2 shadow-sm' />
                       <textarea 
                         className='w-full p-2 pb-8 bg-transparent text-slate-900 placeholder-slate-400 outline-none text-xs font-medium resize-none min-h-[90px]'
-                        placeholder='Type what you need in simple words (e.g. "I want to withdraw ₹50,000 for medical emergency", "Fix KYC mismatch then withdraw PF", "Reset password")...'
+                        placeholder='Type what you need — try compound requests like "Fix KYC then mark exit and withdraw PF" or single tasks like "Submit life certificate"...'
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
                         onKeyDown={(e) => {
@@ -935,6 +837,31 @@ export const Home: React.FC = () => {
                     title: "Merge old PF account and transfer balance",
                     desc: "2-phase: Discover duplicate UANs → Consolidate via One Member One EPF",
                     query: "Merge my old PF account and then transfer the balance"
+                  },
+                  {
+                    title: "Update nominee and withdraw PF",
+                    desc: "2-phase: File e-nomination → Submit Form 31 withdrawal",
+                    query: "Update my nominee and then withdraw PF"
+                  },
+                  {
+                    title: "Fix Aadhaar conflict then update KYC",
+                    desc: "2-phase: De-link wrong UAN → Correct KYC records",
+                    query: "Fix my Aadhaar conflict and then update my KYC"
+                  },
+                  {
+                    title: "Transfer old PF and withdraw balance",
+                    desc: "2-phase: Consolidate previous employer → File settlement claim",
+                    query: "Transfer my old PF and then withdraw the balance"
+                  },
+                  {
+                    title: "KYC fix + exit date + withdraw PF",
+                    desc: "3-phase: Correct KYC → Mark exit → Submit full settlement (auto-sequenced)",
+                    query: "Fix my KYC mismatch, mark my exit date, and then withdraw my PF"
+                  },
+                  {
+                    title: "Merge accounts + update nominee + withdraw",
+                    desc: "3-phase: Consolidate UANs → File e-nomination → Submit claim",
+                    query: "Merge my old PF accounts, update my nominee, and then withdraw PF"
                   }
                 ].map((faq, idx) => (
                   <button
@@ -945,7 +872,9 @@ export const Home: React.FC = () => {
                     <div>
                       <p className='text-xs font-bold text-slate-800 group-hover:text-orange-700 flex items-center gap-1.5'>
                         {faq.title}
-                        <span className='text-[9px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full font-bold'>Multi-Phase</span>
+                        <span className='text-[9px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full font-bold'>
+                          {faq.query.split(' and ').length >= 3 ? '3-Phase' : 'Multi-Phase'}
+                        </span>
                       </p>
                       <p className='text-[11px] text-slate-500 mt-0.5'>
                         {faq.desc}

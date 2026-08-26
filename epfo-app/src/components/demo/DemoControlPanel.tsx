@@ -21,6 +21,9 @@ const SCENARIO_HINTS: Record<string, string> = {
   bank_not_seeded: 'Bank verification fails on claim.',
   aadhaar_conflict: 'Aadhaar already linked to another UAN.',
   multi_phase: 'Two-phase compound workflow: KYC → Withdraw.',
+  multi_phase_exit: 'Two-phase compound workflow: Mark Exit → Withdraw.',
+  multi_phase_merge: 'Three-phase compound workflow: Merge → Transfer → Withdraw.',
+  multi_phase_aadhaar: 'Three-phase compound workflow: Aadhaar Fix → KYC → Withdraw.',
 };
 
 export const DemoControlPanel: React.FC = () => {
@@ -153,6 +156,161 @@ export const DemoControlPanel: React.FC = () => {
           }))
         );
         wfStore.startTask('Fix my KYC mismatch and then withdraw PF', 'multi_phase', combinedPlan, phases);
+        navigate('/smart-flow');
+        break;
+      }
+      case 'multi_phase_exit': {
+        const wfStore = useWorkflowStore.getState();
+        wfStore.clearAllTasks();
+        const phases: Phase[] = [
+          {
+            id: 'phase-1',
+            label: 'Mark Exit Date',
+            description: 'Self-declare your date of exit from employment',
+            taskType: 'mark_exit',
+            plan: [
+              { step: 'verify_identity', description: 'Verify your identity securely', status: 'completed' },
+              { step: 'fetch_employment', description: 'Retrieve employment records', status: 'completed' },
+              { step: 'select_exit_reason', description: 'Select establishment and reason for exit', status: 'active' },
+              { step: 'submit_exit', description: 'Aadhaar OTP sign & confirm exit', status: 'pending' },
+            ],
+            status: 'active',
+          },
+          {
+            id: 'phase-2',
+            label: 'Withdraw PF',
+            description: 'File your PF withdrawal claim (Form 31/19/10C)',
+            taskType: 'withdraw_pf',
+            plan: [
+              { step: 'verify_identity', description: 'Verify your identity securely', status: 'pending' },
+              { step: 'check_eligibility', description: 'Check advance / final claim eligibility', status: 'pending' },
+              { step: 'gather_documents', description: 'Fetch KYC & Bank details from DigiLocker', status: 'pending' },
+              { step: 'review_claim', description: 'Review claim purpose & amount', status: 'pending' },
+              { step: 'submit_claim', description: 'Aadhaar OTP sign & final submission', status: 'pending' },
+            ],
+            status: 'pending',
+          },
+        ];
+        const combinedPlan = phases.flatMap((phase, phaseIdx) =>
+          phase.plan.map((step, stepIdx) => ({
+            ...step,
+            step: `phase${phaseIdx}_${step.step}`,
+            status: (phaseIdx === 0 && stepIdx === phase.plan.findIndex(s => s.status === 'active')) ? 'active' as const : step.status,
+          }))
+        );
+        wfStore.startTask('Mark my exit date and then withdraw my PF', 'multi_phase', combinedPlan, phases);
+        navigate('/smart-flow');
+        break;
+      }
+      case 'multi_phase_merge': {
+        const wfStore = useWorkflowStore.getState();
+        wfStore.clearAllTasks();
+        const phases: Phase[] = [
+          {
+            id: 'phase-1',
+            label: 'Merge Accounts',
+            description: 'Consolidate duplicate UAN accounts under one UAN',
+            taskType: 'merge_accounts',
+            plan: [
+              { step: 'verify_identity', description: 'Verify your identity securely', status: 'completed' },
+              { step: 'fetch_linked_accounts', description: 'Discover duplicate UANs via Aadhaar', status: 'completed' },
+              { step: 'select_accounts_to_merge', description: 'Select accounts to consolidate', status: 'active' },
+              { step: 'submit_merge_request', description: 'Aadhaar OTP sign & submit merge', status: 'pending' },
+            ],
+            status: 'active',
+          },
+          {
+            id: 'phase-2',
+            label: 'Transfer PF',
+            description: 'Transfer PF balance from old employer to current',
+            taskType: 'transfer_pf',
+            plan: [
+              { step: 'verify_identity', description: 'Verify your identity securely', status: 'pending' },
+              { step: 'fetch_employment', description: 'Locate previous Member IDs & establishments', status: 'pending' },
+              { step: 'initiate_transfer', description: 'Authorize transfer to current account', status: 'pending' },
+              { step: 'submit_transfer', description: 'Attestation & OTP submission', status: 'pending' },
+            ],
+            status: 'pending',
+          },
+          {
+            id: 'phase-3',
+            label: 'Withdraw PF',
+            description: 'File your PF withdrawal claim (Form 31/19/10C)',
+            taskType: 'withdraw_pf',
+            plan: [
+              { step: 'verify_identity', description: 'Verify your identity securely', status: 'pending' },
+              { step: 'check_eligibility', description: 'Check advance / final claim eligibility', status: 'pending' },
+              { step: 'gather_documents', description: 'Fetch KYC & Bank details from DigiLocker', status: 'pending' },
+              { step: 'review_claim', description: 'Review claim purpose & amount', status: 'pending' },
+              { step: 'submit_claim', description: 'Aadhaar OTP sign & final submission', status: 'pending' },
+            ],
+            status: 'pending',
+          },
+        ];
+        const combinedPlan = phases.flatMap((phase, phaseIdx) =>
+          phase.plan.map((step, stepIdx) => ({
+            ...step,
+            step: `phase${phaseIdx}_${step.step}`,
+            status: (phaseIdx === 0 && stepIdx === phase.plan.findIndex(s => s.status === 'active')) ? 'active' as const : step.status,
+          }))
+        );
+        wfStore.startTask('Merge my old PF accounts, transfer balance, and then withdraw', 'multi_phase', combinedPlan, phases);
+        navigate('/smart-flow');
+        break;
+      }
+      case 'multi_phase_aadhaar': {
+        const wfStore = useWorkflowStore.getState();
+        wfStore.clearAllTasks();
+        const phases: Phase[] = [
+          {
+            id: 'phase-1',
+            label: 'Fix Aadhaar Conflict',
+            description: 'De-link Aadhaar from wrong UAN',
+            taskType: 'kyc_mismatch',
+            plan: [
+              { step: 'verify_identity', description: 'Verify your identity securely', status: 'completed' },
+              { step: 'analyze_mismatch', description: 'Compare EPFO vs Aadhaar records', status: 'active' },
+              { step: 'draft_declaration', description: 'Draft Joint Declaration for correction', status: 'pending' },
+              { step: 'submit_declaration', description: 'Aadhaar OTP sign & submit to EPFO', status: 'pending' },
+            ],
+            status: 'active',
+          },
+          {
+            id: 'phase-2',
+            label: 'Update KYC',
+            description: 'Correct your name/DOB mismatch between EPFO and Aadhaar',
+            taskType: 'kyc_mismatch',
+            plan: [
+              { step: 'verify_identity', description: 'Verify your identity securely', status: 'pending' },
+              { step: 'analyze_mismatch', description: 'Compare EPFO vs Aadhaar records', status: 'pending' },
+              { step: 'draft_declaration', description: 'Draft Joint Declaration for correction', status: 'pending' },
+              { step: 'submit_declaration', description: 'Aadhaar OTP sign & submit to EPFO', status: 'pending' },
+            ],
+            status: 'pending',
+          },
+          {
+            id: 'phase-3',
+            label: 'Withdraw PF',
+            description: 'File your PF withdrawal claim (Form 31/19/10C)',
+            taskType: 'withdraw_pf',
+            plan: [
+              { step: 'verify_identity', description: 'Verify your identity securely', status: 'pending' },
+              { step: 'check_eligibility', description: 'Check advance / final claim eligibility', status: 'pending' },
+              { step: 'gather_documents', description: 'Fetch KYC & Bank details from DigiLocker', status: 'pending' },
+              { step: 'review_claim', description: 'Review claim purpose & amount', status: 'pending' },
+              { step: 'submit_claim', description: 'Aadhaar OTP sign & final submission', status: 'pending' },
+            ],
+            status: 'pending',
+          },
+        ];
+        const combinedPlan = phases.flatMap((phase, phaseIdx) =>
+          phase.plan.map((step, stepIdx) => ({
+            ...step,
+            step: `phase${phaseIdx}_${step.step}`,
+            status: (phaseIdx === 0 && stepIdx === phase.plan.findIndex(s => s.status === 'active')) ? 'active' as const : step.status,
+          }))
+        );
+        wfStore.startTask('Fix my Aadhaar conflict, update KYC, and then withdraw PF', 'multi_phase', combinedPlan, phases);
         navigate('/smart-flow');
         break;
       }

@@ -63,4 +63,7 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
   { id: 'bank_not_seeded', label: 'Bank Not Seeded — Disbursement Fails' },
   { id: 'aadhaar_conflict', label: 'Aadhaar Conflict — Wrong UAN Linkage' },
   { id: 'multi_phase', label: 'Multi-Phase — Fix KYC + Withdraw PF' },
+  { id: 'multi_phase_exit', label: 'Multi-Phase — Mark Exit + Withdraw PF' },
+  { id: 'multi_phase_merge', label: 'Multi-Phase — Merge + Transfer + Withdraw' },
+  { id: 'multi_phase_aadhaar', label: 'Multi-Phase — Aadhaar Fix + KYC + Withdraw' },
 ];
