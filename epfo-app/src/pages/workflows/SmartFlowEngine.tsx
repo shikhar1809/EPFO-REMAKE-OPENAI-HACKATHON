@@ -26,7 +26,7 @@ interface AgentMessage {
 
 export const SmartFlowEngine: React.FC = () => {
   const navigate = useNavigate();
-  const { getCurrentTask, updateTaskState, checkpointTask, archiveTask, completeCurrentPhase, getCurrentPhase } = useWorkflowStore();
+  const { getCurrentTask, updateTaskState, checkpointTask, archiveTask, completeCurrentPhase } = useWorkflowStore();
   const { stepUpAuth } = useSessionStore();
   
   const task = getCurrentTask();
@@ -36,7 +36,6 @@ export const SmartFlowEngine: React.FC = () => {
   const [amount, setAmount] = useState('50000');
   const [otpInput, setOtpInput] = useState('1234');
   const [authError, setAuthError] = useState(false);
-  const [operationId, setOperationId] = useState<string | null>(null);
 
   const [hasStartedFlow, setHasStartedFlow] = useState(false);
   const [flowStartTime, setFlowStartTime] = useState<number | null>(null);
@@ -259,7 +258,6 @@ export const SmartFlowEngine: React.FC = () => {
     const success = await stepUpAuth(otpInput || '1234');
     if (success) {
       setAuthError(false);
-      setOperationId(`OP-CLM-${Math.floor(Math.random() * 1000000)}`);
       proceedToNextStep();
     } else {
       setAuthError(true);
@@ -324,34 +322,7 @@ export const SmartFlowEngine: React.FC = () => {
     });
   };
 
-  const getAgentMessage = () => {
-    const step = activeStep?.step;
-    switch (task.agentState) {
-      case 'planned': return `I made ${task.plan.length} steps for your issue. Follow this step by step.`;
-      case 'in_progress':
-        if (step === 'check_eligibility' || step === 'verify_uan') return "Checking your eligibility records...";
-        if (step === 'fetch_documents' || step === 'kyc_check') return "Retrieving your documents from the vault...";
-        if (step === 'fetch_pension_details') return "Pulling pension account details...";
-        if (step === 'prepare_claim' || step === 'prepare_exit_declaration') return "Preparing your documents...";
-        if (step === 'submit_claim' || step === 'submit_transfer' || step === 'submit_exit') return "Submitting to EPFO...";
-        return "Processing this step...";
-      case 'needs_user':
-        if (step === 'check_eligibility') return "Please verify your bank account details.";
-        if (step === 'review_claim') return "Please provide the details for your claim.";
-        if (step === 'capture_face') return "Please scan your face to authenticate.";
-        if (step === 'select_exit_reason') return "Please select a reason for your exit.";
-        if (step === 'register_grievance') return "Please provide the details of your grievance.";
-        if (step === 'analyze_passbook') return "Here is the summary of your passbook balance and latest contributions.";
-        if (step === 'fetch_linked_accounts') return "I found multiple accounts linked to your Aadhaar.";
-        if (step === 'select_accounts_to_merge') return "Please confirm which accounts to merge.";
-        if (step === 'select_grievance_type') return "What type of grievance are you filing?";
-        if (step === 'generate_reference') return "Your grievance ticket has been generated.";
-        return "Please review the gathered documents before we proceed.";
-      case 'sensitive_action': return "Review and authenticate before continuing.";
-      case 'completed': return `Task completed successfully. Reference ID: ${operationId}`;
-      default: return "";
-    }
-  };
+
 
   // Generate step-specific contextual messages for the chat
   const getStepContextMessage = (stepName: string, state: string): string | null => {
@@ -513,7 +484,7 @@ export const SmartFlowEngine: React.FC = () => {
                             </div>
                           )}
                           <div className='space-y-3 relative ml-2'>
-                            {phaseSteps.map((step, stepIdx) => {
+                            {phaseSteps.map((step) => {
                               const globalIdx = task.plan.indexOf(step);
                               return (
                                 <div key={step.step} className='relative pl-10'>
@@ -563,25 +534,29 @@ export const SmartFlowEngine: React.FC = () => {
                   
                   <div className='flex items-center gap-2 bg-slate-100 px-4 py-1.5 rounded-full'>
                     {/* Phase progress bar (for multi-phase tasks) */}
-                    {task.phases && task.currentPhaseIndex !== undefined && (
+                    {task.phases && task.currentPhaseIndex != null && (() => {
+                      const phaseIdx = task.currentPhaseIndex!;
+                      const phasesArr = task.phases!;
+                      return (
                       <div className='flex items-center gap-1 mr-3 border-r border-slate-300 pr-3'>
-                        {task.phases.map((phase: Phase, i: number) => (
+                        {phasesArr.map((phase: Phase, i: number) => (
                           <div key={phase.id} className='flex items-center gap-1'>
                             <div className={`w-2.5 h-2.5 rounded-full transition-all ${
-                              i < task.currentPhaseIndex ? 'bg-emerald-500' :
-                              i === task.currentPhaseIndex ? 'bg-epfo-blue ring-2 ring-blue-100 scale-110' :
+                              i < phaseIdx ? 'bg-emerald-500' :
+                              i === phaseIdx ? 'bg-epfo-blue ring-2 ring-blue-100 scale-110' :
                               'bg-slate-300'
                             }`} title={phase.label} />
-                            {i < task.phases.length - 1 && (
-                              <div className={`w-2 h-0.5 ${i < task.currentPhaseIndex ? 'bg-emerald-300' : 'bg-slate-200'}`} />
+                            {i < phasesArr.length - 1 && (
+                              <div className={`w-2 h-0.5 ${i < phaseIdx ? 'bg-emerald-300' : 'bg-slate-200'}`} />
                             )}
                           </div>
                         ))}
                         <span className='text-[10px] font-bold text-epfo-blue ml-1.5 uppercase tracking-wider'>
-                          {task.phases[task.currentPhaseIndex]?.label}
+                          {phasesArr[phaseIdx]?.label}
                         </span>
                       </div>
-                    )}
+                      );
+                    })()}
                     <div className='flex gap-1.5 mr-2'>
                       {task.plan.map((_: any, i: number) => (
                         <div key={i} className={`w-2 h-2 rounded-full ${i === currentStepIndex ? 'bg-epfo-blue ring-2 ring-blue-100' : i < currentStepIndex ? 'bg-emerald-500' : 'bg-slate-300'}`} />
