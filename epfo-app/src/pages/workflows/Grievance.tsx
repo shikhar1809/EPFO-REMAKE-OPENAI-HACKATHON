@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, MessageSquareWarning, Search, CheckCircle2, HeadphonesIcon, LifeBuoy, Phone, Mail } from 'lucide-react';
+import { ArrowLeft, MessageSquareWarning, Search, CheckCircle2, HeadphonesIcon, LifeBuoy, Phone, Mail, AlertTriangle } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
+import { useWorkflowStore } from '../../store/useWorkflowStore';
 
 export const Grievance: React.FC = () => {
   const navigate = useNavigate();
+  const { completedTasks } = useWorkflowStore();
   const [activeTab, setActiveTab] = useState<'register' | 'track'>('register');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [statusResult, setStatusResult] = useState<string | null>(null);
@@ -214,6 +216,23 @@ export const Grievance: React.FC = () => {
                     </h3>
                     <p className='text-slate-800 leading-relaxed text-sm font-medium'>{statusResult}</p>
                   </div>
+
+                  {(() => {
+                    const recentGrievance = completedTasks.find(t => t.taskType === 'grievance' && t.grievanceType);
+                    if (!recentGrievance) return null;
+                    if (recentGrievance.grievanceType === 'employer_not_depositing') {
+                      return (
+                        <div className='bg-amber-50 border border-amber-200 p-4 rounded-2xl flex gap-3 items-start'>
+                          <AlertTriangle className='w-5 h-5 text-amber-600 shrink-0 mt-0.5' />
+                          <div>
+                            <p className='text-xs font-bold text-amber-900'>Employer Non-Deposit Grievance</p>
+                            <p className='text-xs text-amber-800 mt-1'>This grievance relates to employer non-deposit of contributions. EPFO's stated SLA is 15 working days. If unresolved, escalate to the Regional PF Commissioner.</p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
 
                   {isResolvedByEPFO && userClosedTicket === null && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='bg-blue-50 border border-blue-200 p-5 rounded-2xl'>

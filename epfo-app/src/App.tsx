@@ -15,6 +15,9 @@ import { History } from './pages/workflows/History';
 import { Onboarding } from './pages/Onboarding';
 import { LifeCertificate } from './pages/workflows/LifeCertificate';
 import { MarkExit } from './pages/workflows/MarkExit';
+import { KycMismatch } from './pages/workflows/KycMismatch';
+import { MergeAccounts } from './pages/workflows/MergeAccounts';
+import { StatusPage } from './pages/StatusPage';
 import { Toaster } from 'react-hot-toast';
 import './i18n/config';
 
@@ -47,7 +50,6 @@ function App() {
         <OnboardWrapper>
           <SceneTransition>
             <Routes>
-
               <Route path='/onboarding' element={<Onboarding />} />
               <Route path='/login' element={<Login />} />
               <Route path='/uan-activation' element={<UanActivation />} />
@@ -60,8 +62,11 @@ function App() {
               <Route path='/smart-flow' element={<PrivateRoute><SmartFlowEngine /></PrivateRoute>} />
               <Route path='/history' element={<PrivateRoute><History /></PrivateRoute>} />
               <Route path='/grievance' element={<Grievance />} />
+              <Route path='/status' element={<StatusPage />} />
               <Route path='/life-certificate' element={<PrivateRoute><LifeCertificate /></PrivateRoute>} />
               <Route path='/mark-exit' element={<PrivateRoute><MarkExit /></PrivateRoute>} />
+              <Route path='/kyc-mismatch' element={<PrivateRoute><KycMismatch /></PrivateRoute>} />
+              <Route path='/merge-accounts' element={<PrivateRoute><MergeAccounts /></PrivateRoute>} />
             </Routes>
           </SceneTransition>
         </OnboardWrapper>

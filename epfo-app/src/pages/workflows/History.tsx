@@ -3,15 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, CheckCircle2, History as HistoryIcon, SlidersHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
+import { EmployerApprovalStatus } from '../../components/ui/EmployerApprovalStatus';
 
 export const History: React.FC = () => {
   const navigate = useNavigate();
-  const { completedTasks } = useWorkflowStore();
+  const { completedTasks, activeTasks } = useWorkflowStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredTasks = completedTasks.filter(task => 
     task.intent.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const pendingEmployerTasks = Object.values(activeTasks).filter(
+    t => t.agentState === 'pending_employer' && t.employerApproval
+  );
+
+  const filteredPending = searchQuery
+    ? pendingEmployerTasks.filter(t => t.intent.toLowerCase().includes(searchQuery.toLowerCase()))
+    : pendingEmployerTasks;
 
   return (
     <div className='flex-1 flex flex-col bg-transparent overflow-hidden relative'>
@@ -41,63 +50,17 @@ export const History: React.FC = () => {
           </button>
         </div>
 
-        {searchQuery === '' && (
+        {searchQuery === '' && filteredPending.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className='mb-6'>
             <h2 className='text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 px-1'>Active Requests</h2>
-            <div className='bg-white p-5 rounded-2xl border border-blue-200 shadow-sm relative overflow-hidden'>
-              <div className='absolute top-0 left-0 w-1 h-full bg-blue-500'></div>
-              <div className='flex justify-between items-start mb-4'>
-                <div>
-                  <h3 className='font-bold text-slate-900 text-lg'>PF Transfer Request</h3>
-                  <p className='text-sm text-slate-500'>TKT-9921 • Initiated 3 days ago</p>
-                </div>
-                <span className='bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wide'>
-                  Pending Employer
-                </span>
-              </div>
-              
-              {/* Timeline (Problem #4 / #9) */}
-              <div className='mt-5 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent'>
-                
-                <div className='relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active'>
-                  <div className='flex items-center justify-center w-6 h-6 rounded-full border-2 border-white bg-green-500 text-white shadow shrink-0 z-10'>
-                    <CheckCircle2 className='w-4 h-4' />
-                  </div>
-                  <div className='w-[calc(100%-2.5rem)] ml-4'>
-                    <div className='flex flex-col'>
-                      <span className='text-sm font-bold text-slate-900'>Member Submitted</span>
-                      <span className='text-xs text-slate-500'>Completed immediately</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mt-4'>
-                  <div className='flex items-center justify-center w-6 h-6 rounded-full border-2 border-white bg-blue-500 shadow shrink-0 z-10'>
-                    <div className='w-2 h-2 bg-white rounded-full animate-pulse'></div>
-                  </div>
-                  <div className='w-[calc(100%-2.5rem)] ml-4'>
-                    <div className='bg-blue-50 p-3 rounded-xl border border-blue-100'>
-                      <span className='text-sm font-bold text-blue-900 block'>Pending with Employer</span>
-                      <span className='text-xs text-blue-800 block mt-1'>TCS (Tata Consultancy Services) needs to approve this transfer.</span>
-                      <button className='text-xs bg-white text-blue-700 border border-blue-200 px-3 py-1.5 rounded-lg mt-2 font-medium hover:bg-blue-50'>
-                        Send Automatic Reminder
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group mt-4'>
-                  <div className='flex items-center justify-center w-6 h-6 rounded-full border-2 border-white bg-slate-200 shadow shrink-0 z-10'>
-                  </div>
-                  <div className='w-[calc(100%-2.5rem)] ml-4 opacity-50'>
-                    <div className='flex flex-col'>
-                      <span className='text-sm font-bold text-slate-700'>EPFO Field Office</span>
-                      <span className='text-xs text-slate-500'>Waiting for Employer Approval</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
+            <div className='space-y-3'>
+              {filteredPending.map(task => (
+                <EmployerApprovalStatus
+                  key={task.taskId}
+                  employerApproval={task.employerApproval!}
+                  taskId={task.taskId}
+                />
+              ))}
             </div>
           </motion.div>
         )}

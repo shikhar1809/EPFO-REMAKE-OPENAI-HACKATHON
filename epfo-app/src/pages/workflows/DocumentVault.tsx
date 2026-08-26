@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, ShieldCheck, FileText, Vault, Plus, XCircle } from 'lucide-react';
 
 import { useVaultStore } from '../../store/useVaultStore';
+import { useDemoStore } from '../../store/useDemoStore';
 
 export const DocumentVault: React.FC = () => {
   const navigate = useNavigate();
   const { documents, addDocument } = useVaultStore();
+  const clearScenario = useDemoStore(s => s.clearScenario);
+
+  useEffect(() => { clearScenario(); }, []);
   const [isAdding, setIsAdding] = useState(false);
 
   const docsList = Object.values(documents);

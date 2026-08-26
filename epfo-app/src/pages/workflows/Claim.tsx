@@ -4,16 +4,21 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, ShieldCheck, Lock, CreditCard, Home as HomeIcon, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { OtpFallbackOptions } from '../../components/ui/OtpFallbackOptions';
 import { useVaultStore } from '../../store/useVaultStore';
 import { useSessionStore } from '../../store/useSessionStore';
+import { useDemoStore } from '../../store/useDemoStore';
 
 import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
+import { FlowInfoCard } from '../../components/ui/FlowInfoCard';
 
 export const Claim: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { getDocumentsByType } = useVaultStore();
   const { stepUpAuth } = useSessionStore();
+  const { isClaimRejected } = useDemoStore();
   
   const [step, setStep] = useState(1);
   const [bankDigits, setBankDigits] = useState('1234');
@@ -24,6 +29,7 @@ export const Claim: React.FC = () => {
   const [otp, setOtp] = useState('1234');
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [authError, setAuthError] = useState(false);
   const [operationId, setOperationId] = useState<string | null>(null);
 
   const [isValidating, setIsValidating] = useState(false);
@@ -38,7 +44,7 @@ export const Claim: React.FC = () => {
     if (bankDigits === '1234') { // Mock verification
       setStep(2);
     } else {
-      alert('Invalid bank digits. Use 1234 for demo.');
+      alert('Invalid bank digits. Use 1234.');
     }
   };
 
@@ -63,11 +69,12 @@ export const Claim: React.FC = () => {
     setIsSubmitting(false);
     
     if (authSuccess) {
-      // Idempotency: Generate a unique Operation ID for the submission
+      setAuthError(false);
       setOperationId(`OP-CLM-${Math.floor(Math.random() * 1000000)}`);
       setStep(4);
     } else {
-      alert('Invalid OTP. Use 1234.');
+      setAuthError(true);
+      toast.error('Invalid OTP. Use 1234.');
     }
   };
 
@@ -92,7 +99,30 @@ export const Claim: React.FC = () => {
       </div>
 
       <div className='p-6 flex-1 overflow-y-auto pb-24'>
-        
+        {isClaimRejected() && (
+          <div className='bg-red-50 border border-red-200 rounded-2xl p-4 mb-6'>
+            <div className='flex items-start gap-3'>
+              <div className='bg-red-100 p-2 rounded-xl text-red-600 shrink-0'>
+                <AlertTriangle className='w-5 h-5' />
+              </div>
+              <div>
+                <h3 className='font-bold text-red-900 text-sm'>Previous Claim Rejected</h3>
+                <p className='text-xs text-red-800 mt-1 leading-snug'>
+                  Your Form 31 claim (₹50,000) was rejected on 20 Jul 2026. Reason: "Bank account not seeded with Aadhaar NPCI". Please fix this before filing a new claim.
+                </p>
+                <button
+                  onClick={() => navigate('/documents')}
+                  className='mt-2 text-[11px] font-bold text-red-700 underline flex items-center gap-1'
+                >
+                  Fix Bank Seeding →
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 1 && <FlowInfoCard flowType="withdraw_pf" />}
+
         {step === 1 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className='space-y-6'>
             <div className='bg-blue-50 border border-blue-100 p-4 rounded-2xl'>
@@ -238,6 +268,7 @@ export const Claim: React.FC = () => {
                   Filing a claim is a sensitive action. Please sign this request.
                 </p>
                 <Input type='text' placeholder='Enter Aadhaar OTP (1234)' value={otp} onChange={e => setOtp(e.target.value)} className='bg-white' />
+                {authError && <OtpFallbackOptions variant='compact' />}
               </div>
             </div>
 

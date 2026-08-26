@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useServerStatusStore, type ServerHealthState } from '../../store/useServerStatusStore';
 
 export const ServerStatusBadge: React.FC = () => {
+  const navigate = useNavigate();
   const { status, setStatus } = useServerStatusStore();
 
   // Subtle Demo Load Fluctuation (Randomly toggles between Green and Yellow only, never Red)
@@ -65,10 +67,8 @@ export const ServerStatusBadge: React.FC = () => {
 
   return (
     <div className="relative group inline-flex items-center">
-      <a
-        href="https://support-epfo-remake-openai.vercel.app"
-        target="_blank"
-        rel="noopener noreferrer"
+      <button
+        onClick={() => navigate('/status')}
         className={`flex items-center gap-1.5 px-1 py-0.5 transition-all cursor-pointer select-none text-[10px] font-extrabold tracking-tight shrink-0 ${config.badgeBg}`}
       >
         <span className="relative flex h-2 w-2 shrink-0">
@@ -76,7 +76,7 @@ export const ServerStatusBadge: React.FC = () => {
           <span className={`relative inline-flex rounded-full h-2 w-2 ${config.dotColor}`}></span>
         </span>
         <span className="tracking-wide uppercase">{config.labelText}</span>
-      </a>
+      </button>
 
       {/* Floating Hover Tooltip */}
       <div className="absolute left-0 top-full mt-1.5 hidden group-hover:flex flex-col items-start z-50 pointer-events-none">

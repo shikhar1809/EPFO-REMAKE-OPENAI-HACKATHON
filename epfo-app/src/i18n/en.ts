@@ -33,6 +33,15 @@ export const en = {
   mpin_hint: "You will use this MPIN to quickly log in to the app next time.",
   verify_and_continue: "Verify & Continue",
 
+  // Scam Awareness
+  scam_awareness_title: "Important Advisory",
+  scam_awareness_subtitle: "All services on UMANG and this app are provided by EPFO completely free of charge. You will never be asked to pay any fees.",
+  scam_awareness_point_1: "Do not pay any amount to agents, intermediaries, or anyone claiming to process your EPFO work.",
+  scam_awareness_point_2: "No EPFO or government official will ever ask for money via phone, WhatsApp, SMS, or in person.",
+  scam_awareness_point_3: "If anyone demands payment, report it immediately on the EPFiGMS grievance portal or call 1800-180-0104.",
+  scam_awareness_point_4: "This application does not charge any hidden, service, or convenience fees — ever.",
+  scam_awareness_button: "I understand, continue",
+
   // Dashboard / Home
   welcome_back: "Welcome back, {{name}}",
   portal_title: "EPFO Portal",
@@ -65,6 +74,13 @@ export const en = {
   resume: "Resume",
   no_active_tasks: "No active tasks in progress",
   start_first_request: "Start your first request →",
+  status_page_title: "System Status",
+  status_page_subtitle: "Real-time EPFO infrastructure health",
+  status_operational: "Operational",
+  status_degraded: "Degraded",
+  status_down: "Down",
+  status_peak_advisory: "Expect higher traffic during 1st–7th of every month (salary credit cycle) and month-end KYC filing deadlines. Try off-peak hours for best experience.",
+  status_umang_alt: "Server busy?",
 
   // Workflows
   claim_heading: "File a Claim (Form 31/19)",

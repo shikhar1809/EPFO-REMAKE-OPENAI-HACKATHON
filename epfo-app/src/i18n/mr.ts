@@ -33,6 +33,15 @@ export const mr = {
   mpin_hint: "पुढील वेळी अॅपमध्ये त्वरित लॉगिन करण्यासाठी तुम्ही हा MPIN वापराल.",
   verify_and_continue: "सत्यापित करा आणि सुरू ठेवा",
 
+  // Scam Awareness
+  scam_awareness_title: "महत्त्वाची सूचना",
+  scam_awareness_subtitle: "UMANG आणि या अॅपवरील सर्व सेवा EPFO द्वारे पूर्णपणे मोफत प्रदान केल्या जातात. तुम्हाला कधीही कोणताही शुल्क विनंती केला जाणार नाही.",
+  scam_awareness_point_1: "एजंट, दलाल किंवा तुमचे EPFO कार्य सांभाळतो म्हणून सांगणाऱ्या कोणालाही रक्कम देऊ नका.",
+  scam_awareness_point_2: "कोणताही EPFO किंवा सरकारी अधिकारी फोन, WhatsApp, SMS किंवा थेट भेटीत कधीही पैसे मागणार नाही.",
+  scam_awareness_point_3: "जर कोणीही पेमेंटची मागणी करत असेल, तर त्याची त्वरित EPFiGMS तक्रार पोर्टलवर तक्रार करा किंवा 1800-180-0104 वर कॉल करा.",
+  scam_awareness_point_4: "हे अॅप्लिकेशन कोणताही लपलेले, सेवा किंवा सुविधा शुल्क घेत नाही — कधीही नाही.",
+  scam_awareness_button: "समजले, सुरू ठेवा",
+
   // Dashboard / Home
   welcome_back: "पुन्हा स्वागत आहे, {{name}}",
   portal_title: "EPFO पोर्टल",
@@ -96,5 +105,12 @@ export const mr = {
   mark_exit_info: "जर तुमच्या मागील मालकाने काम सोडल्याची तारीख नोंदवली नसेल, तर तुम्ही 60 दिवसांनंतर आधार OTP सह स्वतः नोंदवू शकता.",
   select_establishment: "रोजगार नोंद निवडा",
   exit_date_label: "काम सोडल्याची तारीख (अंतिम दिवस) *",
-  exit_reason_label: "काम सोडण्याचे कारण *"
+  exit_reason_label: "काम सोडण्याचे कारण *",
+  status_page_title: "सिस्टम स्थिती",
+  status_page_subtitle: "रिअल-टाइम EPFO पायाभूत सुविधा आरोग्य",
+  status_operational: "कार्यरत",
+  status_degraded: "कमकुवत",
+  status_down: "डाउन",
+  status_peak_advisory: "दर महिन्याच्या १–७ तारखेला (पगार क्रेडिट सायकल) आणि महिन्याच्या शेवटी KYC फायलिंग अवधीत अधिक ट्रॅफिक अपेक्षित आहे. चांगला अनुभवासाठी ऑफ-पीक वेळा वापरा.",
+  status_umang_alt: "सर्व्हर व्यस्त?"
 };

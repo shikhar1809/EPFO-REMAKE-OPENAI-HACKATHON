@@ -16,10 +16,15 @@ import {
 import { Button } from '../../components/ui/Button';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { FlowInfoCard } from '../../components/ui/FlowInfoCard';
+import { useDemoStore } from '../../store/useDemoStore';
 
 export const LifeCertificate: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const clearScenario = useDemoStore(s => s.clearScenario);
+
+  useEffect(() => { clearScenario(); }, []);
   
   const [step, setStep] = useState<'status' | 'face_auth' | 'processing' | 'success' | 'doorstep'>('status');
   const [cameraActive, setCameraActive] = useState(false);
@@ -103,6 +108,7 @@ export const LifeCertificate: React.FC = () => {
       </div>
 
       <div className='p-5 space-y-5 max-w-md mx-auto w-full'>
+        {step === 'status' && <FlowInfoCard flowType="life_certificate" />}
         
         {/* STEP 1: PPO STATUS OVERVIEW */}
         {step === 'status' && (

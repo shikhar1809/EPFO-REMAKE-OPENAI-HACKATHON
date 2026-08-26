@@ -33,6 +33,15 @@ export const bn = {
   mpin_hint: "পরের বার অ্যাপে দ্রুত লগইন করার জন্য আপনি এই MPIN ব্যবহার করবেন।",
   verify_and_continue: "যাচাই করুন এবং এগিয়ে যান",
 
+  // Scam Awareness
+  scam_awareness_title: "গুরুত্বপূর্ণ পরামর্শ",
+  scam_awareness_subtitle: "UMANG এবং এই অ্যাপের সমস্ত সেবা EPFO দ্বারা সম্পূর্ণ বিনামূল্যে প্রদান করা হয়। আপনাকে কখনোই কোনো ফি দিতে বলা হবে না।",
+  scam_awareness_point_1: "এজেন্ট, দালাল বা আপনার EPFO কাজ সামলাতে বলে এমন কাউকে কোনো অর্থ দেবেন না।",
+  scam_awareness_point_2: "কোনো EPFO বা সরকারি কর্মকর্তা ফোন, WhatsApp, SMS বা ব্যক্তিগতভাবে কখনোই টাকা চাইবেন না।",
+  scam_awareness_point_3: "যদি কেউ অর্থের দাবি করে, তাহলে অবিলম্বে EPFiGMS অভিযোগ পোর্টালে রিপোর্ট করুন বা 1800-180-0104 নম্বরে কল করুন।",
+  scam_awareness_point_4: "এই অ্যাপ্লিকেশন কোনো লুকানো, সেবা বা সুবিধা ফি নেয় না — কখনোই না।",
+  scam_awareness_button: "বুঝেছি, চালিয়ে যান",
+
   // Dashboard / Home
   welcome_back: "স্বাগতম, {{name}}",
   portal_title: "EPFO পোর্টাল",
@@ -96,5 +105,12 @@ export const bn = {
   mark_exit_info: "আপনার পূর্ববর্তী নিয়োগকর্তা চাকরি ছাড়ার তারিখ না দিয়ে থাকলে, আধার OTP দিয়ে ৬০ দিন পর আপনি নিজেই তা আপডেট করতে পারেন।",
   select_establishment: "কোম্পানির রেকর্ড নির্বাচন করুন",
   exit_date_label: "চাকরি ছাড়ার তারিখ (শেষ কাজের দিন) *",
-  exit_reason_label: "চাকরি ছাড়ার কারণ *"
+  exit_reason_label: "চাকরি ছাড়ার কারণ *",
+  status_page_title: "সিস্টেম স্ট্যাটাস",
+  status_page_subtitle: "রিয়েল-টাইম EPFO অবকাঠামোর স্বাস্থ্য",
+  status_operational: "পরিচালনাধীন",
+  status_degraded: "হ্রাসপ্রাপ্ত",
+  status_down: "ডাউন",
+  status_peak_advisory: "প্রতি মাসের ১–৭ তারিখ (বেতন ক্রেডিট সাইকেল) এবং মাসশেষে KYC ফাইলিংয়ের সময়ে বেশি ট্র্যাফিক প্রত্যাশিত। ভালো অভিজ্ঞতার জন্য অফ-পিক সময় চেষ্টা করুন।",
+  status_umang_alt: "সার্ভার ব্যস্ত?"
 };

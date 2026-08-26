@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import toast from 'react-hot-toast';
+import { FlowInfoCard } from '../../components/ui/FlowInfoCard';
 
 export const Transfer: React.FC = () => {
   const navigate = useNavigate();
@@ -71,6 +72,7 @@ export const Transfer: React.FC = () => {
       </div>
 
       <div className='p-5 space-y-5 max-w-md mx-auto w-full'>
+        <FlowInfoCard flowType="transfer_pf" />
         
         {/* ONE MEMBER - ONE EPF DISCOVERY CARD */}
         <div className='bg-gradient-to-br from-indigo-900 to-blue-900 text-white rounded-3xl p-5 shadow-lg relative overflow-hidden'>

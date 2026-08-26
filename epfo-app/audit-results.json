@@ -1,0 +1,102 @@
+[
+  {
+    "section": "Initial Load / Route Guard",
+    "status": "PASS",
+    "note": "Correctly redirected unauthenticated user to /onboarding"
+  },
+  {
+    "section": "Onboarding Step 1 - Language Select",
+    "status": "PASS",
+    "note": "English and Hindi options visible. All 6 languages should be present."
+  },
+  {
+    "section": "Onboarding Step 2 - User Type",
+    "status": "WARN",
+    "note": "Unexpected H1 after language select: \"EPFO\""
+  },
+  {
+    "section": "Onboarding - Returning User",
+    "status": "PASS",
+    "note": "Clicked returning user. H1: \"EPFO\""
+  },
+  {
+    "section": "Onboarding - UAN Pre-fill",
+    "status": "PASS",
+    "note": "UAN pre-filled: 101234567890"
+  },
+  {
+    "section": "Onboarding - OTP Input",
+    "status": "PASS",
+    "note": "OTP field appeared and filled with 1234"
+  },
+  {
+    "section": "Onboarding - Login Flow",
+    "status": "PASS",
+    "note": "After verify OTP — URL: https://epfo-remake-openai.vercel.app/"
+  },
+  {
+    "section": "Dashboard Access",
+    "status": "INFO",
+    "note": "Dashboard URL: https://epfo-remake-openai.vercel.app/onboarding (note: auth state is in-memory, re-login required)"
+  },
+  {
+    "section": "Grievance - Public Access",
+    "status": "PASS",
+    "note": "Grievance page accessible without login. Title: \"EPFO\""
+  },
+  {
+    "section": "Grievance - Form Elements",
+    "status": "PASS",
+    "note": "Found 5 form inputs (Name, Mobile, UAN, Description expected)"
+  },
+  {
+    "section": "Grievance - Tabs Present",
+    "status": "PASS",
+    "note": "Register/Track tabs present"
+  },
+  {
+    "section": "Grievance - Contact Links",
+    "status": "PASS",
+    "note": "Phone CTA: true, Email CTA: true"
+  },
+  {
+    "section": "LifeCertificate - Auth Guard",
+    "status": "PASS",
+    "note": "Correctly redirected to onboarding without auth"
+  },
+  {
+    "section": "Passbook - Auth Guard",
+    "status": "PASS",
+    "note": "Correctly redirected to onboarding without auth"
+  },
+  {
+    "section": "SmartFlow - Auth Guard",
+    "status": "PASS",
+    "note": "Correctly redirected to onboarding without auth"
+  },
+  {
+    "section": "Claim - Auth Guard",
+    "status": "PASS",
+    "note": "Correctly redirected to onboarding without auth"
+  },
+  {
+    "section": "MarkExit - Auth Guard",
+    "status": "PASS",
+    "note": "Correctly redirected to onboarding without auth"
+  },
+  {
+    "section": "Full Login Flow",
+    "status": "PASS",
+    "note": "After full login: https://epfo-remake-openai.vercel.app/"
+  },
+  {
+    "section": "Page: /grievance",
+    "status": "INFO",
+    "note": "Title: \"EPFO Portal\", H1: \"EPFO\""
+  },
+  {
+    "section": "Responsive Layout",
+    "status": "PASS",
+    "note": "Viewport: 390px, Content: 390px"
+  }
+]

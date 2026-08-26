@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Globe, ArrowLeft, User } from 'lucide-react';
+import { ShieldCheck, Globe, ArrowLeft, User, AlertTriangle } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useSessionStore } from '../store/useSessionStore';
 import toast from 'react-hot-toast';
 
-type Step = 'language' | 'user_type' | 'returning_login' | 'identity' | 'verify_uan' | 'mobile_login' | 'profile_setup' | 'prerequisites' | 'vault_intro';
+type Step = 'language' | 'scam_awareness' | 'user_type' | 'returning_login' | 'identity' | 'verify_uan' | 'mobile_login' | 'profile_setup' | 'prerequisites' | 'vault_intro';
 
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Lock } from 'lucide-react';
 import { ProfileSuccessAnim, VaultSuccessAnim } from '../components/ui/SuccessAnimations';
 import { SyncAnimation } from '../components/ui/SyncAnimation';
 import { VaultIntroAnimation } from '../components/animations/VaultIntroAnimation';
+import { ScamAwarenessAnimation } from '../components/animations/ScamAwarenessAnimation';
+import { OtpFallbackOptions } from '../components/ui/OtpFallbackOptions';
 
 const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
   const [vaultState, setVaultState] = useState<'intro' | 'fetching' | 'done'>('intro');
@@ -129,6 +131,7 @@ export const Onboarding: React.FC = () => {
   const [profileName, setProfileName] = useState('Rameshwar Sharma');
   const [mpinInput, setMpinInput] = useState('1234');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [showFallback, setShowFallback] = useState(false);
 
   const languages = [
     { code: 'en', name: 'English' },
@@ -142,7 +145,7 @@ export const Onboarding: React.FC = () => {
   const handleLanguageSelect = (code: string) => {
     i18n.changeLanguage(code);
     localStorage.setItem('language', code);
-    setStep('user_type');
+    setStep('scam_awareness');
   };
 
   const handleUanVerification = async () => {
@@ -152,6 +155,7 @@ export const Onboarding: React.FC = () => {
         await new Promise(r => setTimeout(r, 800)); // Simulate sending OTP
         setIsVerifying(false);
         setShowOtp(true);
+        setShowFallback(false);
       } else {
         alert('Invalid UAN (must be 12 digits)');
       }
@@ -177,6 +181,7 @@ export const Onboarding: React.FC = () => {
           if (next >= 3) setIsLocked(true);
           return next;
         });
+        setShowFallback(true);
         toast.error('Invalid OTP');
       }
     } else {
@@ -185,6 +190,7 @@ export const Onboarding: React.FC = () => {
         if (next >= 3) setIsLocked(true);
         return next;
       });
+      setShowFallback(true);
       toast.error('Invalid OTP. Attempt ' + (failedAttempts + 1) + ' of 3');
     }
   };
@@ -200,7 +206,8 @@ export const Onboarding: React.FC = () => {
         setStep('prerequisites');
       }
     } else {
-      alert('Invalid OTP');
+      setShowFallback(true);
+      toast.error('Invalid OTP');
     }
   };
 
@@ -216,7 +223,8 @@ export const Onboarding: React.FC = () => {
         <div className='sticky top-4 left-4 z-50 self-start ml-4 mt-4 -mb-10'>
           <button 
             onClick={() => {
-              if (step === 'user_type') setStep('language');
+              if (step === 'scam_awareness') setStep('language');
+              else if (step === 'user_type') setStep('scam_awareness');
               else if (step === 'returning_login') setStep('user_type');
               else if (step === 'identity') setStep('user_type');
               else if (step === 'verify_uan' || step === 'mobile_login') setStep('identity');
@@ -248,6 +256,33 @@ export const Onboarding: React.FC = () => {
                     <span className='font-medium text-lg'>{lang.name}</span>
                   </button>
                 ))}
+              </div>
+            </motion.div>
+          )}
+
+          {step === 'scam_awareness' && (
+            <motion.div key="scam_awareness" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='space-y-3 my-auto'>
+              <ScamAwarenessAnimation />
+              
+              <div>
+                <div className='flex items-center gap-2 mb-0.5'>
+                  <AlertTriangle className='w-4 h-4 text-amber-500 shrink-0' />
+                  <h1 className='text-xl font-bold text-slate-900'>{t('scam_awareness_title')}</h1>
+                </div>
+                <p className='text-slate-500 text-[11px] leading-snug'>{t('scam_awareness_subtitle')}</p>
+              </div>
+
+              <div className='bg-white border border-slate-200/80 rounded-xl p-3 space-y-2'>
+                <p className='text-[11px] text-slate-600 leading-snug'><span className='font-semibold text-red-600'>1.</span> {t('scam_awareness_point_1')}</p>
+                <p className='text-[11px] text-slate-600 leading-snug'><span className='font-semibold text-red-600'>2.</span> {t('scam_awareness_point_2')}</p>
+                <p className='text-[11px] text-slate-600 leading-snug'><span className='font-semibold text-amber-600'>3.</span> {t('scam_awareness_point_3')}</p>
+                <p className='text-[11px] text-slate-600 leading-snug'><span className='font-semibold text-green-600'>4.</span> {t('scam_awareness_point_4')}</p>
+              </div>
+
+              <div className='pt-1'>
+                <Button className='w-full py-3.5 text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-2xl shadow-sm' onClick={() => setStep('user_type')}>
+                  {t('scam_awareness_button')} →
+                </Button>
               </div>
             </motion.div>
           )}
@@ -307,6 +342,17 @@ export const Onboarding: React.FC = () => {
                           value={otpInput}
                           onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
                         />
+                        {showFallback ? (
+                          <OtpFallbackOptions />
+                        ) : (
+                          <div className='flex justify-between items-center mt-3 px-1'>
+                            <p className='text-xs text-slate-500'>Didn't receive OTP?</p>
+                            <div className='flex gap-3'>
+                              <button className='text-xs font-semibold text-epfo-blue hover:underline' onClick={() => toast.success('OTP sent via WhatsApp')}>WhatsApp</button>
+                              <button className='text-xs font-semibold text-epfo-blue hover:underline' onClick={() => toast.success('Initiating Voice Call...')}>Voice Call</button>
+                            </div>
+                          </div>
+                        )}
                       </motion.div>
                     )}
                     
@@ -421,6 +467,17 @@ export const Onboarding: React.FC = () => {
                       value={otpInput}
                       onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
                     />
+                    {showFallback ? (
+                      <OtpFallbackOptions />
+                    ) : (
+                      <div className='flex justify-between items-center mt-3 px-1'>
+                        <p className='text-xs text-slate-500'>Didn't receive OTP?</p>
+                        <div className='flex gap-3'>
+                          <button className='text-xs font-semibold text-epfo-orange hover:underline' onClick={() => toast.success('OTP sent via WhatsApp')}>WhatsApp</button>
+                          <button className='text-xs font-semibold text-epfo-orange hover:underline' onClick={() => toast.success('Initiating Voice Call...')}>Voice Call</button>
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 )}
 
@@ -459,6 +516,7 @@ export const Onboarding: React.FC = () => {
                 <Button className='w-full py-4' disabled={isVerifying || phoneInput.length < 10} onClick={handlePhoneLogin}>
                   {isVerifying ? 'Verifying...' : 'Login'}
                 </Button>
+                {showFallback && <OtpFallbackOptions />}
               </div>
             </motion.div>
           )}

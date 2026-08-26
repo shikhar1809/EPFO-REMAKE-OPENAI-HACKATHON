@@ -12,9 +12,7 @@ export const SceneTransition = ({ children }: { children: React.ReactNode }) => 
     if (location.pathname !== displayLocation.pathname) {
       setIsLoading(true);
       
-      // If we are navigating to the Dashboard, wait 5 seconds. Otherwise 600ms.
-      const isDashboard = location.pathname === '/' || location.pathname === '/guest';
-      const delay = isDashboard ? 5000 : 600;
+      const delay = 300;
 
       // Simulate network/transition delay
       const timer = setTimeout(() => {

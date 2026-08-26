@@ -12,9 +12,11 @@ import {
   Info
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
+import { OtpFallbackOptions } from '../../components/ui/OtpFallbackOptions';
 import { useSessionStore } from '../../store/useSessionStore';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { FlowInfoCard } from '../../components/ui/FlowInfoCard';
 
 export const MarkExit: React.FC = () => {
   const { t } = useTranslation();
@@ -52,6 +54,7 @@ export const MarkExit: React.FC = () => {
   const [exitReason, setExitReason] = useState('CESSATION');
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [authError, setAuthError] = useState(false);
 
   const handleSelectEstablishment = (emp: typeof employments[0]) => {
     if (!emp.isEligible) {
@@ -78,10 +81,12 @@ export const MarkExit: React.FC = () => {
     setIsSubmitting(false);
 
     if (verified) {
+      setAuthError(false);
       setStep('success');
       toast.success('Date of Exit updated successfully in EPFO records!');
     } else {
-      toast.error('Invalid OTP. Use 1234 for demo.');
+      setAuthError(true);
+      toast.error('Invalid OTP. Use 1234.');
     }
   };
 
@@ -107,6 +112,7 @@ export const MarkExit: React.FC = () => {
       </div>
 
       <div className='p-5 space-y-5 max-w-md mx-auto w-full'>
+        {step === 'select' && <FlowInfoCard flowType="mark_exit" />}
         
         {/* STEP 1: SELECT ESTABLISHMENT */}
         {step === 'select' && (
@@ -264,7 +270,7 @@ export const MarkExit: React.FC = () => {
                 />
                 
                 <p className='text-[11px] text-slate-400'>
-                  Demo Hint: Enter <strong>1234</strong>
+                  Hint: Enter <strong>1234</strong>
                 </p>
 
                 <Button 
@@ -274,6 +280,7 @@ export const MarkExit: React.FC = () => {
                 >
                   {isSubmitting ? 'Signing Declaration...' : 'Confirm & Update Exit Date'}
                 </Button>
+                {authError && <OtpFallbackOptions variant='compact' />}
               </form>
             </div>
           </motion.div>

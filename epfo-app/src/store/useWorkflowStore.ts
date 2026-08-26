@@ -7,9 +7,29 @@ export type AgentState =
   | 'in_progress' 
   | 'needs_user' 
   | 'sensitive_action' 
+  | 'pending_employer'
   | 'completed' 
   | 'failed' 
   | 'recoverable';
+
+export interface EmployerApproval {
+  submittedAt: number;
+  slaDays: number;
+  employerName: string;
+  escalated: boolean;
+  taskReference: string;
+}
+
+export type PlanStep = { step: string; description: string; status: 'pending' | 'active' | 'completed' };
+
+export interface Phase {
+  id: string;
+  label: string;
+  description: string;
+  taskType: string;
+  plan: PlanStep[];
+  status: 'pending' | 'active' | 'completed';
+}
 
 export interface WorkflowTask {
   taskId: string;
@@ -18,10 +38,14 @@ export interface WorkflowTask {
   currentStep: string;
   completedSteps: string[];
   stateVersion: number;
-  dataReferences: string[]; // Vault references
+  dataReferences: string[];
   agentState: AgentState;
-  lastCheckpoint: number; // Timestamp
-  plan: { step: string; description: string; status: 'pending' | 'active' | 'completed' }[];
+  lastCheckpoint: number;
+  plan: PlanStep[];
+  employerApproval?: EmployerApproval;
+  grievanceType?: string;
+  phases?: Phase[];
+  currentPhaseIndex?: number;
 }
 
 interface WorkflowState {
@@ -29,12 +53,14 @@ interface WorkflowState {
   completedTasks: WorkflowTask[];
   currentTaskId: string | null;
   
-  // Actions
-  startTask: (intent: string, taskType: string, plan: WorkflowTask['plan']) => string;
+  startTask: (intent: string, taskType: string, plan: WorkflowTask['plan'], phases?: Phase[]) => string;
   updateTaskState: (taskId: string, updates: Partial<WorkflowTask>) => void;
   checkpointTask: (taskId: string, completedStep: string, nextStep: string) => void;
+  completeCurrentPhase: (taskId: string) => void;
+  getCurrentPhase: (taskId: string) => Phase | null;
   resumeTask: (taskId: string) => void;
   clearTask: (taskId: string) => void;
+  clearAllTasks: () => void;
   archiveTask: (taskId: string) => void;
   getCurrentTask: () => WorkflowTask | null;
 }
@@ -48,7 +74,7 @@ export const useWorkflowStore = create<WorkflowState>()(
       completedTasks: [],
       currentTaskId: null,
 
-      startTask: (intent, taskType, plan) => {
+      startTask: (intent, taskType, plan, phases) => {
         const taskId = generateId();
         const newTask: WorkflowTask = {
           taskId,
@@ -60,7 +86,8 @@ export const useWorkflowStore = create<WorkflowState>()(
           dataReferences: [],
           agentState: 'planned',
           lastCheckpoint: Date.now(),
-          plan
+          plan,
+          ...(phases && phases.length > 0 ? { phases, currentPhaseIndex: 0 } : {}),
         };
 
         set(state => ({
@@ -111,6 +138,63 @@ export const useWorkflowStore = create<WorkflowState>()(
         });
       },
 
+      completeCurrentPhase: (taskId) => {
+        set(state => {
+          const task = state.activeTasks[taskId];
+          if (!task?.phases || task.currentPhaseIndex === undefined) return state;
+
+          const updatedPhases = task.phases.map((p, i) => {
+            if (i === task.currentPhaseIndex) return { ...p, status: 'completed' as const };
+            if (i === task.currentPhaseIndex! + 1) return { ...p, status: 'active' as const };
+            return p;
+          });
+
+          const nextPhaseIndex = task.currentPhaseIndex + 1;
+          const nextPhase = updatedPhases[nextPhaseIndex];
+
+          if (!nextPhase) {
+            return {
+              activeTasks: {
+                ...state.activeTasks,
+                [taskId]: {
+                  ...task,
+                  phases: updatedPhases,
+                  currentPhaseIndex: nextPhaseIndex,
+                  agentState: 'completed',
+                  stateVersion: task.stateVersion + 1,
+                  lastCheckpoint: Date.now(),
+                }
+              }
+            };
+          }
+
+          return {
+            activeTasks: {
+              ...state.activeTasks,
+              [taskId]: {
+                ...task,
+                phases: updatedPhases,
+                currentPhaseIndex: nextPhaseIndex,
+                plan: nextPhase.plan.map((p, i) => ({
+                  ...p,
+                  status: i === 0 ? 'active' as const : 'pending' as const,
+                })),
+                currentStep: nextPhase.plan[0].step,
+                completedSteps: [],
+                stateVersion: task.stateVersion + 1,
+                lastCheckpoint: Date.now(),
+              }
+            }
+          };
+        });
+      },
+
+      getCurrentPhase: (taskId) => {
+        const task = get().activeTasks[taskId];
+        if (!task?.phases || task.currentPhaseIndex === undefined) return null;
+        return task.phases[task.currentPhaseIndex] || null;
+      },
+
       resumeTask: (taskId) => {
         set({ currentTaskId: taskId });
       },
@@ -124,6 +208,10 @@ export const useWorkflowStore = create<WorkflowState>()(
             currentTaskId: state.currentTaskId === taskId ? null : state.currentTaskId
           };
         });
+      },
+
+      clearAllTasks: () => {
+        set({ activeTasks: {}, completedTasks: [], currentTaskId: null });
       },
 
       archiveTask: (taskId) => {
