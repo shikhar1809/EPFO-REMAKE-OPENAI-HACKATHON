@@ -5,8 +5,6 @@ import {
   FolderOpen, 
   LogOut, 
   ShieldAlert, 
-  Play, 
-  Trash2, 
   ShieldCheck, 
   ArrowRight, 
   Bell,
@@ -37,9 +35,9 @@ import { buildMultiPhaseTask } from '../agents/compound';
 import { BalanceCard } from '../components/dashboard/BalanceCard';
 import { AccountHealthCard } from '../components/dashboard/AccountHealthCard';
 import { RecentActivityCard } from '../components/dashboard/RecentActivityCard';
-import { QuickActionsCard } from '../components/dashboard/QuickActionsCard';
 import { DemoAlertBanners } from '../components/dashboard/DemoAlertBanners';
 import { SwappableCards } from '../components/dashboard/SwappableCards';
+import { ActiveSessionsPrompt } from '../components/dashboard/ActiveSessionsPrompt';
 
 export const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -49,6 +47,7 @@ export const Home: React.FC = () => {
   const { enabled: notificationsEnabled } = useNotificationStore();
   
   const [flowChoice, setFlowChoice] = useState<'none' | 'agentic' | 'traditional'>('none');
+  const [pendingFlowChoice, setPendingFlowChoice] = useState<'agentic' | 'traditional' | null>(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   
   const [chatInput, setChatInput] = useState('');
@@ -158,10 +157,34 @@ export const Home: React.FC = () => {
     if (resumeSecurityAnswer.toLowerCase() === 'fluffy') {
       if (resumeTaskId) {
         resumeTask(resumeTaskId);
+        setPendingFlowChoice(null);
+        setFlowChoice('none');
         navigate(`/smart-flow`);
       }
     } else {
       setResumeError(true);
+    }
+  };
+
+  const goToFlow = (choice: 'agentic' | 'traditional') => {
+    setPendingFlowChoice(null);
+    setFlowChoice(choice);
+  };
+
+  const requestFlow = (choice: 'agentic' | 'traditional') => {
+    if (activeTaskValues.length > 0) {
+      setPendingFlowChoice(choice);
+    } else {
+      goToFlow(choice);
+    }
+  };
+
+  const handleDeleteSession = (taskId: string) => {
+    clearTask(taskId);
+    const remaining = Object.values(useWorkflowStore.getState().activeTasks)
+      .filter(t => t.agentState !== 'completed').length;
+    if (remaining === 0 && pendingFlowChoice) {
+      goToFlow(pendingFlowChoice);
     }
   };
 
@@ -240,20 +263,17 @@ export const Home: React.FC = () => {
         {/* ========================================================= */}
         {!isAnalyzing && flowChoice === 'none' && (
           <>
-            {/* PF Balance Card */}
-            {isAuthenticated && <BalanceCard />}
+            {/* PF Details ⇄ Account Details ⇄ Recent Activity (auto-swapping) */}
+            {isAuthenticated && (
+              <SwappableCards intervalMs={5000}>
+                <BalanceCard />
+                <AccountHealthCard />
+                <RecentActivityCard />
+              </SwappableCards>
+            )}
 
             {/* Smart Notifications — Card Stack */}
             {isAuthenticated && <NotificationCardStack />}
-
-            {/* Account Health → Recent Activity → Quick Actions (auto-swapping deck) */}
-            {isAuthenticated && (
-              <SwappableCards intervalMs={5000}>
-                <AccountHealthCard />
-                <RecentActivityCard />
-                <QuickActionsCard />
-              </SwappableCards>
-            )}
 
             {/* Demo Alert Banners */}
             {isAuthenticated && (
@@ -272,7 +292,7 @@ export const Home: React.FC = () => {
                 
                 {/* 1. SMART FLOW (Opens Dedicated Smart Agent View) */}
                 <button 
-                  onClick={() => setFlowChoice('agentic')}
+                  onClick={() => requestFlow('agentic')}
                   className='p-3 bg-gradient-to-br from-blue-50/95 via-white to-blue-50/50 border border-epfo-blue/40 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-2xs hover:shadow-xs transition-all'
                 >
                   <div className='flex items-center justify-between mb-1.5'>
@@ -296,7 +316,7 @@ export const Home: React.FC = () => {
 
                 {/* 2. TRADITIONAL FLOW (Opens Dedicated Traditional View) */}
                 <button 
-                  onClick={() => setFlowChoice('traditional')}
+                  onClick={() => requestFlow('traditional')}
                   className='p-3 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-2xs hover:shadow-xs transition-all'
                 >
                   <div className='w-7 h-7 bg-slate-100 text-slate-700 rounded-lg flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform'>
@@ -315,42 +335,6 @@ export const Home: React.FC = () => {
 
               </div>
             </section>
-
-            {/* Active Tasks & Crash Recovery */}
-            {activeTaskValues.length > 0 && (
-              <section className='space-y-1.5'>
-                <h2 className='text-[11px] font-bold text-slate-800 uppercase tracking-wider px-0.5 flex items-center gap-1.5'>
-                  {t('active_tasks')}
-                  <span className='bg-orange-100 text-orange-700 text-[9px] px-1.5 py-0.5 rounded-full font-bold'>
-                    {activeTaskValues.length}
-                  </span>
-                </h2>
-                <div className='space-y-2'>
-                  {activeTaskValues.map(task => (
-                    <div key={task.taskId} className='bg-white/95 p-3 rounded-2xl border border-orange-200 shadow-2xs flex justify-between items-center'>
-                      <div>
-                        <p className='font-bold text-xs text-slate-900'>{task.intent}</p>
-                        <p className='text-[11px] text-slate-500 mt-0.5'>
-                          Status: <span className='font-semibold text-orange-600 capitalize'>{task.agentState.replace('_', ' ')}</span> • {new Date(task.lastCheckpoint).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </div>
-                      <div className='flex items-center gap-1.5'>
-                        <Button onClick={() => handleResume(task.taskId)} className='shrink-0 gap-1 text-[11px] py-1.5 px-3 font-bold'>
-                          <Play className='w-3 h-3 fill-current' /> {t('resume')}
-                        </Button>
-                        <button 
-                          onClick={() => clearTask(task.taskId)} 
-                          className='p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors'
-                          title='Delete task'
-                        >
-                          <Trash2 className='!w-4 !h-4' />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
           </>
         )}
 
@@ -623,8 +607,19 @@ export const Home: React.FC = () => {
 
       </div>
 
+      {pendingFlowChoice && activeTaskValues.length > 0 && (
+        <ActiveSessionsPrompt
+          sessions={activeTaskValues}
+          flowChoice={pendingFlowChoice}
+          onResume={handleResume}
+          onStartFresh={() => goToFlow(pendingFlowChoice)}
+          onCancel={() => setPendingFlowChoice(null)}
+          onDelete={handleDeleteSession}
+        />
+      )}
+
       {resumeTaskId && (
-        <div className='fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4'>
+        <div className='fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[110] flex items-center justify-center p-4'>
           <div className='bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-6'>
             <div className='flex items-center gap-3 text-epfo-blue'>
               <ShieldCheck className='!w-8 !h-8' />

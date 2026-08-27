@@ -18,7 +18,7 @@ export const BalanceCard: React.FC = () => {
           <div className='bg-white/10 p-1.5 rounded-lg'>
             <Wallet className='!w-4 !h-4' />
           </div>
-          <span className='text-[11px] font-medium text-white/60'>Total PF Balance</span>
+          <span className='text-[11px] font-medium text-white/60'>PF Details</span>
         </div>
         <button
           onClick={() => navigate('/passbook')}

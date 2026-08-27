@@ -50,7 +50,7 @@ export const AccountHealthCard: React.FC = () => {
           ) : (
             <ShieldAlert className='!w-3.5 !h-3.5 text-amber-600' />
           )}
-          <span className='text-[10px] font-bold text-slate-700 uppercase tracking-wider'>Account Health</span>
+          <span className='text-[10px] font-bold text-slate-700 uppercase tracking-wider'>Account Details</span>
         </div>
         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
           score === 100 ? 'bg-emerald-100 text-emerald-700' :
