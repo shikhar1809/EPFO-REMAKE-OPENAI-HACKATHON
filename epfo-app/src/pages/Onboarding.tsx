@@ -132,7 +132,8 @@ export const Onboarding: React.FC = () => {
         applyLowInternetMode(isLow);
       };
       runNetworkCheck();
-      const timer = setTimeout(() => setStep('language'), 1500);
+      const nextStep = localStorage.getItem('onboarded') === 'true' ? 'returning_login' : 'language';
+      const timer = setTimeout(() => setStep(nextStep), 1500);
       return () => clearTimeout(timer);
     }
   }, [step]);

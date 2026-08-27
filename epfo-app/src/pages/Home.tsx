@@ -221,14 +221,24 @@ export const Home: React.FC = () => {
               <span className='absolute top-1 right-1 w-2 h-2 bg-emerald-500 rounded-full ring-1 ring-white'></span>
             )}
           </button>
-          <button 
-            onClick={() => { logout(); navigate('/onboarding', { replace: true }); }} 
-            className='p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors shadow-2xs' 
-            aria-label={t('logout')}
-            title={t('logout')}
-          >
-            <LogOut className='!w-4 !h-4' />
-          </button>
+          {isAuthenticated ? (
+            <button 
+              onClick={() => { logout(); navigate('/onboarding', { replace: true }); }} 
+              className='p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors shadow-2xs' 
+              aria-label={t('logout')}
+              title={t('logout')}
+            >
+              <LogOut className='!w-4 !h-4' />
+            </button>
+          ) : (
+            <button 
+              onClick={() => navigate('/onboarding', { replace: true })} 
+              className='px-3 py-1.5 bg-epfo-blue text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-xs' 
+              aria-label={t('ob_login')}
+            >
+              {t('ob_login')}
+            </button>
+          )}
         </div>
       </div>
 
