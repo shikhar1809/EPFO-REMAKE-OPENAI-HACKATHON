@@ -2,11 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RotateCcw } from 'lucide-react';
 import { useDemoStore, DEMO_SCENARIOS } from '../../store/useDemoStore';
-import { useSessionStore } from '../../store/useSessionStore';
 import { useDataStore } from '../../store/useDataStore';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
 import { buildMultiPhaseTaskAt } from '../../agents/compound';
 import { generatePlan } from '../../agents/registry';
+import { resetDemoBaseline } from '../../lib/demoReset';
 
 const SCENARIO_HINTS: Record<string, string> = {
   happy: 'All checks pass.',
@@ -31,20 +31,9 @@ export const DemoControlPanel: React.FC = () => {
   const { activeScenario, setScenario } = useDemoStore();
   const navigate = useNavigate();
 
-  const resetToBaseline = () => {
-    useSessionStore.setState({
-      isAuthenticated: true,
-      user: { uan: '100904838291', phone: '9876543210', name: 'Rahul Sharma' },
-    });
-    useDataStore.setState({
-      profile: { name: 'Rahul Sharma', uan: '100904838291', pan: 'ABCDE1234F', aadhaar: 'XXXX-XXXX-8921', bankAccount: 'XXXXXX4892' },
-    });
-    useWorkflowStore.getState().clearAllTasks();
-  };
-
   const applyScenario = (id: string) => {
     setScenario(id);
-    resetToBaseline();
+    resetDemoBaseline();
 
     switch (id) {
       case 'happy':

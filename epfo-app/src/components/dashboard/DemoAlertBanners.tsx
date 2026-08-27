@@ -144,15 +144,15 @@ export const DemoAlertBanners: React.FC<Props> = ({ onAgenticStart }) => {
       {visible.map((banner) => {
         const Icon = banner.icon;
         return (
-          <section key={banner.key} className={`${banner.color} border rounded-2xl p-3 shadow-sm`}>
+          <section key={banner.key} className={`${banner.color} border rounded-2xl p-2.5 shadow-sm`}>
             <div className='flex items-start gap-2.5'>
               <div className={`${banner.iconColor} p-1.5 rounded-xl shrink-0`}>
-                <Icon className='!w-6 !h-6' />
+                <Icon className='!w-5 !h-5' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-bold text-xs text-slate-900'>{banner.title}</h3>
                 <p className='text-[11px] text-slate-700 mt-0.5 leading-snug'>{banner.desc}</p>
-                <div className='flex gap-2 mt-2'>
+                <div className='flex gap-2 mt-1.5'>
                   {banner.actions.map((action) => (
                     <button
                       key={action.label}

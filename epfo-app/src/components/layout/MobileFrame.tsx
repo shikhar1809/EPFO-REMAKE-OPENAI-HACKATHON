@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, ChevronDown, ChevronUp } from 'lucide-react';
 import { ServerStatusBadge } from '../common/ServerStatusBadge';
@@ -9,6 +9,7 @@ import { DemoControlPanel } from '../demo/DemoControlPanel';
 
 import { useDemoStore, DEMO_SCENARIOS } from '../../store/useDemoStore';
 import { getComparison, getScenarioFeatures, ALL_FEATURES } from '../../data/comparisons';
+import { resetDemoBaseline } from '../../lib/demoReset';
 
 const ComparisonPanelContent: React.FC<{
   route: string;
@@ -113,11 +114,27 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
   const { i18n } = useTranslation();
   const { status } = useServerStatusStore();
   const location = useLocation();
+  const navigate = useNavigate();
   const { activeScenario } = useDemoStore();
   const [fontScale, setFontScale] = React.useState(() => parseInt(localStorage.getItem('fontScale') || '16'));
   const [mobileCompareOpen, setMobileCompareOpen] = React.useState(false);
 
   const scenarioLabel = DEMO_SCENARIOS.find(s => s.id === activeScenario)?.label || 'Happy Path';
+
+  // Every fresh page load starts at the default: Happy Path dashboard.
+  // Clear any stale persisted scenario and route back to '/' so the app
+  // never boots into a leftover banner state or scenario page.
+  React.useEffect(() => {
+    const demo = useDemoStore.getState();
+    if (demo.activeScenario !== 'happy') {
+      demo.clearScenario();
+      resetDemoBaseline();
+      if (location.pathname !== '/' && location.pathname !== '/onboarding' && location.pathname !== '/login') {
+        navigate('/', { replace: true });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   React.useEffect(() => {
     document.documentElement.style.fontSize = `${fontScale}px`;

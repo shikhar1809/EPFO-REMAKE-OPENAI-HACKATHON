@@ -12,6 +12,8 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { useNotificationStore } from '../../store/useNotificationStore';
+import { useDemoStore } from '../../store/useDemoStore';
+import { mergeNotifications } from '../../lib/scenarioNotifications';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   ShieldCheck, CalendarX2, AlertTriangle, Wallet, ArrowRightLeft, CheckCircle2, ShieldAlert,
@@ -67,15 +69,17 @@ const LINK_MAP: Record<string, string> = {
 export const NotificationCardStack: React.FC = () => {
   const navigate = useNavigate();
   const { notifications, activeCardIndex, setActiveCardIndex } = useNotificationStore();
-  const unreadCards = notifications.filter(n => !n.read);
-  const cards = unreadCards.length > 0 ? unreadCards : notifications.slice(0, 3);
+  const activeScenario = useDemoStore(s => s.activeScenario);
+  const merged = React.useMemo(() => mergeNotifications(notifications, activeScenario), [notifications, activeScenario]);
+  const unreadCards = merged.filter(n => !n.read);
+  const cards = unreadCards.length > 0 ? unreadCards : merged.slice(0, 3);
   const current = cards[activeCardIndex % cards.length];
 
   const c = current?.color || 'blue';
   const CardIcon = ICON_MAP[current?.icon] || ShieldCheck;
 
   return (
-    <section className='space-y-1.5'>
+    <section className='space-y-1'>
       <div className='px-0.5 flex items-center justify-between'>
         <h2 className='text-[11px] font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5'>
           <Bell className='!w-3.5 !h-3.5 text-epfo-blue' />
@@ -99,7 +103,7 @@ export const NotificationCardStack: React.FC = () => {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.2 }}
-        className={`bg-gradient-to-r ${GRADIENT_MAP[c] || GRADIENT_MAP.blue} border ${BORDER_MAP[c] || BORDER_MAP.blue} rounded-2xl p-3 shadow-xs cursor-pointer`}
+        className={`bg-gradient-to-r ${GRADIENT_MAP[c] || GRADIENT_MAP.blue} border ${BORDER_MAP[c] || BORDER_MAP.blue} rounded-2xl px-3 py-2.5 shadow-xs cursor-pointer`}
         onClick={() => navigate('/notifications')}
       >
         <div className='flex items-start gap-2.5'>
@@ -108,7 +112,7 @@ export const NotificationCardStack: React.FC = () => {
           </div>
           <div className='flex-1 min-w-0'>
             <div className='flex items-center gap-1.5'>
-              <h4 className={`text-[11px] font-bold ${HEADING_MAP[c] || HEADING_MAP.blue}`}>{current?.title}</h4>
+              <p className={`text-[11px] font-bold ${HEADING_MAP[c] || HEADING_MAP.blue}`}>{current?.title}</p>
               {!current?.read && <span className='w-1.5 h-1.5 rounded-full bg-epfo-blue shrink-0' />}
             </div>
             <p className={`text-[10px] ${BODY_MAP[c] || BODY_MAP.blue} mt-0.5 leading-snug`}>
@@ -117,7 +121,7 @@ export const NotificationCardStack: React.FC = () => {
             {current?.actionPath && (
               <button
                 onClick={(e) => { e.stopPropagation(); navigate(current.actionPath!); }}
-                className={`mt-1.5 text-[10px] font-bold ${LINK_MAP[c] || LINK_MAP.blue} underline underline-offset-2`}
+                className={`mt-1 text-[10px] font-bold ${LINK_MAP[c] || LINK_MAP.blue} underline underline-offset-2`}
               >
                 {current?.actionLabel} →
               </button>

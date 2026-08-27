@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useServerStatusStore, type ServerHealthState } from '../../store/useServerStatusStore';
 
+const SUPPORT_URL = 'https://support-epfo-remake-openai.vercel.app';
+
 export const ServerStatusBadge: React.FC = () => {
-  const navigate = useNavigate();
   const { status, setStatus } = useServerStatusStore();
 
   // Subtle Demo Load Fluctuation (Randomly toggles between Green and Yellow only, never Red)
@@ -68,7 +68,7 @@ export const ServerStatusBadge: React.FC = () => {
   return (
     <div className="relative group inline-flex items-center" role="status">
       <button
-        onClick={() => navigate('/status')}
+        onClick={() => window.open(SUPPORT_URL, '_blank', 'noopener,noreferrer')}
         aria-label={`Server status: ${status}. This is simulated data.`}
         className={`flex items-center gap-1.5 px-1 py-0.5 transition-all cursor-pointer select-none text-[10px] font-extrabold tracking-tight shrink-0 ${config.badgeBg}`}
       >

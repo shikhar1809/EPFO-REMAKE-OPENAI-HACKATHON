@@ -46,7 +46,7 @@ export const SwappableCards: React.FC<Props> = ({ children, intervalMs = 5000 })
       </div>
 
       {count > 1 && (
-        <div className='flex items-center justify-center gap-3 mt-1.5'>
+        <div className='flex items-center justify-center gap-3 mt-1'>
           <button
             onClick={() => goTo(active - 1)}
             className='p-1 rounded-full hover:bg-slate-100 text-slate-400 transition-colors'

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell, CheckCircle2, ShieldCheck, CalendarX2, AlertTriangle, Wallet, ArrowRightLeft, ShieldAlert, CheckCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotificationStore, NOTIFICATION_CATEGORIES, type NotificationCategory, type NotificationItem } from '../../store/useNotificationStore';
+import { useDemoStore } from '../../store/useDemoStore';
+import { mergeNotifications } from '../../lib/scenarioNotifications';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   ShieldCheck,
@@ -53,9 +55,9 @@ const NotificationCard: React.FC<{ item: NotificationItem; onTap: () => void }> 
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h4 className={`text-xs font-bold ${catMeta.color.replace('text-', 'text-').replace('-700', '-900')}`}>
+            <p className={`text-xs font-bold ${catMeta.color.replace('text-', 'text-').replace('-700', '-900')}`}>
               {item.title}
-            </h4>
+            </p>
             {!item.read && (
               <span className="shrink-0 w-2 h-2 rounded-full bg-epfo-blue" aria-label="Unread" />
             )}
@@ -75,7 +77,9 @@ const NotificationCard: React.FC<{ item: NotificationItem; onTap: () => void }> 
 export const Notifications: React.FC = () => {
   const navigate = useNavigate();
   const { notifications, markRead, markAllRead } = useNotificationStore();
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const activeScenario = useDemoStore(s => s.activeScenario);
+  const merged = useMemo(() => mergeNotifications(notifications, activeScenario), [notifications, activeScenario]);
+  const unreadCount = merged.filter(n => !n.read).length;
 
   const grouped = useMemo(() => {
     const groups: Record<NotificationCategory, NotificationItem[]> = {
@@ -84,9 +88,9 @@ export const Notifications: React.FC = () => {
       contributions: [],
       alerts: [],
     };
-    notifications.forEach(n => groups[n.category].push(n));
+    merged.forEach(n => groups[n.category].push(n));
     return groups;
-  }, [notifications]);
+  }, [merged]);
 
   const categoryOrder: NotificationCategory[] = ['deadlines', 'claims', 'contributions', 'alerts'];
 

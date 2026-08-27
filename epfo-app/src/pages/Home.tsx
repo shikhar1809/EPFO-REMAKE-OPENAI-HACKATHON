@@ -192,7 +192,7 @@ export const Home: React.FC = () => {
     <div className='flex-1 flex flex-col bg-transparent overflow-y-auto relative'>
       
       {/* Compact Clean Header */}
-      <div className='px-4 py-2.5 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex justify-between items-center sticky top-0 z-10 shadow-xs'>
+      <div className='px-4 py-2 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex justify-between items-center sticky top-0 z-10 shadow-xs'>
         <div>
           <h1 className='text-base font-bold tracking-tight text-slate-900 leading-snug'>
             {isAuthenticated ? `Welcome back, ${firstName}` : t('portal_title')}
@@ -230,7 +230,7 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-<div className='p-4 space-y-3 max-w-2xl mx-auto w-full pb-12'>
+<div className='p-3 space-y-2 max-w-2xl mx-auto w-full pb-4'>
 
         {/* Global Analyzing Overlay — shows during handleAgenticStart from any view */}
         {isAnalyzing && (
@@ -293,11 +293,11 @@ export const Home: React.FC = () => {
                 {/* 1. SMART FLOW (Opens Dedicated Smart Agent View) */}
                 <button 
                   onClick={() => requestFlow('agentic')}
-                  className='p-3 bg-gradient-to-br from-blue-50/95 via-white to-blue-50/50 border border-epfo-blue/40 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-2xs hover:shadow-xs transition-all'
+                  className='p-2.5 bg-gradient-to-br from-blue-50/95 via-white to-blue-50/50 border border-epfo-blue/40 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-2xs hover:shadow-xs transition-all'
                 >
-                  <div className='flex items-center justify-between mb-1.5'>
-                    <div className='w-7 h-7 bg-epfo-blue text-white rounded-lg flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform'>
-                      <AssistantAvatar className='!w-5 !h-5' />
+                  <div className='flex items-center justify-between mb-1'>
+                    <div className='w-6 h-6 bg-epfo-blue text-white rounded-lg flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform'>
+                      <AssistantAvatar className='!w-4 !h-4' />
                     </div>
                     <span className='bg-epfo-orange text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase'>
                       {t('recommended')}
@@ -306,10 +306,10 @@ export const Home: React.FC = () => {
                   <h3 className='font-bold text-xs text-epfo-blue leading-tight'>
                     Smart Flow
                   </h3>
-                  <p className='text-[10px] text-slate-600 mt-1 leading-relaxed'>
+                  <p className='text-[10px] text-slate-600 mt-0.5 leading-relaxed'>
                     AI agent guides claims, transfers & certificates.
                   </p>
-                  <div className='mt-2 text-[10px] font-bold text-epfo-blue flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+                  <div className='mt-1.5 text-[10px] font-bold text-epfo-blue flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
                     Launch Smart Flow →
                   </div>
                 </button>
@@ -317,18 +317,18 @@ export const Home: React.FC = () => {
                 {/* 2. TRADITIONAL FLOW (Opens Dedicated Traditional View) */}
                 <button 
                   onClick={() => requestFlow('traditional')}
-                  className='p-3 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-2xs hover:shadow-xs transition-all'
+                  className='p-2.5 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-2xs hover:shadow-xs transition-all'
                 >
-                  <div className='w-7 h-7 bg-slate-100 text-slate-700 rounded-lg flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform'>
-                    <FolderOpen className='!w-5 !h-5' />
+                  <div className='w-6 h-6 bg-slate-100 text-slate-700 rounded-lg flex items-center justify-center mb-1 group-hover:scale-105 transition-transform'>
+                    <FolderOpen className='!w-4 !h-4' />
                   </div>
                   <h3 className='font-bold text-xs text-slate-900 leading-tight group-hover:text-slate-700'>
                     Traditional Flow
                   </h3>
-                  <p className='text-[10px] text-slate-600 mt-1 leading-relaxed'>
+                  <p className='text-[10px] text-slate-600 mt-0.5 leading-relaxed'>
                     Direct access to classic portal forms & filing.
                   </p>
-                  <div className='mt-2 text-[10px] font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+                  <div className='mt-1.5 text-[10px] font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
                     Open Portal →
                   </div>
                 </button>

@@ -12,8 +12,8 @@ export const BalanceCard: React.FC = () => {
   const pensionPct = (balance.pension / total) * 100;
 
   return (
-    <div className='bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-4 text-white shadow-lg'>
-      <div className='flex items-center justify-between mb-3'>
+    <div className='bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl px-4 py-3 text-white shadow-lg'>
+      <div className='flex items-center justify-between mb-2'>
         <div className='flex items-center gap-2'>
           <div className='bg-white/10 p-1.5 rounded-lg'>
             <Wallet className='!w-4 !h-4' />
@@ -28,8 +28,8 @@ export const BalanceCard: React.FC = () => {
         </button>
       </div>
 
-      <div className='mb-3'>
-        <span className='text-2xl font-bold tracking-tight'>₹{total.toLocaleString('en-IN')}</span>
+      <div className='mb-2'>
+        <span className='text-xl font-bold tracking-tight'>₹{total.toLocaleString('en-IN')}</span>
       </div>
 
       {/* Colored breakdown bar */}
@@ -39,7 +39,7 @@ export const BalanceCard: React.FC = () => {
         <div className='bg-amber-400 h-full' style={{ width: `${pensionPct}%` }} />
       </div>
 
-      <div className='flex gap-4 mt-2'>
+      <div className='flex gap-4 mt-1.5'>
         <div className='flex items-center gap-1.5'>
           <div className='w-2 h-2 rounded-full bg-emerald-400' />
           <span className='text-[10px] text-white/50'>Employee ₹{balance.employee.toLocaleString('en-IN')}</span>
