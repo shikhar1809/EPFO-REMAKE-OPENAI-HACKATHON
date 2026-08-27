@@ -6,7 +6,7 @@ import { Button } from '../components/ui/Button';
 import { useSessionStore } from '../store/useSessionStore';
 import toast from 'react-hot-toast';
 
-type Step = 'language' | 'scam_awareness' | 'user_type' | 'returning_login' | 'identity' | 'verify_uan' | 'mobile_login' | 'profile_setup' | 'prerequisites' | 'vault_intro';
+type Step = 'network_check' | 'language' | 'scam_awareness' | 'user_type' | 'returning_login' | 'identity' | 'verify_uan' | 'mobile_login' | 'profile_setup' | 'prerequisites' | 'vault_intro';
 
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Lock } from 'lucide-react';
@@ -15,6 +15,7 @@ import { SyncAnimation } from '../components/ui/SyncAnimation';
 import { VaultIntroAnimation } from '../components/animations/VaultIntroAnimation';
 import { ScamAwarenessAnimation } from '../components/animations/ScamAwarenessAnimation';
 import { OtpFallbackOptions } from '../components/ui/OtpFallbackOptions';
+import { useSettingsStore } from '../store/useSettingsStore';
 
 const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
   const { t } = useTranslation();
@@ -119,9 +120,25 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
 export const Onboarding: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [step, setStep] = useState<Step>('language');
+  const [step, setStep] = useState<Step>('network_check');
   
   const { verifyUAN, loginWithPhone, completeProfile, user } = useSessionStore();
+  const lowInternetMode = useSettingsStore(s => s.lowInternetMode);
+
+  React.useEffect(() => {
+    if (step === 'network_check') {
+      const timer = setTimeout(() => {
+        if (lowInternetMode) {
+          toast('LOW INTERNET MODE ENABLED', { 
+            icon: '⚠️', 
+            style: { background: '#f59e0b', color: '#fff', fontWeight: 'bold' } 
+          });
+        }
+        setStep('language');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [step, lowInternetMode]);
   
   const [uanInput, setUanInput] = useState('101234567890');
   const [phoneInput, setPhoneInput] = useState('9876543210');
@@ -245,6 +262,16 @@ export const Onboarding: React.FC = () => {
       <div className='flex-1 p-6 flex flex-col pb-12 max-w-md mx-auto w-full min-h-[min-content]'>
         <AnimatePresence mode='wait'>
           
+          {step === 'network_check' && (
+            <motion.div key="network_check" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className='space-y-6 my-auto text-center'>
+              <div className='flex items-center justify-center mb-4'>
+                <div className='animate-spin w-12 h-12 border-4 border-epfo-blue border-t-transparent rounded-full' />
+              </div>
+              <h1 className='text-2xl font-semibold mb-2 text-slate-900'>Checking your network...</h1>
+              <p className='text-slate-500 text-sm'>Optimizing EPFO app experience</p>
+            </motion.div>
+          )}
+
           {step === 'language' && (
             <motion.div key="language" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='space-y-6 my-auto'>
               <div className='bg-blue-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4'>
