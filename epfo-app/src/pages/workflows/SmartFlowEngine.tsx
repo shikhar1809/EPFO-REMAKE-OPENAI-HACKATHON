@@ -183,8 +183,13 @@ export const SmartFlowEngine: React.FC = () => {
 
   const proceedToNextStep = () => {
     if (currentStepIndex === task.plan.length - 1) {
-      const empFlow = EMPLOYER_APPROVAL_FLOWS[activeStep.step];
-      if (empFlow && task.taskType === empFlow) {
+      const bareStep = activeStep.step.replace(/^phase\d+_/, '');
+      const empFlow = EMPLOYER_APPROVAL_FLOWS[bareStep];
+      const currentFlowType = task.phases && task.currentPhaseIndex !== undefined 
+        ? task.phases[task.currentPhaseIndex].taskType 
+        : task.taskType;
+
+      if (empFlow && currentFlowType === empFlow) {
         checkpointTask(task.taskId, activeStep.step, '');
         updateTaskState(task.taskId, {
           agentState: 'pending_employer',
@@ -194,9 +199,6 @@ export const SmartFlowEngine: React.FC = () => {
             escalated: false, taskReference: `TKT-${Math.floor(1000 + Math.random() * 9000)}`,
           },
         });
-      } else if (task.phases && task.currentPhaseIndex !== undefined && task.currentPhaseIndex < task.phases.length - 1) {
-        checkpointTask(task.taskId, activeStep.step, '');
-        completeCurrentPhase(task.taskId);
       } else {
         checkpointTask(task.taskId, activeStep.step, '');
         updateTaskState(task.taskId, { agentState: 'completed' });
@@ -204,12 +206,28 @@ export const SmartFlowEngine: React.FC = () => {
       }
     } else {
       const nextStep = task.plan[currentStepIndex + 1].step;
-      const bareStep = nextStep.replace(/^phase\d+_/, '');
-      let nextState = 'planned';
-      if (NEEDS_USER_STEPS.has(bareStep)) nextState = 'needs_user';
-      else if (SENSITIVE_STEPS.has(bareStep)) nextState = 'sensitive_action';
-      checkpointTask(task.taskId, activeStep.step, nextStep);
-      updateTaskState(task.taskId, { agentState: nextState as any });
+      const currentPhaseMatch = activeStep.step.match(/^phase(\d+)_/);
+      const nextPhaseMatch = nextStep.match(/^phase(\d+)_/);
+      
+      const isPhaseTransition = task.phases && currentPhaseMatch && nextPhaseMatch && currentPhaseMatch[1] !== nextPhaseMatch[1];
+      
+      if (isPhaseTransition) {
+        checkpointTask(task.taskId, activeStep.step, '');
+        completeCurrentPhase(task.taskId);
+        
+        const bareStep = nextStep.replace(/^phase\d+_/, '');
+        let nextState = 'planned';
+        if (NEEDS_USER_STEPS.has(bareStep)) nextState = 'needs_user';
+        else if (SENSITIVE_STEPS.has(bareStep)) nextState = 'sensitive_action';
+        updateTaskState(task.taskId, { agentState: nextState as any });
+      } else {
+        const bareStep = nextStep.replace(/^phase\d+_/, '');
+        let nextState = 'planned';
+        if (NEEDS_USER_STEPS.has(bareStep)) nextState = 'needs_user';
+        else if (SENSITIVE_STEPS.has(bareStep)) nextState = 'sensitive_action';
+        checkpointTask(task.taskId, activeStep.step, nextStep);
+        updateTaskState(task.taskId, { agentState: nextState as any });
+      }
     }
   };
 

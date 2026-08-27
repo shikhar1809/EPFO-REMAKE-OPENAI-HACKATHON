@@ -39,6 +39,7 @@ const EPFO_KEYWORDS: { keyword: string; intent: string }[] = [
   { keyword: 'nomination', intent: 'kyc_mismatch' },
   { keyword: 'bank.*seed', intent: 'kyc_mismatch' },
   { keyword: 'ifsc', intent: 'kyc_mismatch' },
+  { keyword: 'withdrwa', intent: 'withdraw_pf' },
 ];
 
 const COMPOUND_PATTERNS: { pattern: RegExp; flows: string[] }[] = [
@@ -73,7 +74,7 @@ function extractIntents(query: string): string[] {
 }
 
 function hasConjunction(query: string): boolean {
-  return /\b(and|then|also|after|before|plus|with|while|once)\b/i.test(query);
+  return /\b(and|then|also|after|before|plus|with|while|once)\b/i.test(query) || /[\+&]/.test(query);
 }
 
 export function detectCompoundIntent(query: string): string[] | null {
@@ -104,7 +105,7 @@ export function classifyIntent(query: string): string {
   const lower = query.toLowerCase();
   if (lower.includes('life') || lower.includes('certificate') || lower.includes('pramaan') || lower.includes('jeevan')) return 'life_certificate';
   if (lower.includes('exit') || lower.includes('leaving') || lower.includes('quit') || lower.includes('resign') || lower.includes('left my job')) return 'mark_exit';
-  if (lower.includes('withdraw') || lower.includes('advance') || lower.includes('claim') || lower.includes('medical') || lower.includes('emergency') || lower.includes('form 31') || lower.includes('form 19')) return 'withdraw_pf';
+  if (lower.includes('withdraw') || lower.includes('withdrwa') || lower.includes('advance') || lower.includes('claim') || lower.includes('medical') || lower.includes('emergency') || lower.includes('form 31') || lower.includes('form 19')) return 'withdraw_pf';
   if (lower.includes('transfer') || lower.includes('old account') || lower.includes('previous employer')) return 'transfer_pf';
   if (lower.includes('merge') || lower.includes('consolidat') || lower.includes('duplicate') || lower.includes('multiple uan')) return 'merge_accounts';
   if (lower.includes('grievance') || lower.includes('complaint') || lower.includes('reject') || lower.includes('complain')) return 'grievance';
