@@ -190,7 +190,7 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
       <DemoControlPanel />
 
       {/* Center Mobile App Frame */}
-      <div className='flex-1 flex flex-col items-center px-4 pt-3 pb-4 min-w-0'>
+      <div className='flex-1 flex flex-col items-center px-4 pt-3 pb-4 min-w-0 relative'>
         <p className='text-[10px] text-slate-500 mb-2 shrink-0'>Submission by Shikhar Shahi, Jigyasa Tiwari</p>
         <div className='w-full max-w-[420px] h-[870px] max-h-[92vh] bg-slate-50 rounded-3xl shadow-2xl overflow-hidden relative flex flex-col border border-slate-700/30 shrink-0'>
 
@@ -253,6 +253,9 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
             {children}
           </main>
         </div>
+        
+        {/* Portal Target for Right-Side Content (Outside Mobile Frame) */}
+        <div id="right-side-portal" className="hidden xl:flex flex-col gap-4 absolute left-[calc(50%+230px)] top-12 w-[340px] pointer-events-auto" />
       </div>
 
       {/* Right Panel — Comparison (Desktop) */}

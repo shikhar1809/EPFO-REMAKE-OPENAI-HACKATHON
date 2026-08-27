@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -368,25 +369,29 @@ export const SmartFlowEngine: React.FC = () => {
                 </div>
                 <FlowInfoCard flowType={task.taskType} className='mb-4' />
 
-                {/* Problem Root Cause — why this problem exists */}
-                {agentConfig?.rootCause && (
-                  <div className='mb-3 p-3.5 rounded-2xl border border-amber-200 bg-amber-50'>
-                    <p className='text-[11px] font-bold text-amber-700 uppercase tracking-wider mb-1'>⚠ Why this problem exists</p>
-                    <p className='text-xs text-amber-900 leading-relaxed'>{agentConfig.rootCause}</p>
-                  </div>
-                )}
+                {/* Insights moved to external portal */}
+                {document.getElementById('right-side-portal') && createPortal(
+                  <>
+                    {agentConfig?.rootCause && (
+                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className='p-5 rounded-3xl border border-amber-500/20 bg-amber-500/10 shadow-2xl backdrop-blur-md'>
+                        <p className='text-xs font-bold text-amber-500 uppercase tracking-wider mb-2'>⚠ Why this problem exists</p>
+                        <p className='text-sm text-slate-300 leading-relaxed'>{agentConfig.rootCause}</p>
+                      </motion.div>
+                    )}
 
-                {/* API Integration + Scale Note — end-to-end production thinking */}
-                {(agentConfig?.apiIntegration || agentConfig?.scaleNote) && (
-                  <div className='mb-4 p-3.5 rounded-2xl border border-slate-200 bg-slate-50'>
-                    <p className='text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2'>🔌 How this works at scale</p>
-                    {agentConfig?.apiIntegration && (
-                      <p className='text-xs text-slate-700 leading-relaxed mb-1.5'><span className='font-semibold'>APIs:</span> {agentConfig.apiIntegration}</p>
+                    {(agentConfig?.apiIntegration || agentConfig?.scaleNote) && (
+                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className='p-5 rounded-3xl border border-blue-500/20 bg-blue-500/10 shadow-2xl backdrop-blur-md'>
+                        <p className='text-xs font-bold text-blue-400 uppercase tracking-wider mb-3'>🔌 How this works at scale</p>
+                        {agentConfig?.apiIntegration && (
+                          <p className='text-sm text-slate-300 leading-relaxed mb-3'><span className='font-semibold text-slate-100'>APIs:</span> {agentConfig.apiIntegration}</p>
+                        )}
+                        {agentConfig?.scaleNote && (
+                          <p className='text-sm text-slate-300 leading-relaxed'><span className='font-semibold text-slate-100'>Scale:</span> {agentConfig.scaleNote}</p>
+                        )}
+                      </motion.div>
                     )}
-                    {agentConfig?.scaleNote && (
-                      <p className='text-xs text-slate-700 leading-relaxed'><span className='font-semibold'>Scale:</span> {agentConfig.scaleNote}</p>
-                    )}
-                  </div>
+                  </>,
+                  document.getElementById('right-side-portal')!
                 )}
 
                 {/* Mock Disclosure */}
