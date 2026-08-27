@@ -16,12 +16,10 @@ const SCENARIO_HINTS: Record<string, string> = {
   kyc_wrong: 'EPFO vs Aadhaar diff shown.',
   claim_denied: 'Rejected claim + appeal option.',
   employer_hold: 'Pending employer SLA card.',
-  no_exit: 'Mark Exit page shown.',
   multi_uan: 'Merge banner on dashboard.',
   no_nominee: 'e-Nomination warning on dashboard.',
   pension_cert: 'Pension cert issue on Life Certificate page.',
   advance_rejected: 'Advance claim rejected, eligibility blocked.',
-  bank_not_seeded: 'Bank verification fails on claim.',
   aadhaar_conflict: 'Aadhaar already linked to another UAN.',
   multi_phase: 'Two-phase compound workflow: KYC → Withdraw.',
   multi_phase_exit: 'Two-phase compound workflow: Mark Exit → Withdraw.',
@@ -75,9 +73,7 @@ export const DemoControlPanel: React.FC = () => {
         navigate('/');
         break;
       }
-      case 'no_exit':
-        navigate('/mark-exit');
-        break;
+
       case 'multi_uan':
         navigate('/');
         break;
@@ -96,9 +92,7 @@ export const DemoControlPanel: React.FC = () => {
         });
         navigate('/');
         break;
-      case 'bank_not_seeded':
-        navigate('/');
-        break;
+
       case 'aadhaar_conflict':
         navigate('/');
         break;

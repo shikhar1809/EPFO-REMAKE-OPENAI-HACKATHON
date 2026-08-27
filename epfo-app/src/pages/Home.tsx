@@ -420,7 +420,7 @@ export const Home: React.FC = () => {
                       titleKey: 'home_faq_withdraw_title',
                       descKey: 'home_faq_withdraw_desc',
                       query: "I want to withdraw ₹150,000 for medical emergency",
-                      sc: ['happy', 'advance_rejected', 'bank_not_seeded', 'no_kyc']
+                      sc: ['happy', 'advance_rejected', 'no_kyc']
                     },
                     {
                       titleKey: 'home_faq_life_title',
@@ -480,7 +480,7 @@ export const Home: React.FC = () => {
                     titleKey: 'home_compound_kyc_title',
                     descKey: 'home_compound_kyc_desc',
                     query: "Fix my KYC mismatch and then withdraw PF",
-                    sc: ['happy', 'kyc_wrong', 'no_kyc', 'bank_not_seeded', 'multi_phase']
+                    sc: ['happy', 'kyc_wrong', 'no_kyc', 'multi_phase']
                   },
                   {
                     titleKey: 'home_compound_exit_title',

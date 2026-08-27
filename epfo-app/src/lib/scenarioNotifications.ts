@@ -113,20 +113,7 @@ const SCENARIO_NOTIFICATIONS: Record<string, NotificationItem[]> = {
       color: 'rose',
     },
   ],
-  bank_not_seeded: [
-    {
-      id: 'scn-bank-not-seeded',
-      title: 'Bank Account Not Verified',
-      body: 'Your claim was approved but disbursement failed. The linked bank account is not verified or IFSC is outdated.',
-      category: 'alerts',
-      date: '2026-08-20',
-      read: false,
-      actionPath: '/documents',
-      actionLabel: 'Fix Bank KYC',
-      icon: 'ShieldAlert',
-      color: 'indigo',
-    },
-  ],
+
   aadhaar_conflict: [
     {
       id: 'scn-aadhaar-conflict',
@@ -141,26 +128,12 @@ const SCENARIO_NOTIFICATIONS: Record<string, NotificationItem[]> = {
       color: 'rose',
     },
   ],
-  no_exit: [
-    {
-      id: 'scn-no-exit',
-      title: 'Exit Date Not Marked',
-      body: 'Your previous employer has not updated your date of exit. Transfers and claims are blocked until it is marked.',
-      category: 'alerts',
-      date: '2026-08-18',
-      read: false,
-      actionPath: '/mark-exit',
-      actionLabel: 'Mark Exit',
-      icon: 'AlertTriangle',
-      color: 'amber',
-    },
-  ],
 };
 
 export const getScenarioNotifications = (activeScenario: string): NotificationItem[] => {
   const map: Record<string, string[]> = {
     multi_phase: ['kyc_wrong'],
-    multi_phase_exit: ['no_exit'],
+    multi_phase_exit: ['employer_hold'],
     multi_phase_merge: ['multi_uan'],
     multi_phase_aadhaar: ['aadhaar_conflict', 'kyc_wrong'],
   };

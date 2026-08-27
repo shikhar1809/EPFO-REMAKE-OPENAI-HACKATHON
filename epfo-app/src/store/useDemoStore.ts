@@ -20,7 +20,7 @@ interface DemoState {
   isNomineeMissing: () => boolean;
   isPensionCertIssue: () => boolean;
   isAdvanceRejected: () => boolean;
-  isBankNotSeeded: () => boolean;
+
   isAadhaarConflict: () => boolean;
 }
 
@@ -35,12 +35,12 @@ export const useDemoStore = create<DemoState>()(
       isKycMismatch: () => ['kyc_wrong', 'multi_phase', 'multi_phase_aadhaar'].includes(get().activeScenario),
       isClaimRejected: () => get().activeScenario === 'claim_denied',
       isEmployerPending: () => get().activeScenario === 'employer_hold',
-      isExitNotMarked: () => ['no_exit', 'multi_phase_exit'].includes(get().activeScenario),
+      isExitNotMarked: () => ['multi_phase_exit'].includes(get().activeScenario),
       hasMultipleUans: () => ['multi_uan', 'multi_phase_merge'].includes(get().activeScenario),
       isNomineeMissing: () => get().activeScenario === 'no_nominee',
       isPensionCertIssue: () => get().activeScenario === 'pension_cert',
       isAdvanceRejected: () => get().activeScenario === 'advance_rejected',
-      isBankNotSeeded: () => get().activeScenario === 'bank_not_seeded',
+
       isAadhaarConflict: () => ['aadhaar_conflict', 'multi_phase_aadhaar'].includes(get().activeScenario),
     }),
     {
@@ -54,13 +54,11 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
   { id: 'no_kyc', label: 'Missing KYC — Prerequisite Blocks Claim' },
   { id: 'kyc_wrong', label: 'KYC Mismatch — Name/DOB Differs from Aadhaar' },
   { id: 'claim_denied', label: 'PF Claim Rejected — Need to Appeal' },
-  { id: 'employer_hold', label: 'Employer Not Approving — SLA Tracking' },
-  { id: 'no_exit', label: 'Exit Date Not Marked — Transfer Blocked' },
+  { id: 'employer_hold', label: 'Employer Non Approval for PF and all' },
   { id: 'multi_uan', label: 'Multiple UANs — Merge Required' },
   { id: 'no_nominee', label: 'Nominee Not Updated — Claim Stuck' },
   { id: 'pension_cert', label: 'Pension Certificate — Scheme Cert Fails' },
   { id: 'advance_rejected', label: 'Advance Rejected — Eligibility Mismatch' },
-  { id: 'bank_not_seeded', label: 'Bank Not Seeded — Disbursement Fails' },
   { id: 'aadhaar_conflict', label: 'Aadhaar Conflict — Wrong UAN Linkage' },
   { id: 'multi_phase', label: 'Multi-Phase — Fix KYC + Withdraw PF' },
   { id: 'multi_phase_exit', label: 'Multi-Phase — Mark Exit + Withdraw PF' },
