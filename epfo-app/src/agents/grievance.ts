@@ -24,4 +24,7 @@ export const grievanceAgent: AgentConfig = {
     register_grievance: { agentState: 'needs_user', message: 'I\'ve categorized your issue. Please fill in the grievance details below.', avatarState: 'reviewing' },
     generate_reference: { agentState: 'in_progress', message: 'Grievance registered! Generating your ticket reference number...', avatarState: 'generating' },
   },
+  rootCause: 'EPFiGMS (the official grievance portal) accepts submissions but provides no SLA visibility, no status tracking beyond "pending", and no escalation path. Grievances are frequently closed without resolution and marked "disposed" — forcing members to re-file the same issue multiple times.',
+  apiIntegration: 'Production: EPFiGMS REST API (grievance submission, status polling), EPFO internal routing API (assign to correct regional office), SMS gateway for status updates. SLA engine cross-checks complaint age vs. EPFO circular timelines.',
+  scaleNote: 'Each grievance gets an immutable reference ID generated client-side (UUID v4), preventing duplicate submissions. Status webhooks replace polling — member is notified in real-time when the officer adds a response. Escalation after 15 working days is automatic.',
 };

@@ -24,4 +24,7 @@ export const mergeAccountsAgent: AgentConfig = {
     select_accounts_to_merge: { agentState: 'needs_user', message: 'Found multiple UANs. Please review and confirm which accounts to merge.', avatarState: 'reviewing' },
     submit_merge_request: { agentState: 'sensitive_action', message: 'Merge request ready. Please authorize with your Aadhaar OTP.', avatarState: 'authenticating' },
   },
+  rootCause: 'Multiple UANs are generated when employers register members without checking if one already exists. India has over 65 million duplicate UAN pairs. Each duplicate blocks PF withdrawal, as EPFO cannot credit multiple accounts simultaneously. The current online merger tool has a >30% failure rate due to Aadhaar mis-seeding.',
+  apiIntegration: 'Production: EPFO UAN Discovery API (find all UANs linked to Aadhaar), EPFO Account Merge API (mark inactive UANs, consolidate balance), EPFO Passbook API (verify transferred balance). Employer verification via EPF ECR portal API.',
+  scaleNote: 'Merge is a two-phase commit: inactive UAN is locked before balance transfer to prevent race conditions. Rollback is possible if transfer fails. Event sourcing pattern ensures auditability. Account lock expires automatically after 72h if merge is not completed.',
 };

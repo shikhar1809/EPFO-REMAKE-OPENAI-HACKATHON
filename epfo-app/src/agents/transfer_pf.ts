@@ -24,4 +24,7 @@ export const transferPFAgent: AgentConfig = {
     initiate_transfer: { agentState: 'needs_user', message: 'Found your previous accounts. Please review and confirm which ones to transfer.', avatarState: 'reviewing' },
     submit_transfer: { agentState: 'sensitive_action', message: 'Transfer request ready. Please authorize with your Aadhaar OTP.', avatarState: 'authenticating' },
   },
+  rootCause: 'EPFO PF balances are tied to individual employer establishments, not the member. When switching jobs, old balance stays dormant unless manually transferred via Form 13. Many workers lose track of old accounts or assume balances transfer automatically — leading to crores of unclaimed PF.',
+  apiIntegration: 'Production: EPFO Passbook API (enumerate previous employer accounts), EPFO Form-13 Transfer API (initiate transfer request), ECR employer verification API (confirm previous employer PF registration). SMS/email status updates via EPFO notification service.',
+  scaleNote: 'Transfer requests are idempotent — duplicate submissions are deduplicated by UAN+establishment pair. Previous employer\'s EPFO trust or exempted establishment is detected automatically and routed to the correct settlement authority.',
 };

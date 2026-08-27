@@ -656,6 +656,17 @@ export const Home: React.FC = () => {
         </div>
       )}
 
+      {/* Persistent Prototype Disclosure Footer */}
+      <div className='mx-4 mb-4 mt-2 p-3 rounded-2xl border border-blue-200 bg-blue-50 flex items-start gap-2'>
+        <span className='text-base shrink-0'>🧪</span>
+        <div>
+          <p className='text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-0.5'>Prototype — All data is simulated</p>
+          <p className='text-xs text-blue-800 leading-relaxed'>
+            No real EPFO, UIDAI, or banking API is called. All UAN numbers, balances, Aadhaar details, bank accounts, OTPs and employer data are synthetic mock values. Use <span className='font-mono font-bold'>1234</span> as OTP anywhere. This prototype exists to demonstrate the citizen experience; production deployment would require formal EPFO API access, UIDAI e-KYC agreements, and security certifications.
+          </p>
+        </div>
+      </div>
+
       {/* Notification Settings & DPDP Consent Modal */}
       <NotificationModal 
         isOpen={isNotificationOpen}

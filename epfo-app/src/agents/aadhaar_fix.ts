@@ -24,4 +24,7 @@ export const aadhaarFixAgent: AgentConfig = {
     delink_aadhaar: { agentState: 'sensitive_action', message: 'To de-link your Aadhaar from the conflicting UAN, please authenticate with your Aadhaar OTP.', avatarState: 'authenticating' },
     relink_aadhaar: { agentState: 'in_progress', message: 'De-link complete. Now re-linking your Aadhaar to your correct active UAN...', avatarState: 'generating' },
   },
+  rootCause: 'When a member changes jobs, the new employer sometimes creates a fresh UAN instead of using the existing one. Both UANs then try to claim the same Aadhaar, leaving one permanently conflicted. EPFO has no self-service de-link tool — members must visit a field office, often losing weeks of access.',
+  apiIntegration: 'Production: UIDAI Aadhaar Seeding API (check current linkage), EPFO UAN Delink API (requires OTP + biometric consent), EPFO UAN Relink API (re-associate Aadhaar with correct UAN). All calls TLS 1.3 + UIDAI registered IP whitelist.',
+  scaleNote: 'De-link/re-link operations are atomic and idempotent. Conflict detection is read-only and stateless. All PII transmitted over encrypted channels; nothing stored in browser. Audit trail written to EPFO event log for regulatory compliance.',
 };

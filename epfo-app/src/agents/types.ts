@@ -30,4 +30,10 @@ export interface AgentConfig {
   initMessages: string[];
   generatePlan: () => PlanStep[];
   steps: Record<string, StepConfig>;
+  /** Why this problem exists in the current EPFO system */
+  rootCause?: string;
+  /** What real APIs/systems would be called in production */
+  apiIntegration?: string;
+  /** How the solution scales safely */
+  scaleNote?: string;
 }
