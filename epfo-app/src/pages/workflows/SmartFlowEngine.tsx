@@ -55,12 +55,12 @@ const NEEDS_USER_STEPS = new Set([
   'check_eligibility', 'review_claim', 'capture_face', 'select_exit_reason',
   'register_grievance', 'generate_reference', 'analyze_passbook', 'analyze_mismatch',
   'draft_declaration', 'fetch_linked_accounts', 'select_accounts_to_merge',
-  'select_grievance_type', 'initiate_transfer'
+  'select_grievance_type', 'initiate_transfer', 'detect_conflict',
 ]);
 
 const SENSITIVE_STEPS = new Set([
   'submit_claim', 'submit_transfer', 'submit_certificate', 'submit_exit',
-  'submit_declaration', 'submit_merge_request',
+  'submit_declaration', 'submit_merge_request', 'delink_aadhaar',
 ]);
 
 const EMPLOYER_APPROVAL_FLOWS: Record<string, string> = {

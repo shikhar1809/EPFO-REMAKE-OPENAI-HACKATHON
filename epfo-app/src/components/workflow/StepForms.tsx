@@ -370,7 +370,8 @@ export const StepForms: React.FC<StepFormsProps> = ({
             Authentication Required
           </div>
           <p className='text-orange-800 text-xs leading-relaxed'>
-            {stepName === 'submit_transfer' ? 'Submitting this will initiate an automatic transfer of your funds. Please authenticate to sign.' :
+            {stepName === 'delink_aadhaar' ? 'This will de-link your Aadhaar from the conflicting UAN. This action cannot be undone without EPFO assistance.' :
+             stepName === 'submit_transfer' ? 'Submitting this will initiate an automatic transfer of your funds. Please authenticate to sign.' :
              stepName === 'submit_certificate' ? 'This will cryptographically sign and submit your Digital Life Certificate to the government.' :
              stepName === 'submit_exit' ? 'This will officially mark your exit from the selected establishment.' :
              stepName === 'submit_merge_request' ? 'This will submit a One Employee One EPF merge request to consolidate your duplicate UANs.' :
@@ -390,6 +391,7 @@ export const StepForms: React.FC<StepFormsProps> = ({
         </div>
         <Button className='w-full bg-red-600 hover:bg-red-700 text-white shadow-md' onClick={onSensitiveAction}>
           <Lock className='w-4 h-4 mr-2' /> Sign &amp; Submit {
+            stepName === 'delink_aadhaar' ? 'De-link Request' :
             stepName === 'submit_transfer' ? 'Transfer' :
             stepName === 'submit_certificate' ? 'Certificate' :
             stepName === 'submit_exit' ? 'Exit Request' :
@@ -397,6 +399,40 @@ export const StepForms: React.FC<StepFormsProps> = ({
             stepName === 'submit_declaration' ? 'Declaration' : 'Claim'
           }
         </Button>
+      </div>
+    );
+  }
+
+
+  // detect_conflict (aadhaar_fix agent)
+  if (needsUser && stepName === 'detect_conflict') {
+    return (
+      <div className='space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-100'>
+        <div className='text-sm text-slate-700 font-medium mb-2'>
+          We found your Aadhaar linked to a conflicting UAN. Here are the details:
+        </div>
+        <div className='bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm'>
+          <div className='grid grid-cols-2 bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider'>
+            <div className='px-3 py-2'>Your Current UAN</div>
+            <div className='px-3 py-2'>Conflicting UAN</div>
+          </div>
+          <div className='grid grid-cols-2 text-xs p-3 gap-2'>
+            <div className='bg-emerald-50 border border-emerald-200 rounded-lg p-2.5'>
+              <p className='font-bold text-slate-900'>100XXXXX1234</p>
+              <p className='text-slate-500 mt-0.5'>Active • ABC Company</p>
+              <span className='text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-bold mt-1 inline-block'>YOURS</span>
+            </div>
+            <div className='bg-red-50 border border-red-200 rounded-lg p-2.5'>
+              <p className='font-bold text-slate-900'>100XXXXX5678</p>
+              <p className='text-slate-500 mt-0.5'>Inactive • XYZ Corp</p>
+              <span className='text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full font-bold mt-1 inline-block'>CONFLICT</span>
+            </div>
+          </div>
+        </div>
+        <div className='bg-red-50 text-red-900 p-3 rounded-lg text-xs border border-red-200'>
+          <span className='font-bold'>Action required:</span> Your Aadhaar is currently linked to UAN 100XXXXX5678. We will de-link it and re-link it to your active UAN.
+        </div>
+        <Button onClick={onProceed} className='w-full'>Confirm & De-link Aadhaar</Button>
       </div>
     );
   }

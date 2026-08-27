@@ -2,6 +2,7 @@ import type { AgentConfig, StepConfig } from './types';
 import { DEFAULT_THEME } from './themes';
 import { withdrawPFAgent } from './withdraw_pf';
 import { kycMismatchAgent } from './kyc_mismatch';
+import { aadhaarFixAgent } from './aadhaar_fix';
 import { transferPFAgent } from './transfer_pf';
 import { markExitAgent } from './mark_exit';
 import { lifeCertificateAgent } from './life_certificate';
@@ -12,6 +13,7 @@ import type { PlanStep } from '../store/useWorkflowStore';
 const AGENTS: Record<string, AgentConfig> = {
   withdraw_pf: withdrawPFAgent,
   kyc_mismatch: kycMismatchAgent,
+  aadhaar_fix: aadhaarFixAgent,
   transfer_pf: transferPFAgent,
   mark_exit: markExitAgent,
   life_certificate: lifeCertificateAgent,
