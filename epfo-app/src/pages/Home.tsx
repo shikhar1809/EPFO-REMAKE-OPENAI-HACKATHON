@@ -482,13 +482,13 @@ export const Home: React.FC = () => {
                     titleKey: 'home_compound_exit_title',
                     descKey: 'home_compound_exit_desc',
                     query: "Mark my exit date and then claim my PF",
-                    sc: ['happy', 'multi_phase_exit', 'no_exit', 'pension_cert']
+                    sc: ['happy', 'multi_phase_exit', 'pension_cert']
                   },
                   {
                     titleKey: 'home_compound_merge_title',
                     descKey: 'home_compound_merge_desc',
                     query: "Merge my old PF account and then transfer the balance",
-                    sc: ['multi_phase_merge', 'multi_uan']
+                    sc: ['multi_uan']
                   },
                   {
                     titleKey: 'home_compound_nominee_title',
@@ -514,7 +514,7 @@ export const Home: React.FC = () => {
                     query: "Merge my old PF accounts, update my nominee, and then withdraw PF",
                     sc: ['multi_phase_merge']
                   }
-                ].filter(f => f.sc.includes(sc)).slice(0, 2).map((faq, idx) => (
+                ].filter(f => f.sc.includes(sc)).slice(0, 1).map((faq, idx) => (
                   <button
                     key={`compound-${idx}`}
                     onClick={(e) => handleAgenticStart(e, faq.query)}
