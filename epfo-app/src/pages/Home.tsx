@@ -37,7 +37,6 @@ import { ClaimTrackerCard } from '../components/dashboard/ClaimTrackerCard';
 import { BalanceCard } from '../components/dashboard/BalanceCard';
 import { AccountHealthCard } from '../components/dashboard/AccountHealthCard';
 import { RecentActivityCard } from '../components/dashboard/RecentActivityCard';
-import { DemoAlertBanners } from '../components/dashboard/DemoAlertBanners';
 import { SwappableCards } from '../components/dashboard/SwappableCards';
 import { ActiveSessionsPrompt } from '../components/dashboard/ActiveSessionsPrompt';
 
@@ -279,10 +278,7 @@ export const Home: React.FC = () => {
             {/* Smart Notifications — Card Stack */}
             {isAuthenticated && <NotificationCardStack />}
 
-            {/* Demo Alert Banners */}
-            {isAuthenticated && (
-              <DemoAlertBanners onAgenticStart={(query) => handleAgenticStart(undefined, query)} />
-            )}
+
 
             {/* NEED MORE HELP ? (Smart Flow vs Traditional Flow) */}
             <section className='space-y-2 pt-0.5'>
