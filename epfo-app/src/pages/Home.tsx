@@ -231,13 +231,26 @@ export const Home: React.FC = () => {
               <LogOut className='!w-4 !h-4' />
             </button>
           ) : (
-            <button 
-              onClick={() => navigate('/onboarding', { replace: true })} 
-              className='px-3 py-1.5 bg-epfo-blue text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-xs' 
-              aria-label={t('ob_login')}
-            >
-              {t('ob_login')}
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => {
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  window.location.href = '/';
+                }}
+                className='px-3 py-1.5 bg-red-50 text-red-600 rounded-xl text-[10px] font-bold hover:bg-red-100 transition-colors shadow-xs uppercase tracking-wider' 
+                title="Clear local storage to test first-time onboarding flow"
+              >
+                Reset Demo
+              </button>
+              <button 
+                onClick={() => navigate('/onboarding', { replace: true })} 
+                className='px-3 py-1.5 bg-epfo-blue text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-xs' 
+                aria-label={t('ob_login')}
+              >
+                {t('ob_login')}
+              </button>
+            </div>
           )}
         </div>
       </div>

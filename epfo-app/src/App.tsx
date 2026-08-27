@@ -46,11 +46,7 @@ const OnboardWrapper = ({ children }: { children: React.ReactNode }) => {
 
 const RootRedirect = () => {
   const { isAuthenticated } = useSessionStore();
-  const onboarded = localStorage.getItem('onboarded');
-  
-  if (isAuthenticated) return <Home />;
-  if (onboarded) return <Home />;
-  return <Navigate to='/onboarding' replace />;
+  return isAuthenticated ? <Home /> : <Navigate to='/onboarding' replace />;
 };
 
 function App() {
