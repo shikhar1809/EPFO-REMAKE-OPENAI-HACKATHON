@@ -4,7 +4,7 @@ import { useSettingsStore } from '../../store/useSettingsStore';
 import { toast } from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, ChevronDown, ChevronUp } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { ServerStatusBadge } from '../common/ServerStatusBadge';
 import { useServerStatusStore } from '../../store/useServerStatusStore';
 import { DemoControlPanel } from '../demo/DemoControlPanel';
