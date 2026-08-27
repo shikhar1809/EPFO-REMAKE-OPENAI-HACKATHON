@@ -112,7 +112,7 @@ export const mr = {
   status_degraded: "कमकुवत",
   status_down: "डाउन",
   status_peak_advisory: "दर महिन्याच्या १–७ तारखेला (पगार क्रेडिट सायकल) आणि महिन्याच्या शेवटी KYC फायलिंग अवधीत अधिक ट्रॅफिक अपेक्षित आहे. चांगला अनुभवासाठी ऑफ-पीक वेळा वापरा.",
-  status_umang_alt: "सर्व्हर व्यस्त?"
+  status_umang_alt: "सर्व्हर व्यस्त?",
 
   home_need_more_help: "आणखी मदत हवी आहे?",
   home_smart_flow_title: "स्मार्ट फ्लो",

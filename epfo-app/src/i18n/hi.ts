@@ -112,7 +112,7 @@ export const hi = {
   status_degraded: "कमज़ोर",
   status_down: "डाउन",
   status_peak_advisory: "हर महीने की 1–7 तारीख (वेतन क्रेडिट साइकिल) और महीने के अंत में KYC फाइलिंग की अवधि में अधिक ट्रैफिक की उम्मीद है। बेहतर अनुभव के लिए ऑफ-पीक समय आज़माएं।",
-  status_umang_alt: "सर्वर व्यस्त?"
+  status_umang_alt: "सर्वर व्यस्त?",
 
   home_need_more_help: "क्या और मदद चाहिए?",
   home_smart_flow_title: "स्मार्ट फ्लो",

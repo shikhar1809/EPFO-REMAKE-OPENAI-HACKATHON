@@ -33,7 +33,7 @@ export const AccountHealthCard: React.FC = () => {
     { label: t('lbl_pan_kyc', 'PAN KYC'), ok: panOk, detail: panDetail },
     { label: t('lbl_bank_kyc', 'Bank KYC'), ok: bankOk, detail: bankOk ? t('sts_ifsc_verified', 'IFSC verified') : 'Not seeded' },
     { label: t('lbl_e_nomination', 'e-Nomination'), ok: nomineeOk, detail: nomineeOk ? t('sts_filed', 'Filed') : 'Not filed' },
-    { label: t('lbl_exit_status', 'Exit Status'), ok: exitOk, detail: exitOk ? 't('sts_marked', 'Marked (23 Jul 2026)')' : 'Not marked' },
+    { label: t('lbl_exit_status', 'Exit Status'), ok: exitOk, detail: exitOk ? t('sts_marked', 'Marked (23 Jul 2026)') : 'Not marked' },
     { label: t('lbl_service', 'Service'), ok: serviceOk, detail: `${serviceMonths} months` },
   ];
 
