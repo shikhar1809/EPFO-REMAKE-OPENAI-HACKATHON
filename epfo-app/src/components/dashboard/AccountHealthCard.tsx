@@ -9,14 +9,21 @@ export const AccountHealthCard: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { serviceMonths } = useAccountStore();
-  const sc = useDemoStore(s => s.activeScenario);
+  const { 
+    isKycMissing: getIsKycMissing, 
+    isKycMismatch: getIsKycMismatch, 
+    isAadhaarConflict: getIsAadhaarConflict,
+    isBankNotSeeded: getIsBankNotSeeded,
+    isNomineeMissing: getIsNomineeMissing,
+    isExitNotMarked: getIsExitNotMarked
+  } = useDemoStore();
 
-  const isKycMissing = sc === 'no_kyc';
-  const isKycMismatch = sc === 'kyc_wrong';
-  const isAadhaarConflict = sc === 'aadhaar_conflict';
-  const isBankNotSeeded = sc === 'bank_not_seeded';
-  const isNomineeMissing = sc === 'no_nominee';
-  const isExitNotMarked = sc === 'no_exit';
+  const isKycMissing = getIsKycMissing();
+  const isKycMismatch = getIsKycMismatch();
+  const isAadhaarConflict = getIsAadhaarConflict();
+  const isBankNotSeeded = getIsBankNotSeeded();
+  const isNomineeMissing = getIsNomineeMissing();
+  const isExitNotMarked = getIsExitNotMarked();
 
   const aadhaarOk = !(isKycMissing || isKycMismatch || isAadhaarConflict);
   const panOk = !(isKycMissing || isKycMismatch);

@@ -157,8 +157,24 @@ const SCENARIO_NOTIFICATIONS: Record<string, NotificationItem[]> = {
   ],
 };
 
-export const getScenarioNotifications = (activeScenario: string): NotificationItem[] =>
-  SCENARIO_NOTIFICATIONS[activeScenario] ?? [];
+export const getScenarioNotifications = (activeScenario: string): NotificationItem[] => {
+  const map: Record<string, string[]> = {
+    multi_phase: ['kyc_wrong'],
+    multi_phase_exit: ['no_exit'],
+    multi_phase_merge: ['multi_uan'],
+    multi_phase_aadhaar: ['aadhaar_conflict', 'kyc_wrong'],
+  };
+  
+  if (SCENARIO_NOTIFICATIONS[activeScenario]) {
+    return SCENARIO_NOTIFICATIONS[activeScenario];
+  }
+  
+  if (map[activeScenario]) {
+    return map[activeScenario].flatMap(key => SCENARIO_NOTIFICATIONS[key] || []);
+  }
+  
+  return [];
+};
 
 export const mergeNotifications = (notifications: NotificationItem[], activeScenario: string): NotificationItem[] => {
   const scenario = getScenarioNotifications(activeScenario);
