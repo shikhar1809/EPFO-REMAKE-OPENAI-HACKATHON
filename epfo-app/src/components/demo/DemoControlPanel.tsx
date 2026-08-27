@@ -144,8 +144,23 @@ export const DemoControlPanel: React.FC = () => {
   return (
     <div className='hidden lg:flex flex-col w-[280px] shrink-0 h-full bg-white border-r border-slate-200 overflow-hidden'>
 
-      <div className='px-4 py-3 border-b border-slate-100'>
-        <p className='text-[11px] font-semibold text-slate-400 uppercase tracking-widest'>Try Different Scenarios</p>
+      <div className='px-4 py-3 border-b border-slate-100 flex items-center justify-between'>
+        <p className='text-[10px] font-semibold text-slate-400 uppercase tracking-widest'>Try Scenarios</p>
+        <button
+          onClick={() => {
+            const { lowInternetMode, setLowInternetMode } = useSettingsStore.getState();
+            setLowInternetMode(!lowInternetMode);
+          }}
+          title="Toggle Low Internet Mode"
+          className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase transition-colors border ${
+            useSettingsStore().lowInternetMode
+              ? 'bg-epfo-blue text-white border-epfo-blue'
+              : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'
+          }`}
+        >
+          <WifiOff className='w-2.5 h-2.5' />
+          {useSettingsStore().lowInternetMode ? 'Low Net: ON' : 'Low Net: OFF'}
+        </button>
       </div>
 
       <div className='flex-1 overflow-y-auto py-2'>
@@ -172,23 +187,7 @@ export const DemoControlPanel: React.FC = () => {
         })}
       </div>
 
-      <div className='px-4 py-3 border-t border-slate-100 flex flex-col gap-2'>
-        <button
-          onClick={() => {
-            const { lowInternetMode, setLowInternetMode } = useSettingsStore.getState();
-            setLowInternetMode(!lowInternetMode);
-          }}
-          className='w-full py-2 px-3 text-[11px] font-medium transition-colors flex items-center justify-between rounded-md bg-slate-50 border border-slate-200'
-        >
-          <span className='flex items-center gap-1.5 text-slate-600'>
-            <WifiOff className='w-3 h-3' />
-            Low Internet Mode
-          </span>
-          <div className={`w-6 h-3.5 rounded-full relative transition-colors ${useSettingsStore().lowInternetMode ? 'bg-epfo-blue' : 'bg-slate-300'}`}>
-            <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-all ${useSettingsStore().lowInternetMode ? 'left-3' : 'left-0.5'}`} />
-          </div>
-        </button>
-
+      <div className='px-4 py-3 border-t border-slate-100'>
         <button
           onClick={() => applyScenario('happy')}
           className='w-full py-2 text-[11px] font-medium text-slate-400 hover:text-slate-700 transition-colors flex items-center justify-center gap-1.5'
