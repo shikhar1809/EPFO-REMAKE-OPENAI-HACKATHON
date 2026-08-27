@@ -21,6 +21,7 @@ import {
   Send,
 } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
+import { useDemoStore } from '../store/useDemoStore';
 import { useWorkflowStore } from '../store/useWorkflowStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { Button } from '../components/ui/Button';
@@ -41,6 +42,7 @@ import { ActiveSessionsPrompt } from '../components/dashboard/ActiveSessionsProm
 
 export const Home: React.FC = () => {
   const { t } = useTranslation();
+    const sc = useDemoStore(s => s.activeScenario);
   const navigate = useNavigate();
   const { isAuthenticated, logout, user, riskLevel } = useSessionStore();
   const { activeTasks, startTask, resumeTask, clearTask, archiveTask } = useWorkflowStore();
@@ -412,32 +414,37 @@ export const Home: React.FC = () => {
 
               <div className='space-y-2'>
                 {[
-                  {
-                    titleKey: 'home_faq_withdraw_title',
-                    descKey: 'home_faq_withdraw_desc',
-                    query: "I want to withdraw ₹50,000 for medical emergency"
-                  },
-                  {
-                    titleKey: 'home_faq_life_title',
-                    descKey: 'home_faq_life_desc',
-                    query: "I want to submit my life certificate"
-                  },
-                  {
-                    titleKey: 'home_faq_merge_title',
-                    descKey: 'home_faq_merge_desc',
-                    query: "Transfer and merge my previous PF accounts"
-                  },
-                  {
-                    titleKey: 'home_faq_exit_title',
-                    descKey: 'home_faq_exit_desc',
-                    query: "I want to mark my date of exit"
-                  },
-                  {
-                    titleKey: 'home_faq_rejected_title',
-                    descKey: 'home_faq_rejected_desc',
-                    query: "Why was my claim rejected?"
-                  }
-                ].map((faq, idx) => (
+                    {
+                      titleKey: 'home_faq_withdraw_title',
+                      descKey: 'home_faq_withdraw_desc',
+                      query: "I want to withdraw ₹150,000 for medical emergency",
+                      sc: ['happy', 'advance_rejected', 'bank_not_seeded', 'no_kyc']
+                    },
+                    {
+                      titleKey: 'home_faq_life_title',
+                      descKey: 'home_faq_life_desc',
+                      query: "I want to submit my life certificate",
+                      sc: ['happy', 'pension_cert']
+                    },
+                    {
+                      titleKey: 'home_faq_merge_title',
+                      descKey: 'home_faq_merge_desc',
+                      query: "Transfer and merge my previous PF accounts",
+                      sc: ['happy', 'multi_uan']
+                    },
+                    {
+                      titleKey: 'home_faq_exit_title',
+                      descKey: 'home_faq_exit_desc',
+                      query: "I want to mark my date of exit",
+                      sc: ['no_exit']
+                    },
+                    {
+                      titleKey: 'home_faq_rejected_title',
+                      descKey: 'home_faq_rejected_desc',
+                      query: "Why was my claim rejected?",
+                      sc: ['claim_denied', 'employer_hold', 'advance_rejected']
+                    }
+                  ].filter(f => f.sc.includes(sc) || (f.sc.includes('happy') && sc === 'happy')).slice(0, 3).map((faq, idx) => (
                   <button
                     key={idx}
                     onClick={(e) => handleAgenticStart(e, faq.query)}
@@ -470,44 +477,46 @@ export const Home: React.FC = () => {
                   {
                     titleKey: 'home_compound_kyc_title',
                     descKey: 'home_compound_kyc_desc',
-                    query: "Fix my KYC mismatch and then withdraw PF"
+                    query: "Fix my KYC mismatch and then withdraw PF",
+                    sc: ['happy', 'kyc_wrong', 'no_kyc', 'bank_not_seeded', 'multi_phase']
                   },
                   {
                     titleKey: 'home_compound_exit_title',
                     descKey: 'home_compound_exit_desc',
-                    query: "Mark my exit date and then claim my PF"
+                    query: "Mark my exit date and then claim my PF",
+                    sc: ['happy', 'multi_phase_exit', 'no_exit', 'pension_cert']
                   },
                   {
                     titleKey: 'home_compound_merge_title',
                     descKey: 'home_compound_merge_desc',
-                    query: "Merge my old PF account and then transfer the balance"
+                    query: "Merge my old PF account and then transfer the balance",
+                    sc: ['multi_phase_merge', 'multi_uan']
                   },
                   {
                     titleKey: 'home_compound_nominee_title',
                     descKey: 'home_compound_nominee_desc',
-                    query: "Update my nominee and then withdraw PF"
+                    query: "Update my nominee and then withdraw PF",
+                    sc: ['no_nominee']
                   },
                   {
                     titleKey: 'home_compound_aadhaar_title',
                     descKey: 'home_compound_aadhaar_desc',
-                    query: "Fix my Aadhaar conflict and then update my KYC"
-                  },
-                  {
-                    titleKey: 'home_compound_transfer_title',
-                    descKey: 'home_compound_transfer_desc',
-                    query: "Transfer my old PF and then withdraw the balance"
+                    query: "Fix my Aadhaar conflict and then update my KYC",
+                    sc: ['aadhaar_conflict', 'multi_phase_aadhaar']
                   },
                   {
                     titleKey: 'home_compound_3phase_title',
                     descKey: 'home_compound_3phase_desc',
-                    query: "Fix my KYC mismatch, mark my exit date, and then withdraw my PF"
+                    query: "Fix my KYC mismatch, mark my exit date, and then withdraw my PF",
+                    sc: ['multi_phase']
                   },
                   {
                     titleKey: 'home_compound_super_title',
                     descKey: 'home_compound_super_desc',
-                    query: "Merge my old PF accounts, update my nominee, and then withdraw PF"
+                    query: "Merge my old PF accounts, update my nominee, and then withdraw PF",
+                    sc: ['multi_phase_merge']
                   }
-                ].map((faq, idx) => (
+                ].filter(f => f.sc.includes(sc)).slice(0, 2).map((faq, idx) => (
                   <button
                     key={`compound-${idx}`}
                     onClick={(e) => handleAgenticStart(e, faq.query)}
