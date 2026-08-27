@@ -75,7 +75,7 @@ export const NotificationCardStack: React.FC = () => {
   const CardIcon = ICON_MAP[current?.icon] || ShieldCheck;
 
   return (
-    <section className='space-y-2'>
+    <section className='space-y-1.5'>
       <div className='px-0.5 flex items-center justify-between'>
         <h2 className='text-[11px] font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5'>
           <Bell className='!w-3.5 !h-3.5 text-epfo-blue' />
@@ -99,25 +99,25 @@ export const NotificationCardStack: React.FC = () => {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.2 }}
-        className={`bg-gradient-to-r ${GRADIENT_MAP[c] || GRADIENT_MAP.blue} border ${BORDER_MAP[c] || BORDER_MAP.blue} rounded-2xl p-3.5 shadow-xs cursor-pointer`}
+        className={`bg-gradient-to-r ${GRADIENT_MAP[c] || GRADIENT_MAP.blue} border ${BORDER_MAP[c] || BORDER_MAP.blue} rounded-2xl p-3 shadow-xs cursor-pointer`}
         onClick={() => navigate('/notifications')}
       >
         <div className='flex items-start gap-2.5'>
           <div className={`${BG_MAP[c] || BG_MAP.blue} p-1.5 rounded-lg ${TEXT_MAP[c] || TEXT_MAP.blue} shrink-0 mt-0.5`}>
-            <CardIcon className='!w-4 !h-4' />
+            <CardIcon className='!w-3.5 !h-3.5' />
           </div>
           <div className='flex-1 min-w-0'>
             <div className='flex items-center gap-1.5'>
-              <h4 className={`text-xs font-bold ${HEADING_MAP[c] || HEADING_MAP.blue}`}>{current?.title}</h4>
+              <h4 className={`text-[11px] font-bold ${HEADING_MAP[c] || HEADING_MAP.blue}`}>{current?.title}</h4>
               {!current?.read && <span className='w-1.5 h-1.5 rounded-full bg-epfo-blue shrink-0' />}
             </div>
-            <p className={`text-[11px] ${BODY_MAP[c] || BODY_MAP.blue} mt-0.5 leading-snug`}>
+            <p className={`text-[10px] ${BODY_MAP[c] || BODY_MAP.blue} mt-0.5 leading-snug`}>
               {current?.body}
             </p>
             {current?.actionPath && (
               <button
                 onClick={(e) => { e.stopPropagation(); navigate(current.actionPath!); }}
-                className={`mt-2 text-[10px] font-bold ${LINK_MAP[c] || LINK_MAP.blue} underline underline-offset-2`}
+                className={`mt-1.5 text-[10px] font-bold ${LINK_MAP[c] || LINK_MAP.blue} underline underline-offset-2`}
               >
                 {current?.actionLabel} →
               </button>
@@ -126,7 +126,7 @@ export const NotificationCardStack: React.FC = () => {
         </div>
       </motion.div>
 
-      <div className='flex items-center justify-center gap-3'>
+      <div className='flex items-center justify-center gap-3 -mt-0.5'>
         <button
           onClick={() => setActiveCardIndex((activeCardIndex - 1 + cards.length) % cards.length)}
           className='p-1 rounded-full hover:bg-slate-100 text-slate-400 transition-colors'

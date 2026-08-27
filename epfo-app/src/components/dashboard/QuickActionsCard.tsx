@@ -16,20 +16,20 @@ export const QuickActionsCard: React.FC = () => {
 
   return (
     <section>
-      <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider px-0.5 mb-2'>
+      <h2 className='text-[11px] font-bold text-slate-500 uppercase tracking-wider px-0.5 mb-1.5'>
         Quick Actions
       </h2>
-      <div className='grid grid-cols-3 gap-2'>
+      <div className='grid grid-cols-3 gap-1.5'>
         {ACTIONS.map((action) => {
           const Icon = action.icon;
           return (
             <button
               key={action.label}
               onClick={() => navigate(action.path)}
-              className='p-3 bg-white/95 hover:bg-slate-50 border border-slate-200/90 rounded-xl flex flex-col items-center text-center transition-all shadow-2xs hover:shadow-xs group'
+              className='p-2.5 bg-white/95 hover:bg-slate-50 border border-slate-200/90 rounded-xl flex flex-col items-center text-center transition-all shadow-2xs hover:shadow-xs group'
             >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-1.5 ${action.color} group-hover:scale-105 transition-transform`}>
-                <Icon className='w-4 h-4' />
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center mb-1 ${action.color} group-hover:scale-105 transition-transform`}>
+                <Icon className='w-3.5 h-3.5' />
               </div>
               <span className='text-[11px] font-bold text-slate-800 leading-tight'>{action.label}</span>
               <span className='text-[9px] text-slate-500 mt-0.5'>{action.desc}</span>

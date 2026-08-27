@@ -39,6 +39,7 @@ import { AccountHealthCard } from '../components/dashboard/AccountHealthCard';
 import { RecentActivityCard } from '../components/dashboard/RecentActivityCard';
 import { QuickActionsCard } from '../components/dashboard/QuickActionsCard';
 import { DemoAlertBanners } from '../components/dashboard/DemoAlertBanners';
+import { SwappableCards } from '../components/dashboard/SwappableCards';
 
 export const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -206,8 +207,8 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      <div className='p-4 space-y-4 max-w-2xl mx-auto w-full pb-12'>
-        
+<div className='p-4 space-y-3 max-w-2xl mx-auto w-full pb-12'>
+
         {/* Global Analyzing Overlay — shows during handleAgenticStart from any view */}
         {isAnalyzing && (
           <div className='bg-slate-50 rounded-2xl border border-blue-100 p-6 flex flex-col items-center justify-center space-y-4 shadow-inner min-h-[180px]'>
@@ -245,12 +246,13 @@ export const Home: React.FC = () => {
             {/* Smart Notifications — Card Stack */}
             {isAuthenticated && <NotificationCardStack />}
 
-            {/* Account Health + Recent Activity */}
+            {/* Account Health → Recent Activity → Quick Actions (auto-swapping deck) */}
             {isAuthenticated && (
-              <div className='grid grid-cols-2 gap-3'>
+              <SwappableCards intervalMs={5000}>
                 <AccountHealthCard />
                 <RecentActivityCard />
-              </div>
+                <QuickActionsCard />
+              </SwappableCards>
             )}
 
             {/* Demo Alert Banners */}
@@ -258,41 +260,36 @@ export const Home: React.FC = () => {
               <DemoAlertBanners onAgenticStart={(query) => handleAgenticStart(undefined, query)} />
             )}
 
-            {/* Quick Actions */}
-            {isAuthenticated && <QuickActionsCard />}
-
             {/* NEED MORE HELP ? (Smart Flow vs Traditional Flow) */}
-            <section className='space-y-2.5 pt-1'>
+            <section className='space-y-2 pt-0.5'>
               <div className='px-0.5'>
-                <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>
+                <h2 className='text-[11px] font-bold text-slate-500 uppercase tracking-wider'>
                   Need More Help?
                 </h2>
               </div>
 
-              <div className='grid grid-cols-2 gap-3.5'>
+              <div className='grid grid-cols-2 gap-2.5'>
                 
                 {/* 1. SMART FLOW (Opens Dedicated Smart Agent View) */}
                 <button 
                   onClick={() => setFlowChoice('agentic')}
-                  className='p-4 sm:p-4.5 bg-gradient-to-br from-blue-50/95 via-white to-blue-50/50 border-2 border-epfo-blue/50 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all min-h-[165px]'
+                  className='p-3 bg-gradient-to-br from-blue-50/95 via-white to-blue-50/50 border border-epfo-blue/40 hover:border-epfo-blue rounded-2xl flex flex-col justify-between text-left group shadow-2xs hover:shadow-xs transition-all'
                 >
-                  <div>
-                    <div className='flex items-center justify-between mb-2.5'>
-                      <div className='w-9 h-9 bg-epfo-blue text-white rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform'>
-                        <AssistantAvatar className='!w-7 !h-7' />
-                      </div>
-                      <span className='bg-epfo-orange text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase'>
-                        {t('recommended')}
-                      </span>
+                  <div className='flex items-center justify-between mb-1.5'>
+                    <div className='w-7 h-7 bg-epfo-blue text-white rounded-lg flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform'>
+                      <AssistantAvatar className='!w-5 !h-5' />
                     </div>
-                    <h3 className='font-bold text-sm text-epfo-blue leading-tight'>
-                      Smart Flow
-                    </h3>
-                    <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
-                      AI assistant guides your claims, transfers & certificates.
-                    </p>
+                    <span className='bg-epfo-orange text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase'>
+                      {t('recommended')}
+                    </span>
                   </div>
-                  <div className='mt-3 text-xs font-bold text-epfo-blue flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+                  <h3 className='font-bold text-xs text-epfo-blue leading-tight'>
+                    Smart Flow
+                  </h3>
+                  <p className='text-[10px] text-slate-600 mt-1 leading-relaxed'>
+                    AI agent guides claims, transfers & certificates.
+                  </p>
+                  <div className='mt-2 text-[10px] font-bold text-epfo-blue flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
                     Launch Smart Flow →
                   </div>
                 </button>
@@ -300,20 +297,18 @@ export const Home: React.FC = () => {
                 {/* 2. TRADITIONAL FLOW (Opens Dedicated Traditional View) */}
                 <button 
                   onClick={() => setFlowChoice('traditional')}
-                  className='p-4 sm:p-4.5 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-xs hover:shadow-md transition-all min-h-[165px]'
+                  className='p-3 bg-white/95 backdrop-blur-md border border-slate-200 hover:border-slate-400 rounded-2xl flex flex-col justify-between text-left group shadow-2xs hover:shadow-xs transition-all'
                 >
-                  <div>
-                    <div className='w-9 h-9 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform'>
-                      <FolderOpen className='!w-7 !h-7' />
-                    </div>
-                    <h3 className='font-bold text-sm text-slate-900 leading-tight group-hover:text-slate-700'>
-                      Traditional Flow
-                    </h3>
-                    <p className='text-xs text-slate-600 mt-1.5 leading-relaxed'>
-                      Direct access to classic portal forms, claims & filing.
-                    </p>
+                  <div className='w-7 h-7 bg-slate-100 text-slate-700 rounded-lg flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform'>
+                    <FolderOpen className='!w-5 !h-5' />
                   </div>
-                  <div className='mt-3 text-xs font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+                  <h3 className='font-bold text-xs text-slate-900 leading-tight group-hover:text-slate-700'>
+                    Traditional Flow
+                  </h3>
+                  <p className='text-[10px] text-slate-600 mt-1 leading-relaxed'>
+                    Direct access to classic portal forms & filing.
+                  </p>
+                  <div className='mt-2 text-[10px] font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
                     Open Portal →
                   </div>
                 </button>

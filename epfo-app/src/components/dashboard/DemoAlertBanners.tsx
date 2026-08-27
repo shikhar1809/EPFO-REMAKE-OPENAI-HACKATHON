@@ -144,20 +144,20 @@ export const DemoAlertBanners: React.FC<Props> = ({ onAgenticStart }) => {
       {visible.map((banner) => {
         const Icon = banner.icon;
         return (
-          <section key={banner.key} className={`${banner.color} border rounded-2xl p-4 shadow-sm`}>
-            <div className='flex items-start gap-3'>
-              <div className={`${banner.iconColor} p-2 rounded-xl shrink-0`}>
-                <Icon className='!w-7 !h-7' />
+          <section key={banner.key} className={`${banner.color} border rounded-2xl p-3 shadow-sm`}>
+            <div className='flex items-start gap-2.5'>
+              <div className={`${banner.iconColor} p-1.5 rounded-xl shrink-0`}>
+                <Icon className='!w-6 !h-6' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-bold text-sm text-slate-900'>{banner.title}</h3>
-                <p className='text-xs text-slate-700 mt-1 leading-snug'>{banner.desc}</p>
-                <div className='flex gap-2 mt-3'>
+                <h3 className='font-bold text-xs text-slate-900'>{banner.title}</h3>
+                <p className='text-[11px] text-slate-700 mt-0.5 leading-snug'>{banner.desc}</p>
+                <div className='flex gap-2 mt-2'>
                   {banner.actions.map((action) => (
                     <button
                       key={action.label}
                       onClick={action.onClick}
-                      className={`font-bold px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                      className={`font-bold px-2.5 py-1 rounded-lg text-[11px] transition-colors ${
                         action.variant === 'secondary'
                           ? 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-700'
                           : `${banner.color.split(' ')[0].replace('50', '600')} text-white hover:opacity-90`
