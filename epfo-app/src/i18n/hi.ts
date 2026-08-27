@@ -265,4 +265,8 @@ export const hi = {
   step_submit_claim: "आधार ओटीपी के साथ दावा जमा करें",
 
   step_verify_identity: "पहचान और यूएएन सत्यापित करें",
+
+  ob_network_check_title: "अभी आपका नेटवर्क जांचा जा रहा है...",
+  ob_network_check_subtitle: "EPFO ऐप अनुभव को अनुकूलित किया जा रहा है",
+  net_low_internet_mode_toast: "लो इंटरनेट मोड चालू किया गया",
 };

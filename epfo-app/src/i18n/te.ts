@@ -238,4 +238,7 @@ export const te = {
   step_review_claim: "క్లెయిమ్ వివరాలను సమీక్షించండి",
   step_submit_claim: "ఆధార్ OTPతో క్లెయిమ్‌ను సమర్పించండి",
 
+  ob_network_check_title: "మీ నెట్‌వర్క్‌ను ఇప్పుడు తనిఖీ చేస్తున్నాం...",
+  ob_network_check_subtitle: "EPFO యాప్ అనుభవాన్ని ఆప్టిమైజ్ చేస్తున్నాం",
+  net_low_internet_mode_toast: "తక్కువ ఇంటర్నెట్ మోడ్ ప్రారంభించబడింది",
 };

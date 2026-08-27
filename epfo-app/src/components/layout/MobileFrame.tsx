@@ -119,7 +119,6 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
   const navigate = useNavigate();
   const { activeScenario } = useDemoStore();
   const [fontScale, setFontScale] = React.useState(() => parseInt(localStorage.getItem('fontScale') || '16'));
-  const [mobileCompareOpen, setMobileCompareOpen] = React.useState(false);
 
   const scenarioLabel = DEMO_SCENARIOS.find(s => s.id === activeScenario)?.label || 'Happy Path';
 
@@ -254,19 +253,6 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
             {children}
           </main>
         </div>
-
-        {/* Mobile Compare FAB — visible on small screens */}
-        <button
-          onClick={() => setMobileCompareOpen(!mobileCompareOpen)}
-          aria-label="Toggle comparison panel"
-          className='lg:hidden mt-3 flex items-center gap-2 px-4 py-2 bg-slate-800 text-white text-xs font-semibold rounded-full shadow-lg hover:bg-slate-700 transition-colors'
-        >
-          {mobileCompareOpen ? <ChevronDown className='w-3.5 h-3.5' /> : <ChevronUp className='w-3.5 h-3.5' />}
-          {mobileCompareOpen ? 'Hide Comparison' : 'Compare: EPFO vs Remake'}
-        </button>
-        <div className='bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-1.5 mt-3 text-center shrink-0'>
-          <p className='text-[10px] font-bold text-amber-600 uppercase tracking-wider'>⚠ Prototype — Not connected to real EPFO services. All data is simulated.</p>
-        </div>
       </div>
 
       {/* Right Panel — Comparison (Desktop) */}
@@ -280,36 +266,6 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
           scenarioLabel={scenarioLabel}
         />
       </div>
-
-      {/* Mobile Compare Drawer */}
-      <AnimatePresence>
-        {mobileCompareOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Comparison panel"
-            className='lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_30px_rgba(0,0,0,0.15)] z-50 overflow-hidden'
-          >
-            <div className='px-4 py-3 border-b border-slate-100 flex items-center justify-between'>
-              <p className='text-[11px] font-semibold text-slate-400 uppercase tracking-widest'>Comparison</p>
-              <button onClick={() => setMobileCompareOpen(false)} className='text-slate-400 hover:text-slate-600'>
-                <ChevronDown className='w-4 h-4' />
-              </button>
-            </div>
-            <div className='max-h-[50vh] overflow-y-auto'>
-              <ComparisonPanelContent
-                route={location.pathname}
-                scenario={activeScenario}
-                scenarioLabel={scenarioLabel}
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

@@ -238,4 +238,7 @@ export const ta = {
   step_review_claim: "உரிமைகோரல் விவரங்களை மதிப்பாய்வு செய்யவும்",
   step_submit_claim: "ஆதார் OTP உடன் உரிமைகோரலைச் சமர்ப்பிக்கவும்",
 
+  ob_network_check_title: "உங்கள் நெட்வொர்க் இப்போது சரிபார்க்கப்படுகிறது...",
+  ob_network_check_subtitle: "EPFO பயன்பாட்டு அனுபவம் மேம்படுத்தப்படுகிறது",
+  net_low_internet_mode_toast: "குறைந்த இன்டர்நெட் முறை இயக்கப்பட்டது",
 };

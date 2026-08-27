@@ -265,4 +265,8 @@ export const mr = {
   step_submit_claim: "आधार OTP सह दावा सबमिट करा",
 
   step_verify_identity: "ओळख आणि UAN सत्यापित करा",
+
+  ob_network_check_title: "आता तुमचे नेटवर्क तपासले जात आहे...",
+  ob_network_check_subtitle: "EPFO अ‍ॅप अनुभव ऑप्टिमाइझ केला जात आहे",
+  net_low_internet_mode_toast: "लो इंटरनेट मोड सक्षम केला",
 };

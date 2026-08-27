@@ -15,7 +15,7 @@ import { SyncAnimation } from '../components/ui/SyncAnimation';
 import { VaultIntroAnimation } from '../components/animations/VaultIntroAnimation';
 import { ScamAwarenessAnimation } from '../components/animations/ScamAwarenessAnimation';
 import { OtpFallbackOptions } from '../components/ui/OtpFallbackOptions';
-import { useSettingsStore } from '../store/useSettingsStore';
+import { applyLowInternetMode, connectionQuality, probeLatency, LOW_INTERNET_LATENCY_MS } from '../lib/networkQuality';
 
 const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
   const { t } = useTranslation();
@@ -123,22 +123,19 @@ export const Onboarding: React.FC = () => {
   const [step, setStep] = useState<Step>('network_check');
   
   const { verifyUAN, loginWithPhone, completeProfile, user } = useSessionStore();
-  const lowInternetMode = useSettingsStore(s => s.lowInternetMode);
 
   React.useEffect(() => {
     if (step === 'network_check') {
-      const timer = setTimeout(() => {
-        if (lowInternetMode) {
-          toast('LOW INTERNET MODE ENABLED', { 
-            icon: '⚠️', 
-            style: { background: '#f59e0b', color: '#fff', fontWeight: 'bold' } 
-          });
-        }
-        setStep('language');
-      }, 1500);
+      const runNetworkCheck = async () => {
+        const medianLatency = await probeLatency();
+        const isLow = connectionQuality() === 'low' || medianLatency > LOW_INTERNET_LATENCY_MS;
+        applyLowInternetMode(isLow);
+      };
+      runNetworkCheck();
+      const timer = setTimeout(() => setStep('language'), 1500);
       return () => clearTimeout(timer);
     }
-  }, [step, lowInternetMode]);
+  }, [step]);
   
   const [uanInput, setUanInput] = useState('101234567890');
   const [phoneInput, setPhoneInput] = useState('9876543210');
@@ -267,8 +264,8 @@ export const Onboarding: React.FC = () => {
               <div className='flex items-center justify-center mb-4'>
                 <div className='animate-spin w-12 h-12 border-4 border-epfo-blue border-t-transparent rounded-full' />
               </div>
-              <h1 className='text-2xl font-semibold mb-2 text-slate-900'>Checking your network...</h1>
-              <p className='text-slate-500 text-sm'>Optimizing EPFO app experience</p>
+              <h1 className='text-2xl font-semibold mb-2 text-slate-900'>{t('ob_network_check_title')}</h1>
+              <p className='text-slate-500 text-sm'>{t('ob_network_check_subtitle')}</p>
             </motion.div>
           )}
 

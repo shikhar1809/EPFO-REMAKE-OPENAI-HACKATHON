@@ -33,6 +33,7 @@ import { AssistantAvatar } from '../components/ui/AssistantAvatar';
 import { detectCompoundIntent, classifyIntent } from '../lib/flowDetection';
 import { generatePlan } from '../agents/registry';
 import { buildMultiPhaseTask } from '../agents/compound';
+import { ClaimTrackerCard } from '../components/dashboard/ClaimTrackerCard';
 import { BalanceCard } from '../components/dashboard/BalanceCard';
 import { AccountHealthCard } from '../components/dashboard/AccountHealthCard';
 import { RecentActivityCard } from '../components/dashboard/RecentActivityCard';
@@ -268,6 +269,7 @@ export const Home: React.FC = () => {
             {/* PF Details ⇄ Account Details ⇄ Recent Activity (auto-swapping) */}
             {isAuthenticated && (
               <SwappableCards intervalMs={5000}>
+                <ClaimTrackerCard />
                 <BalanceCard />
                 <AccountHealthCard />
                 <RecentActivityCard />

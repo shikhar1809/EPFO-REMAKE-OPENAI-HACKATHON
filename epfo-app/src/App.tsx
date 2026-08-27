@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import { SceneTransition } from './components/layout/SceneTransition';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { OfflineBanner } from './components/ui/OfflineBanner';
+import { NetworkQualityMonitor } from './components/ui/NetworkQualityMonitor';
 import { useSettingsStore } from './store/useSettingsStore';
 import { MotionConfig } from 'framer-motion';
 import './i18n/config';
@@ -55,6 +56,7 @@ function App() {
     <MotionConfig reducedMotion={lowInternetMode ? 'always' : 'user'}>
     <BrowserRouter>
       <MobileFrame>
+        <NetworkQualityMonitor />
         <OfflineBanner />
         <OnboardWrapper>
           <SceneTransition>

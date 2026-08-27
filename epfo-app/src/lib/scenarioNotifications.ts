@@ -178,7 +178,12 @@ export const getScenarioNotifications = (activeScenario: string): NotificationIt
 
 export const mergeNotifications = (notifications: NotificationItem[], activeScenario: string): NotificationItem[] => {
   const scenario = getScenarioNotifications(activeScenario);
-  const scenarioIds = new Set(scenario.map((n) => n.id));
-  const base = notifications.filter((n) => !scenarioIds.has(n.id));
-  return [...scenario, ...base];
+  
+  // If we have specific scenario notifications, just show those to keep the demo focused!
+  if (scenario.length > 0) {
+    return scenario;
+  }
+  
+  // Otherwise (e.g., 'happy' scenario), just show a few general non-alert ones
+  return notifications.filter(n => n.category !== 'alerts');
 };

@@ -238,4 +238,7 @@ export const bn = {
   step_review_claim: "দাবি বিবরণ পর্যালোচনা করুন",
   step_submit_claim: "আধার ওটিপি দিয়ে দাবি জমা দিন",
 
+  ob_network_check_title: "আপনার নেটওয়ার্ক এখন পরীক্ষা করা হচ্ছে...",
+  ob_network_check_subtitle: "EPFO অ্যাপ অভিজ্ঞতা অপ্টিমাইজ করা হচ্ছে",
+  net_low_internet_mode_toast: "লো ইন্টারনেট মোড সক্রিয় করা হয়েছে",
 };
