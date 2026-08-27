@@ -499,7 +499,7 @@ export const Home: React.FC = () => {
                   {
                     titleKey: 'home_compound_aadhaar_title',
                     descKey: 'home_compound_aadhaar_desc',
-                    query: "Fix my Aadhaar conflict and then update my KYC",
+                    query: "Fix my Aadhaar conflict, update my KYC, and then withdraw my PF",
                     sc: ['aadhaar_conflict', 'multi_phase_aadhaar']
                   },
                   {

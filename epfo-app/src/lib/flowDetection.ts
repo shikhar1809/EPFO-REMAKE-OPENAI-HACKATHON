@@ -1,7 +1,7 @@
 const EPFO_KEYWORDS: { keyword: string; intent: string }[] = [
   { keyword: 'kyc', intent: 'kyc_mismatch' },
   { keyword: 'mismatch', intent: 'kyc_mismatch' },
-  { keyword: 'aadhaar', intent: 'kyc_mismatch' },
+  { keyword: 'aadhaar', intent: 'aadhaar_fix' }, // Point aadhaar to aadhaar_fix
   { keyword: 'name.*correct', intent: 'kyc_mismatch' },
   { keyword: 'dob', intent: 'kyc_mismatch' },
   { keyword: 'date of birth', intent: 'kyc_mismatch' },
@@ -43,6 +43,7 @@ const EPFO_KEYWORDS: { keyword: string; intent: string }[] = [
 ];
 
 const COMPOUND_PATTERNS: { pattern: RegExp; flows: string[] }[] = [
+  { pattern: /aadhaar.*(and|then|also).*(kyc|mismatch).*(and|then|also|after).*(withdraw|claim|pf)/i, flows: ['aadhaar_fix', 'kyc_mismatch', 'withdraw_pf'] },
   { pattern: /fix.*(kyc|mismatch|aadhaar).*(and|then|also|after).*(withdraw|claim|pf)/i, flows: ['kyc_mismatch', 'withdraw_pf'] },
   { pattern: /(kyc|mismatch|aadhaar).*(and|then|also).*(withdraw|claim|pf)/i, flows: ['kyc_mismatch', 'withdraw_pf'] },
   { pattern: /merge.*(and|then|also).*(transfer|claim)/i, flows: ['merge_accounts', 'transfer_pf'] },
@@ -59,7 +60,7 @@ const COMPOUND_PATTERNS: { pattern: RegExp; flows: string[] }[] = [
   { pattern: /life.*(cert|pramaan).*(and|then|also).*(grievance|complain)/i, flows: ['life_certificate', 'grievance'] },
   { pattern: /transfer.*(and|then|also).*(withdraw|claim)/i, flows: ['transfer_pf', 'withdraw_pf'] },
   { pattern: /fix.*(kyc|mismatch).*(and|then|also).*(nomine|bank|ifsc)/i, flows: ['kyc_mismatch', 'kyc_mismatch'] },
-  { pattern: /aadhaar.*(and|then|also).*(kyc|mismatch|bank)/i, flows: ['kyc_mismatch', 'kyc_mismatch'] },
+  { pattern: /aadhaar.*(and|then|also).*(kyc|mismatch|bank)/i, flows: ['aadhaar_fix', 'kyc_mismatch'] },
 ];
 
 function extractIntents(query: string): string[] {
@@ -109,6 +110,7 @@ export function classifyIntent(query: string): string {
   if (lower.includes('transfer') || lower.includes('old account') || lower.includes('previous employer')) return 'transfer_pf';
   if (lower.includes('merge') || lower.includes('consolidat') || lower.includes('duplicate') || lower.includes('multiple uan')) return 'merge_accounts';
   if (lower.includes('grievance') || lower.includes('complaint') || lower.includes('reject') || lower.includes('complain')) return 'grievance';
-  if (lower.includes('kyc') || lower.includes('mismatch') || lower.includes('aadhaar') || lower.includes('nominee') || lower.includes('nomination') || lower.includes('bank') || lower.includes('ifsc') || lower.includes('dob') || lower.includes('date of birth')) return 'kyc_mismatch';
+  if (lower.includes('aadhaar')) return 'aadhaar_fix';
+  if (lower.includes('kyc') || lower.includes('mismatch') || lower.includes('nominee') || lower.includes('nomination') || lower.includes('bank') || lower.includes('ifsc') || lower.includes('dob') || lower.includes('date of birth')) return 'kyc_mismatch';
   return 'general_inquiry';
 }
