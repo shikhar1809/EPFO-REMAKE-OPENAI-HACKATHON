@@ -38,7 +38,7 @@ export const ClaimTrackerCard: React.FC = () => {
   const Step = ({ title, date, state, isLast }: { title: string, date: string, state: 'done' | 'active' | 'pending' | 'rejected', isLast?: boolean }) => (
     <div className='flex gap-2.5 relative'>
       {!isLast && (
-        <div className={\bsolute left-[7px] top-4 bottom-[-8px] w-0.5 \} />
+        <div className={`absolute left-[7px] top-4 bottom-[-8px] w-0.5 ${state === 'done' ? 'bg-emerald-500' : 'bg-slate-100'}`} />
       )}
       <div className='relative z-10 shrink-0 mt-0.5'>
         {state === 'done' ? (
@@ -58,7 +58,7 @@ export const ClaimTrackerCard: React.FC = () => {
         )}
       </div>
       <div className='pb-2.5'>
-        <p className={\	ext-[11px] font-semibold \}>
+        <p className={`text-[11px] font-semibold ${state === 'active' ? 'text-amber-700' : state === 'rejected' ? 'text-rose-700' : state === 'done' ? 'text-slate-800' : 'text-slate-400'}`}>
           {title}
         </p>
         <p className='text-[9px] text-slate-500'>{date}</p>
