@@ -64,7 +64,6 @@ const SENSITIVE_STEPS = new Set([
 ]);
 
 const EMPLOYER_APPROVAL_FLOWS: Record<string, string> = {
-  submit_claim: 'withdraw_pf',
   submit_declaration: 'kyc_mismatch',
 };
 
