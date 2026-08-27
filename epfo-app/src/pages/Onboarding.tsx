@@ -144,7 +144,9 @@ export const Onboarding: React.FC = () => {
   ];
 
   const handleLanguageSelect = (code: string) => {
-    i18n.changeLanguage(code);
+    i18n.changeLanguage(code).then(() => {
+        toast.success(t('lang_changed_toast', 'Language changed'));
+    });
     localStorage.setItem('language', code);
     setStep('scam_awareness');
   };

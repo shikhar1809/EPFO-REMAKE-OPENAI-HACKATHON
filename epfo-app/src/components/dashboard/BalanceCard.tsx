@@ -2,8 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'lucide-react';
 import { useAccountStore } from '../../store/useAccountStore';
+import { useTranslation } from 'react-i18next';
 
 export const BalanceCard: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { balance } = useAccountStore();
   const total = balance.total;
@@ -18,13 +20,13 @@ export const BalanceCard: React.FC = () => {
           <div className='bg-white/10 p-1.5 rounded-lg'>
             <Wallet className='!w-4 !h-4' />
           </div>
-          <span className='text-[11px] font-medium text-white/60'>PF Details</span>
+          <span className='text-[11px] font-medium text-white/60'>{t('pf_details', 'PF Details')}</span>
         </div>
         <button
           onClick={() => navigate('/passbook')}
           className='text-[10px] font-bold text-white/50 hover:text-white/80 transition-colors underline underline-offset-2'
         >
-          View Passbook
+          {t('view_passbook', 'View Passbook')}
         </button>
       </div>
 
@@ -42,15 +44,15 @@ export const BalanceCard: React.FC = () => {
       <div className='flex gap-4 mt-1.5'>
         <div className='flex items-center gap-1.5'>
           <div className='w-2 h-2 rounded-full bg-emerald-400' />
-          <span className='text-[10px] text-white/50'>Employee ₹{balance.employee.toLocaleString('en-IN')}</span>
+          <span className='text-[10px] text-white/50'>{t('employee', 'Employee')} ₹{balance.employee.toLocaleString('en-IN')}</span>
         </div>
         <div className='flex items-center gap-1.5'>
           <div className='w-2 h-2 rounded-full bg-blue-400' />
-          <span className='text-[10px] text-white/50'>Employer ₹{balance.employer.toLocaleString('en-IN')}</span>
+          <span className='text-[10px] text-white/50'>{t('employer', 'Employer')} ₹{balance.employer.toLocaleString('en-IN')}</span>
         </div>
         <div className='flex items-center gap-1.5'>
           <div className='w-2 h-2 rounded-full bg-amber-400' />
-          <span className='text-[10px] text-white/50'>Pension ₹{balance.pension.toLocaleString('en-IN')}</span>
+          <span className='text-[10px] text-white/50'>{t('pension', 'Pension')} ₹{balance.pension.toLocaleString('en-IN')}</span>
         </div>
       </div>
     </div>

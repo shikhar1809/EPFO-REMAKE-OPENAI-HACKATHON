@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, ChevronDown, ChevronUp } from 'lucide-react';
@@ -145,9 +146,13 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [fontScale]);
 
+  const { t } = useTranslation();
+  
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const code = e.target.value;
-    i18n.changeLanguage(code);
+    i18n.changeLanguage(code).then(() => {
+        toast.success(t('lang_changed_toast', 'Language changed'));
+    });
     localStorage.setItem('language', code);
   };
 

@@ -14,6 +14,7 @@ import {
 import { useNotificationStore } from '../../store/useNotificationStore';
 import { useDemoStore } from '../../store/useDemoStore';
 import { mergeNotifications } from '../../lib/scenarioNotifications';
+import { useTranslation } from 'react-i18next';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   ShieldCheck, CalendarX2, AlertTriangle, Wallet, ArrowRightLeft, CheckCircle2, ShieldAlert,
@@ -67,6 +68,7 @@ const LINK_MAP: Record<string, string> = {
 };
 
 export const NotificationCardStack: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { notifications, activeCardIndex, setActiveCardIndex } = useNotificationStore();
   const activeScenario = useDemoStore(s => s.activeScenario);
@@ -83,7 +85,7 @@ export const NotificationCardStack: React.FC = () => {
       <div className='px-0.5 flex items-center justify-between'>
         <h2 className='text-[11px] font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5'>
           <Bell className='!w-3.5 !h-3.5 text-epfo-blue' />
-          Smart Notifications
+          {t('smart_notifications', 'Smart Notifications')}
           {unreadCards.length > 0 && (
             <span className='ml-1 bg-epfo-blue text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none'>
               {unreadCards.length}
@@ -94,7 +96,7 @@ export const NotificationCardStack: React.FC = () => {
           onClick={() => navigate('/notifications')}
           className='text-[10px] font-bold text-epfo-blue hover:text-epfo-blue/80 transition-colors underline underline-offset-2'
         >
-          View All
+          {t('view_all', 'View All')}
         </button>
       </div>
 
@@ -112,18 +114,20 @@ export const NotificationCardStack: React.FC = () => {
           </div>
           <div className='flex-1 min-w-0'>
             <div className='flex items-center gap-1.5'>
-              <p className={`text-[11px] font-bold ${HEADING_MAP[c] || HEADING_MAP.blue}`}>{current?.title}</p>
+              <p className={`text-[11px] font-bold ${HEADING_MAP[c] || HEADING_MAP.blue}`}>
+                {current ? t(`notif_${current.id.replace(/-/g, '_')}_title`, current.title) : ''}
+              </p>
               {!current?.read && <span className='w-1.5 h-1.5 rounded-full bg-epfo-blue shrink-0' />}
             </div>
             <p className={`text-[10px] ${BODY_MAP[c] || BODY_MAP.blue} mt-0.5 leading-snug`}>
-              {current?.body}
+              {current ? t(`notif_${current.id.replace(/-/g, '_')}_body`, current.body) : ''}
             </p>
             {current?.actionPath && (
               <button
                 onClick={(e) => { e.stopPropagation(); navigate(current.actionPath!); }}
                 className={`mt-1 text-[10px] font-bold ${LINK_MAP[c] || LINK_MAP.blue} underline underline-offset-2`}
               >
-                {current?.actionLabel} →
+                {t(`notif_${current.id.replace(/-/g, '_')}_action`, current.actionLabel || '')} →
               </button>
             )}
           </div>
