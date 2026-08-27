@@ -96,7 +96,7 @@ export const DemoControlPanel: React.FC = () => {
       case 'multi_phase_aadhaar': {
         const wfStore = useWorkflowStore.getState();
         wfStore.clearAllTasks();
-        const { phases, combinedPlan } = buildMultiPhaseTaskAt(['aadhaar_fix', 'kyc_mismatch', 'withdraw_pf'], 0, 1);
+        const { phases, combinedPlan } = buildMultiPhaseTaskAt(['kyc_mismatch', 'aadhaar_fix', 'withdraw_pf'], 0, 1);
         wfStore.startTask('Fix my Aadhaar conflict, update KYC, and then withdraw PF', 'multi_phase', combinedPlan, phases);
         break;
       }

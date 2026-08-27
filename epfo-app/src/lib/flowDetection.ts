@@ -43,7 +43,9 @@ const EPFO_KEYWORDS: { keyword: string; intent: string }[] = [
 ];
 
 const COMPOUND_PATTERNS: { pattern: RegExp; flows: string[] }[] = [
-  { pattern: /aadhaar.*(and|then|also).*(kyc|mismatch).*(and|then|also|after).*(withdraw|claim|pf)/i, flows: ['aadhaar_fix', 'kyc_mismatch', 'withdraw_pf'] },
+  { pattern: /aadhaar.*kyc.*withdraw/i, flows: ['kyc_mismatch', 'aadhaar_fix', 'withdraw_pf'] },
+  { pattern: /kyc.*aadhaar.*withdraw/i, flows: ['kyc_mismatch', 'aadhaar_fix', 'withdraw_pf'] },
+  { pattern: /aadhaar.*(and|then|also).*(kyc|mismatch).*(and|then|also|after).*(withdraw|claim|pf)/i, flows: ['kyc_mismatch', 'aadhaar_fix', 'withdraw_pf'] },
   { pattern: /fix.*(kyc|mismatch|aadhaar).*(and|then|also|after).*(withdraw|claim|pf)/i, flows: ['kyc_mismatch', 'withdraw_pf'] },
   { pattern: /(kyc|mismatch|aadhaar).*(and|then|also).*(withdraw|claim|pf)/i, flows: ['kyc_mismatch', 'withdraw_pf'] },
   { pattern: /merge.*(and|then|also).*(transfer|claim)/i, flows: ['merge_accounts', 'transfer_pf'] },
