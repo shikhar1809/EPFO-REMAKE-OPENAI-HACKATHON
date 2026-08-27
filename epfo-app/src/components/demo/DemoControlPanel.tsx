@@ -36,15 +36,8 @@ export const DemoControlPanel: React.FC = () => {
     resetDemoBaseline();
 
     switch (id) {
-      case 'happy':
-        navigate('/');
-        break;
       case 'no_kyc':
         useDataStore.setState({ profile: null });
-        navigate('/');
-        break;
-      case 'kyc_wrong':
-        navigate('/kyc-mismatch');
         break;
       case 'claim_denied':
         useDataStore.setState({
@@ -53,7 +46,6 @@ export const DemoControlPanel: React.FC = () => {
             { id: 'CLM-001', type: 'Form 19 (Full)', status: 'Approved', date: '2026-05-12', amount: 234560 },
           ],
         });
-        navigate('/');
         break;
       case 'employer_hold': {
         const wfStore = useWorkflowStore.getState();
@@ -70,19 +62,8 @@ export const DemoControlPanel: React.FC = () => {
             },
           });
         }
-        navigate('/');
         break;
       }
-
-      case 'multi_uan':
-        navigate('/');
-        break;
-      case 'no_nominee':
-        navigate('/');
-        break;
-      case 'pension_cert':
-        navigate('/');
-        break;
       case 'advance_rejected':
         useDataStore.setState({
           claims: [
@@ -90,18 +71,12 @@ export const DemoControlPanel: React.FC = () => {
             { id: 'CLM-001', type: 'Form 19 (Full)', status: 'Approved', date: '2026-05-12', amount: 234560 },
           ],
         });
-        navigate('/');
-        break;
-
-      case 'aadhaar_conflict':
-        navigate('/');
         break;
       case 'multi_phase': {
         const wfStore = useWorkflowStore.getState();
         wfStore.clearAllTasks();
         const { phases, combinedPlan } = buildMultiPhaseTaskAt(['kyc_mismatch', 'withdraw_pf'], 0, 3);
         wfStore.startTask('Fix my KYC mismatch and then withdraw PF', 'multi_phase', combinedPlan, phases);
-        navigate('/smart-flow');
         break;
       }
       case 'multi_phase_exit': {
@@ -109,7 +84,6 @@ export const DemoControlPanel: React.FC = () => {
         wfStore.clearAllTasks();
         const { phases, combinedPlan } = buildMultiPhaseTaskAt(['mark_exit', 'withdraw_pf'], 0, 2);
         wfStore.startTask('Mark my exit date and then withdraw my PF', 'multi_phase', combinedPlan, phases);
-        navigate('/smart-flow');
         break;
       }
       case 'multi_phase_merge': {
@@ -117,7 +91,6 @@ export const DemoControlPanel: React.FC = () => {
         wfStore.clearAllTasks();
         const { phases, combinedPlan } = buildMultiPhaseTaskAt(['merge_accounts', 'transfer_pf', 'withdraw_pf'], 0, 2);
         wfStore.startTask('Merge my old PF accounts, transfer balance, and then withdraw', 'multi_phase', combinedPlan, phases);
-        navigate('/smart-flow');
         break;
       }
       case 'multi_phase_aadhaar': {
@@ -125,13 +98,14 @@ export const DemoControlPanel: React.FC = () => {
         wfStore.clearAllTasks();
         const { phases, combinedPlan } = buildMultiPhaseTaskAt(['kyc_mismatch', 'withdraw_pf'], 0, 1);
         wfStore.startTask('Fix my Aadhaar conflict, update KYC, and then withdraw PF', 'multi_phase', combinedPlan, phases);
-        navigate('/smart-flow');
         break;
       }
       default:
-        navigate('/');
         break;
     }
+
+    // Always land on the home dashboard
+    navigate('/');
   };
 
   const stripLabel = (label: string) => label.replace(/^[^\s]+\s/, '');
