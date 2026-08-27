@@ -2,6 +2,7 @@ import React from 'react';
 import { Info, AlertTriangle } from 'lucide-react';
 import { useSessionStore } from '../../store/useSessionStore';
 import { useDataStore } from '../../store/useDataStore';
+import { useTranslation } from 'react-i18next';
 
 export interface FlowHint {
   icon?: 'info' | 'warning';
@@ -56,6 +57,7 @@ export const flowKnowledge: Record<string, FlowHint[]> = {
 export const FlowInfoCard: React.FC<{ flowType: string; className?: string }> = ({ flowType, className = '' }) => {
   const { user } = useSessionStore();
   const { profile } = useDataStore();
+  const { t } = useTranslation();
 
   const ctx = {
     hasUan: !!user?.uan,
@@ -69,11 +71,16 @@ export const FlowInfoCard: React.FC<{ flowType: string; className?: string }> = 
   const hints = allHints.filter(h => (h.condition ? h.condition(ctx) : true));
   if (hints.length === 0) return null;
 
+  const getHintT = (text: string) => {
+    if (text.includes('Form 19 (full settlement)')) return t('sf_form19_warning', text);
+    return t(text, text);
+  };
+
   return (
     <div className={`bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 space-y-2.5 ${className}`}>
       <div className='flex items-center gap-2 mb-1'>
         <Info className='w-4 h-4 text-amber-600' />
-        <p className='text-xs font-bold text-amber-900 uppercase tracking-wider'>Before You Start</p>
+        <p className='text-xs font-bold text-amber-900 uppercase tracking-wider'>{t('sf_before_start', 'Before You Start')}</p>
       </div>
       {hints.map((hint, idx) => (
         <div key={idx} className='flex items-start gap-2'>
@@ -83,7 +90,7 @@ export const FlowInfoCard: React.FC<{ flowType: string; className?: string }> = 
             <div className='w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 mt-1.5' />
           )}
           <p className='text-[11px] text-amber-900 leading-relaxed'>
-            {hint.text}
+            {getHintT(hint.text)}
             {hint.source && <span className='text-amber-600 font-semibold ml-1'>({hint.source})</span>}
           </p>
         </div>

@@ -27,6 +27,14 @@ interface AgentMessage {
   timestamp: number;
 }
 
+const STEP_I18N_MAP: Record<string, string> = {
+  'Check Bank & Eligibility': 'step_check_eligibility',
+  'Gather Documents from Vault': 'step_gather_docs',
+  'Review Claim Details': 'step_review_claim',
+  'Submit Claim with Aadhaar OTP': 'step_submit_claim',
+  'Verify Identity & UAN': 'step_verify_identity',
+};
+
 const USER_MESSAGES: Record<string, string> = {
   check_eligibility: "I need you to verify the last 4 digits of your bank account. This confirms the account linked to your UAN matches your records.",
   review_claim: "Your Aadhaar is linked and KYC is verified. Please select the withdrawal type and amount.",
@@ -320,7 +328,7 @@ export const SmartFlowEngine: React.FC = () => {
             {!hasStartedFlow && !isDone && !isPendingEmployer && (
               <>
                 <div className='mb-6'>
-                  <h2 className='text-2xl font-bold text-slate-900 mb-2 capitalize'>"{task.intent}"</h2>
+                  <h2 className='text-2xl font-bold text-slate-900 mb-2 capitalize'>"{task.intent === 'I want to withdraw PF for medical emergency' ? t('home_faq_withdraw_title', task.intent) : t(task.intent, task.intent)}"</h2>
                   <div className='bg-white p-4 rounded-2xl border shadow-sm flex items-start gap-3 mt-4' style={{ borderColor: `rgba(${colors.primaryRgb}, 0.3)`, backgroundColor: `rgba(${colors.primaryRgb}, 0.03)` }}>
                     <AssistantAvatar state='success' className='!w-6 !h-6 shrink-0' />
                     <div className="flex-1">
@@ -355,8 +363,8 @@ export const SmartFlowEngine: React.FC = () => {
                                     {globalIdx + 1}
                                   </div>
                                   <div className='bg-white rounded-2xl p-4 border border-slate-200 shadow-sm'>
-                                    <h3 className='font-bold text-slate-800'>{step.description}</h3>
-                                    <p className='text-xs text-slate-500 mt-1'>{step.description}</p>
+                                    <h3 className='font-bold text-slate-800'>{String(t(STEP_I18N_MAP[step.description] || step.description, step.description))}</h3>
+                                    <p className='text-xs text-slate-500 mt-1'>{String(t(STEP_I18N_MAP[step.description] || step.description, step.description))}</p>
                                   </div>
                                 </div>
                               );
@@ -372,8 +380,8 @@ export const SmartFlowEngine: React.FC = () => {
                           {idx + 1}
                         </div>
                         <div className='bg-white rounded-2xl p-4 border border-slate-200 shadow-sm'>
-                          <h3 className='font-bold text-slate-800'>{step.title || step.description}</h3>
-                          <p className='text-xs text-slate-500 mt-1'>{step.description}</p>
+                          <h3 className='font-bold text-slate-800'>{String(t(STEP_I18N_MAP[step.title || step.description] || step.title || step.description, step.title || step.description))}</h3>
+                          <p className='text-xs text-slate-500 mt-1'>{String(t(STEP_I18N_MAP[step.description] || step.description, step.description))}</p>
                         </div>
                       </div>
                     ))
