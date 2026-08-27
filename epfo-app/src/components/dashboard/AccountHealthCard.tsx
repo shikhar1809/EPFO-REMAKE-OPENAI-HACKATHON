@@ -13,7 +13,6 @@ export const AccountHealthCard: React.FC = () => {
     isKycMissing: getIsKycMissing, 
     isKycMismatch: getIsKycMismatch, 
     isAadhaarConflict: getIsAadhaarConflict,
-    isBankNotSeeded: getIsBankNotSeeded,
     isNomineeMissing: getIsNomineeMissing,
     isExitNotMarked: getIsExitNotMarked
   } = useDemoStore();
@@ -21,13 +20,12 @@ export const AccountHealthCard: React.FC = () => {
   const isKycMissing = getIsKycMissing();
   const isKycMismatch = getIsKycMismatch();
   const isAadhaarConflict = getIsAadhaarConflict();
-  const isBankNotSeeded = getIsBankNotSeeded();
   const isNomineeMissing = getIsNomineeMissing();
   const isExitNotMarked = getIsExitNotMarked();
 
   const aadhaarOk = !(isKycMissing || isKycMismatch || isAadhaarConflict);
   const panOk = !(isKycMissing || isKycMismatch);
-  const bankOk = !(isKycMissing || isBankNotSeeded);
+  const bankOk = !isKycMissing;
   const nomineeOk = !isNomineeMissing;
   const exitOk = !isExitNotMarked;
   const serviceOk = serviceMonths >= 12;
@@ -38,7 +36,7 @@ export const AccountHealthCard: React.FC = () => {
   const items = [
     { label: t('lbl_aadhaar_kyc', 'Aadhaar KYC'), ok: aadhaarOk, detail: aadhaarDetail, actionPath: (isAadhaarConflict || isKycMismatch) ? '/kyc-mismatch' : isKycMissing ? '/documents' : undefined },
     { label: t('lbl_pan_kyc', 'PAN KYC'), ok: panOk, detail: panDetail, actionPath: isKycMismatch ? '/kyc-mismatch' : isKycMissing ? '/documents' : undefined },
-    { label: t('lbl_bank_kyc', 'Bank KYC'), ok: bankOk, detail: bankOk ? t('sts_ifsc_verified', 'IFSC verified') : 'Not seeded', actionPath: isBankNotSeeded ? '/documents' : isKycMissing ? '/documents' : undefined },
+    { label: t('lbl_bank_kyc', 'Bank KYC'), ok: bankOk, detail: bankOk ? t('sts_ifsc_verified', 'IFSC verified') : 'Not seeded', actionPath: isKycMissing ? '/documents' : undefined },
     { label: t('lbl_e_nomination', 'e-Nomination'), ok: nomineeOk, detail: nomineeOk ? t('sts_filed', 'Filed') : 'Not filed', actionPath: isNomineeMissing ? '/smart-flow' : undefined },
     { label: t('lbl_exit_status', 'Exit Status'), ok: exitOk, detail: exitOk ? t('sts_marked', 'Marked (23 Jul 2026)') : 'Not marked', actionPath: isExitNotMarked ? '/mark-exit' : undefined },
     { label: t('lbl_service', 'Service'), ok: serviceOk, detail: `${serviceMonths} months` },

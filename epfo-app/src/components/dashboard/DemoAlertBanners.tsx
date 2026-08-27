@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, UserX, FileWarning, CreditCard, ShieldAlert } from 'lucide-react';
+import { AlertTriangle, UserX, FileWarning, ShieldAlert } from 'lucide-react';
 import { useDemoStore } from '../../store/useDemoStore';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 
 export const DemoAlertBanners: React.FC<Props> = ({ onAgenticStart }) => {
   const navigate = useNavigate();
-  const { isKycMissing, isClaimRejected, isEmployerPending, hasMultipleUans, isAdvanceRejected, isNomineeMissing, isPensionCertIssue, isBankNotSeeded, isAadhaarConflict } = useDemoStore();
+  const { isKycMissing, isClaimRejected, isEmployerPending, hasMultipleUans, isAdvanceRejected, isNomineeMissing, isPensionCertIssue, isAadhaarConflict } = useDemoStore();
 
   const banners: Array<{
     key: string;
@@ -108,19 +108,7 @@ export const DemoAlertBanners: React.FC<Props> = ({ onAgenticStart }) => {
         { label: 'Resolve via Smart Flow', onClick: () => onAgenticStart('My pension scheme certificate failed due to service history mismatch'), variant: 'primary' },
       ],
     },
-    {
-      key: 'bank',
-      show: isBankNotSeeded(),
-      color: 'bg-indigo-50 border-indigo-200',
-      iconColor: 'bg-indigo-100 text-indigo-600',
-      icon: CreditCard,
-      title: 'Bank Account Not Verified',
-      desc: 'Your claim was approved but disbursement failed. The linked bank account is not verified or IFSC is outdated.',
-      actions: [
-        { label: 'Update Bank Details', onClick: () => navigate('/documents'), variant: 'primary' },
-        { label: 'Get Help', onClick: () => onAgenticStart('My bank account IFSC is outdated, how to update'), variant: 'secondary' },
-      ],
-    },
+
     {
       key: 'aadhaar',
       show: isAadhaarConflict(),
