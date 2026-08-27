@@ -46,13 +46,16 @@ const USER_MESSAGES: Record<string, string> = {
   select_grievance_type: "Categorizing your grievance helps route it to the right department with the correct SLA.",
   register_grievance: "Describe your issue in detail. The more specific you are, the faster the resolution.",
   generate_reference: "Your grievance has been filed. Save this ticket number for tracking.",
+  analyze_mismatch: "I've analyzed the mismatch between your EPFO records and Aadhaar.",
+  draft_declaration: "Here is the drafted Joint Declaration to fix the mismatch.",
+  initiate_transfer: "Found your previous accounts. Please review and confirm which ones to transfer.",
 };
 
 const NEEDS_USER_STEPS = new Set([
   'check_eligibility', 'review_claim', 'capture_face', 'select_exit_reason',
   'register_grievance', 'generate_reference', 'analyze_passbook', 'analyze_mismatch',
   'draft_declaration', 'fetch_linked_accounts', 'select_accounts_to_merge',
-  'select_grievance_type',
+  'select_grievance_type', 'initiate_transfer'
 ]);
 
 const SENSITIVE_STEPS = new Set([
@@ -128,11 +131,12 @@ export const SmartFlowEngine: React.FC = () => {
   const prevStateRef = useRef('');
   useEffect(() => {
     if (!task || !hasStartedFlow) return;
-    const stateKey = `${task.agentState}:${activeStep?.step || ''}`;
+    const bareStep = (activeStep?.step || '').replace(/^phase\d+_/, '');
+    const stateKey = `${task.agentState}:${bareStep}`;
     if (stateKey === prevStateRef.current) return;
     prevStateRef.current = stateKey;
     const isUserState = task.agentState === 'needs_user';
-    const msg = isUserState ? USER_MESSAGES[activeStep?.step || ''] : null;
+    const msg = isUserState ? USER_MESSAGES[bareStep] : null;
     if (msg) addMessage(msg);
   }, [task?.agentState, task?.plan, hasStartedFlow]);
 
@@ -293,7 +297,7 @@ export const SmartFlowEngine: React.FC = () => {
   return (
     <div className='flex-1 flex flex-col bg-transparent overflow-hidden relative'>
       {task.phases && showPhaseTransition && task.currentPhaseIndex !== undefined && (
-        <PhaseTransition phases={task.phases} currentPhaseIndex={task.currentPhaseIndex} onDismiss={() => setShowPhaseTransition(false)} primaryRgb={colors.primaryRgb} />
+        <PhaseTransition phases={task.phases} currentPhaseIndex={task.currentPhaseIndex} onDismiss={() => setShowPhaseTransition(false)} onProceed={handleAgentAction} primaryRgb={colors.primaryRgb} />
       )}
 
       {/* Header */}

@@ -177,6 +177,74 @@ export const StepForms: React.FC<StepFormsProps> = ({
     );
   }
 
+  // analyze_mismatch
+  if (needsUser && stepName === 'analyze_mismatch') {
+    return (
+      <div className='space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-100'>
+        <div className='text-sm text-slate-700 font-medium mb-2'>
+          I've compared your EPFO records with your Aadhaar. Here are the mismatches found:
+        </div>
+        <div className='bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm'>
+          <div className='grid grid-cols-3 bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider'>
+            <div className='px-3 py-2'>Field</div>
+            <div className='px-3 py-2'>EPFO Record</div>
+            <div className='px-3 py-2'>Aadhaar</div>
+          </div>
+          {[
+            { label: 'Name', epfo: 'RAJESH KUMAR', aadhaar: 'Rajesh Kumar Sharma', mismatch: true },
+            { label: 'Date of Birth', epfo: '15/08/1990', aadhaar: '15/08/1992', mismatch: true },
+            { label: 'Gender', epfo: 'Male', aadhaar: 'Male', mismatch: false },
+            { label: "Father's Name", epfo: 'SURESH KUMAR', aadhaar: 'Suresh Kumar Sharma', mismatch: true },
+          ].map((row) => (
+            <div key={row.label} className={`grid grid-cols-3 border-b border-slate-100 last:border-b-0 text-xs ${row.mismatch ? 'bg-red-50/40' : 'bg-emerald-50/30'}`}>
+              <div className='px-3 py-2.5 font-semibold text-slate-700 flex items-center gap-1'>
+                {row.label}
+                {row.mismatch && <span className='text-[8px] font-bold bg-red-100 text-red-600 px-1 py-0.5 rounded uppercase'>!</span>}
+              </div>
+              <div className='px-3 py-2.5 text-slate-600'>{row.epfo}</div>
+              <div className={`px-3 py-2.5 font-medium ${row.mismatch ? 'text-blue-600' : 'text-slate-600'}`}>{row.aadhaar}</div>
+            </div>
+          ))}
+        </div>
+        <div className='bg-amber-50 text-amber-900 p-3 rounded-lg text-xs border border-amber-200'>
+          <span className='font-bold'>3 mismatches found.</span> A Joint Declaration will be drafted to correct these with your employer.
+        </div>
+        <Button onClick={onProceed} className='w-full'>Review &amp; Proceed</Button>
+      </div>
+    );
+  }
+
+  // draft_declaration
+  if (needsUser && stepName === 'draft_declaration') {
+    return (
+      <div className='space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-100'>
+        <div className='text-sm text-slate-700 font-medium mb-2'>
+          Here's your Joint Declaration draft. Review the fields to be corrected:
+        </div>
+        <div className='bg-white rounded-xl border border-slate-200 p-4 space-y-3 shadow-sm'>
+          {[
+            { label: 'Name', from: 'RAJESH KUMAR', to: 'Rajesh Kumar Sharma' },
+            { label: 'Date of Birth', from: '15/08/1990', to: '15/08/1992' },
+            { label: "Father's Name", from: 'SURESH KUMAR', to: 'Suresh Kumar Sharma' },
+          ].map((field) => (
+            <div key={field.label} className='text-xs'>
+              <p className='font-bold text-slate-600 uppercase tracking-wider text-[10px] mb-1'>{field.label}</p>
+              <div className='flex items-center gap-2'>
+                <span className='line-through text-slate-400 bg-red-50 px-2 py-1 rounded'>{field.from}</span>
+                <span className='text-slate-400'>→</span>
+                <span className='font-semibold text-blue-700 bg-blue-50 px-2 py-1 rounded'>{field.to}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className='bg-blue-50 text-blue-800 p-3 rounded-lg text-xs border border-blue-100'>
+          <span className='font-bold'>Next step:</span> You will sign this declaration with your Aadhaar OTP.
+        </div>
+        <Button onClick={onProceed} className='w-full'>Confirm &amp; Proceed to Sign</Button>
+      </div>
+    );
+  }
+
   // analyze_passbook
   if (needsUser && stepName === 'analyze_passbook') {
     return (
@@ -263,6 +331,29 @@ export const StepForms: React.FC<StepFormsProps> = ({
     );
   }
 
+  // initiate_transfer
+  if (needsUser && stepName === 'initiate_transfer') {
+    return (
+      <div className='space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-100'>
+        <div className='text-sm text-slate-700 font-medium mb-2'>Please confirm the accounts for Form 13 transfer:</div>
+        <div className='bg-white p-3 rounded-xl border border-slate-200 space-y-2'>
+          <div className='flex items-center gap-2'>
+            <span className='text-xs text-slate-500'>Transfer From:</span>
+            <span className='text-xs font-bold text-slate-900'>XYZ Corp (Prev. Employer)</span>
+          </div>
+          <div className='flex items-center gap-2'>
+            <span className='text-xs text-slate-500'>Transfer To:</span>
+            <span className='text-xs font-bold text-slate-900'>ABC Company (Current)</span>
+          </div>
+        </div>
+        <div className='bg-blue-50 text-blue-800 p-3 rounded-lg text-xs border border-blue-100'>
+          <span className='font-bold'>Attestation:</span> The transfer request will be sent to your current employer for digital signature.
+        </div>
+        <Button onClick={onProceed} className='w-full'>Confirm Transfer</Button>
+      </div>
+    );
+  }
+
   // sensitive_action (OTP)
   if (sensitive) {
     return (
@@ -283,6 +374,7 @@ export const StepForms: React.FC<StepFormsProps> = ({
              stepName === 'submit_certificate' ? 'This will cryptographically sign and submit your Digital Life Certificate to the government.' :
              stepName === 'submit_exit' ? 'This will officially mark your exit from the selected establishment.' :
              stepName === 'submit_merge_request' ? 'This will submit a One Employee One EPF merge request to consolidate your duplicate UANs.' :
+             stepName === 'submit_declaration' ? 'This will submit your Joint Declaration to EPFO. Your employer will be notified to countersign.' :
              'Submitting this claim will initiate a funds transfer. Please authenticate to sign.'}
           </p>
         </div>
@@ -297,11 +389,12 @@ export const StepForms: React.FC<StepFormsProps> = ({
           )}
         </div>
         <Button className='w-full bg-red-600 hover:bg-red-700 text-white shadow-md' onClick={onSensitiveAction}>
-          <Lock className='w-4 h-4 mr-2' /> Sign & Submit {
-            stepName === 'submit_transfer' ? 'Transfer' : 
+          <Lock className='w-4 h-4 mr-2' /> Sign &amp; Submit {
+            stepName === 'submit_transfer' ? 'Transfer' :
             stepName === 'submit_certificate' ? 'Certificate' :
             stepName === 'submit_exit' ? 'Exit Request' :
-            stepName === 'submit_merge_request' ? 'Merge Request' : 'Claim'
+            stepName === 'submit_merge_request' ? 'Merge Request' :
+            stepName === 'submit_declaration' ? 'Declaration' : 'Claim'
           }
         </Button>
       </div>

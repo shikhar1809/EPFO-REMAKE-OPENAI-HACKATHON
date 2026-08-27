@@ -168,6 +168,8 @@ export const useWorkflowStore = create<WorkflowState>()(
             };
           }
 
+          const firstStepOfNextPhase = task.plan.find(p => p.step.startsWith(`phase${nextPhaseIndex}_`))?.step;
+
           return {
             activeTasks: {
               ...state.activeTasks,
@@ -175,12 +177,12 @@ export const useWorkflowStore = create<WorkflowState>()(
                 ...task,
                 phases: updatedPhases,
                 currentPhaseIndex: nextPhaseIndex,
-                plan: nextPhase.plan.map((p, i) => ({
+                plan: task.plan.map(p => ({
                   ...p,
-                  status: i === 0 ? 'active' as const : 'pending' as const,
+                  status: p.step === firstStepOfNextPhase ? 'active' as const : p.status,
                 })),
-                currentStep: nextPhase.plan[0].step,
-                completedSteps: [],
+                currentStep: firstStepOfNextPhase || task.currentStep,
+                completedSteps: [...task.completedSteps], // Don't clear completed steps to preserve history
                 stateVersion: task.stateVersion + 1,
                 lastCheckpoint: Date.now(),
               }

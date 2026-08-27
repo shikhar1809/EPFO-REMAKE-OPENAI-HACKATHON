@@ -8,21 +8,34 @@ interface PhaseTransitionProps {
   phases: Phase[];
   currentPhaseIndex: number;
   onDismiss: () => void;
+  onProceed?: () => void;
   primaryRgb?: string;
 }
 
-export const PhaseTransition: React.FC<PhaseTransitionProps> = ({ phases, currentPhaseIndex, onDismiss, primaryRgb = '59,130,246' }) => {
+export const PhaseTransition: React.FC<PhaseTransitionProps> = ({
+  phases,
+  currentPhaseIndex,
+  onDismiss,
+  onProceed,
+  primaryRgb = '59,130,246',
+}) => {
   const currentPhase = phases[currentPhaseIndex];
   const [show, setShow] = useState(true);
 
+  const handleDismiss = () => {
+    setShow(false);
+    onDismiss();
+    onProceed?.();
+  };
+
   useEffect(() => {
     setShow(true);
+    // Auto-dismiss after 4s if user doesn't tap
     const timer = setTimeout(() => {
-      setShow(false);
-      onDismiss();
-    }, 2500);
+      handleDismiss();
+    }, 4000);
     return () => clearTimeout(timer);
-  }, [currentPhaseIndex, onDismiss]);
+  }, [currentPhaseIndex]);
 
   if (!currentPhase) return null;
 
@@ -41,7 +54,11 @@ export const PhaseTransition: React.FC<PhaseTransitionProps> = ({ phases, curren
           className='fixed inset-0 z-50 flex items-center justify-center p-6'
         >
           {/* Backdrop */}
-          <div className='absolute inset-0 bg-black/30 backdrop-blur-sm' onClick={() => { setShow(false); onDismiss(); }} aria-label="Dismiss phase transition" />
+          <div
+            className='absolute inset-0 bg-black/30 backdrop-blur-sm'
+            onClick={handleDismiss}
+            aria-label="Dismiss phase transition"
+          />
 
           {/* Card */}
           <motion.div
@@ -64,7 +81,10 @@ export const PhaseTransition: React.FC<PhaseTransitionProps> = ({ phases, curren
             </div>
 
             <div className='flex items-center gap-3 mb-4'>
-              <div className='w-10 h-10 rounded-xl flex items-center justify-center' style={{ backgroundColor: `rgba(${primaryRgb}, 0.1)` }}>
+              <div
+                className='w-10 h-10 rounded-xl flex items-center justify-center'
+                style={{ backgroundColor: `rgba(${primaryRgb}, 0.1)` }}
+              >
                 <AssistantAvatar state='success' className='!w-7 !h-7' />
               </div>
               <div>
@@ -81,11 +101,18 @@ export const PhaseTransition: React.FC<PhaseTransitionProps> = ({ phases, curren
             <div className='flex items-center gap-1.5'>
               {phases.map((phase, i) => (
                 <div key={phase.id} className='flex items-center gap-1.5'>
-                  <div className={`w-2 h-2 rounded-full transition-colors ${
-                    i < currentPhaseIndex ? 'bg-emerald-500' :
-                    i === currentPhaseIndex ? 'ring-2' :
-                    'bg-slate-200'
-                  }`} style={i === currentPhaseIndex ? { backgroundColor: `rgb(${primaryRgb})`, boxShadow: `0 0 0 4px rgba(${primaryRgb}, 0.15)` } : undefined} />
+                  <div
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      i < currentPhaseIndex ? 'bg-emerald-500' :
+                      i === currentPhaseIndex ? 'ring-2' :
+                      'bg-slate-200'
+                    }`}
+                    style={
+                      i === currentPhaseIndex
+                        ? { backgroundColor: `rgb(${primaryRgb})`, boxShadow: `0 0 0 4px rgba(${primaryRgb}, 0.15)` }
+                        : undefined
+                    }
+                  />
                   {i < phases.length - 1 && (
                     <div className={`w-4 h-0.5 rounded-full ${i < currentPhaseIndex ? 'bg-emerald-300' : 'bg-slate-200'}`} />
                   )}
@@ -97,13 +124,20 @@ export const PhaseTransition: React.FC<PhaseTransitionProps> = ({ phases, curren
             {completedPhases > 0 && (
               <div className='mt-3 flex items-center gap-1.5 text-[11px] text-emerald-600 font-semibold'>
                 <CheckCircle2 className='w-3.5 h-3.5' />
-                {completedPhases} phase{completedPhases > 1 ? 's' : ''} completed — {phases.filter((_, i) => i < currentPhaseIndex).map(p => p.label).join(' → ')}
+                {completedPhases} phase{completedPhases > 1 ? 's' : ''} completed —{' '}
+                {phases.filter((_, i) => i < currentPhaseIndex).map(p => p.label).join(' → ')}
               </div>
             )}
 
-            <div className='mt-4 flex items-center gap-1.5 text-[11px] font-bold' style={{ color: `rgb(${primaryRgb})` }}>
+            {/* Clickable "Starting next phase" button */}
+            <button
+              onClick={handleDismiss}
+              className='mt-4 flex items-center gap-1.5 text-[11px] font-bold px-3 py-2 rounded-xl transition-colors hover:bg-slate-50 active:bg-slate-100 cursor-pointer w-full'
+              style={{ color: `rgb(${primaryRgb})` }}
+              aria-label="Start next phase"
+            >
               Starting next phase <ArrowRight className='w-3 h-3' />
-            </div>
+            </button>
           </motion.div>
         </motion.div>
       )}

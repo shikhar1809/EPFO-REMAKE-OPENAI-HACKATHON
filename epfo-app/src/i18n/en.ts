@@ -442,6 +442,7 @@ export const en = {
   sf_plan_ready: "Plan Ready",
   sf_plan_ready_desc: "Your request has been broken into secure steps. The agent will execute them in order.",
   sf_phase_label: "Phase {{num}}",
+  sf_phase_complete_msg: "✅ Phase {{prev}} completed. Now starting: {{next}}.",
   sf_refine_label: "Refine",
   sf_refine_placeholder: "Tell the agent what to change...",
   sf_refine_request: "Refine Request",
