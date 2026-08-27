@@ -709,6 +709,19 @@ dlc_pramaan_id_label: "Pramaan ID",
   notif_multiple_uan_title: "Multiple UAN Accounts Found",
   notif_multiple_uan_body: "We found ₹45,000 in an old UAN. Merge it to your current account to earn maximum interest.",
   notif_multiple_uan_action: "Merge Accounts",
-  lang_changed_toast: "Language changed to English"
+  lang_changed_toast: "Language changed to English",
+
+  asp_title: "Active Sessions Found",
+  asp_desc: "You have {{count}} active workflow in progress. Resume one to continue where you left off, or start a fresh {{flowName}}.",
+  asp_last_active: "Last active",
+  asp_resume: "Resume",
+  asp_start_fresh: "Start Fresh in",
+  asp_back: "Back to Dashboard",
+  sf_before_start: "BEFORE YOU START",
+  sf_form19_warning: "Form 19 (full settlement) requires 2+ months of unemployment after leaving, or reaching retirement age. Form 31 (advance) is for while still employed. Form 10C (pension) is only for total service under 10 years.",
+  step_check_eligibility: "Check Bank & Eligibility",
+  step_gather_docs: "Gather Documents from Vault",
+  step_review_claim: "Review Claim Details",
+  step_submit_claim: "Submit Claim with Aadhaar OTP",
 
 };

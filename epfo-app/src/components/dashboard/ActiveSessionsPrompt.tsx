@@ -2,6 +2,7 @@ import React from 'react';
 import { History, Play, Trash2, ArrowRight } from 'lucide-react';
 import { Button } from '../ui/Button';
 import type { WorkflowTask } from '../../store/useWorkflowStore';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   sessions: WorkflowTask[];
@@ -20,6 +21,7 @@ export const ActiveSessionsPrompt: React.FC<Props> = ({
   onCancel,
   onDelete,
 }) => {
+  const { t } = useTranslation();
   if (sessions.length === 0) return null;
 
   const flowName = flowChoice === 'agentic' ? 'Smart Flow' : 'Traditional Flow';
@@ -33,9 +35,9 @@ export const ActiveSessionsPrompt: React.FC<Props> = ({
             <History className='!w-5 !h-5' />
           </div>
           <div>
-            <h2 className='text-base font-bold text-slate-900 leading-snug'>Active Sessions Found</h2>
+            <h2 className='text-base font-bold text-slate-900 leading-snug'>{t('asp_title', 'Active Sessions Found')}</h2>
             <p className='text-xs text-slate-500 mt-0.5 leading-relaxed'>
-              You have {count} active workflow{count !== 1 ? 's' : ''} in progress. Resume one to continue where you left off, or start a fresh {flowName}.
+              {t('asp_desc', `You have ${count} active workflow in progress. Resume one to continue where you left off, or start a fresh ${flowName}.`).replace('{{count}}', count.toString()).replace('{{flowName}}', flowName)}
             </p>
           </div>
         </div>
@@ -50,7 +52,7 @@ export const ActiveSessionsPrompt: React.FC<Props> = ({
                 <p className='text-xs font-bold text-slate-900 truncate'>{task.intent}</p>
                 <p className='text-[11px] text-slate-500 mt-0.5'>
                   <span className='font-semibold text-orange-600 capitalize'>{task.agentState.replace('_', ' ')}</span>{' '}
-                  • Last active{' '}
+                  • {t('asp_last_active', 'Last active')}{' '}
                   {new Date(task.lastCheckpoint).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
@@ -67,7 +69,7 @@ export const ActiveSessionsPrompt: React.FC<Props> = ({
                   onClick={() => onResume(task.taskId)}
                   className='shrink-0 gap-1 text-[11px] py-1.5 px-3 font-bold'
                 >
-                  <Play className='w-3 h-3 fill-current' /> Resume
+                  <Play className='w-3 h-3 fill-current' /> {t('asp_resume', 'Resume')}
                 </Button>
               </div>
             </div>
@@ -76,13 +78,13 @@ export const ActiveSessionsPrompt: React.FC<Props> = ({
 
         <div className='space-y-2 pt-1 border-t border-slate-100'>
           <Button className='w-full justify-center gap-1.5' onClick={onStartFresh}>
-            Start Fresh in {flowName} <ArrowRight className='w-3.5 h-3.5' />
+            {t('asp_start_fresh', 'Start Fresh in')} {flowName} <ArrowRight className='w-3.5 h-3.5' />
           </Button>
           <button
             onClick={onCancel}
             className='w-full text-[11px] font-semibold text-slate-500 hover:text-slate-800 transition-colors py-1'
           >
-            Back to Dashboard
+            {t('asp_back', 'Back to Dashboard')}
           </button>
         </div>
       </div>
