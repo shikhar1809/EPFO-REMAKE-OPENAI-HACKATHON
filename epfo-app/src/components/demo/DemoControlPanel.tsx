@@ -5,6 +5,7 @@ import { useDemoStore, DEMO_SCENARIOS } from '../../store/useDemoStore';
 import { useDataStore } from '../../store/useDataStore';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
+import toast from 'react-hot-toast';
 import { buildMultiPhaseTaskAt } from '../../agents/compound';
 import { generatePlan } from '../../agents/registry';
 import { resetDemoBaseline } from '../../lib/demoReset';
@@ -149,7 +150,14 @@ export const DemoControlPanel: React.FC = () => {
         <button
           onClick={() => {
             const { lowInternetMode, setLowInternetMode } = useSettingsStore.getState();
-            setLowInternetMode(!lowInternetMode);
+            const nextMode = !lowInternetMode;
+            setLowInternetMode(nextMode);
+            if (nextMode) {
+              toast('LOW INTERNET MODE ENABLED', { 
+                icon: '⚠️', 
+                style: { background: '#f59e0b', color: '#fff', fontWeight: 'bold' } 
+              });
+            }
           }}
           title="Toggle Low Internet Mode"
           className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase transition-colors border ${
