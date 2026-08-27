@@ -181,14 +181,19 @@ export const SmartFlowEngine: React.FC = () => {
   const isPendingEmployer = task.agentState === 'pending_employer';
 
   const proceedToNextStep = () => {
-    if (currentStepIndex === task.plan.length - 1) {
+    const isLastStepOfPlan = currentStepIndex === task.plan.length - 1;
+    const isCompoundFlow = task.phases && task.phases.length > 1;
+
+    if (isLastStepOfPlan) {
       const bareStep = activeStep.step.replace(/^phase\d+_/, '');
       const empFlow = EMPLOYER_APPROVAL_FLOWS[bareStep];
-      const currentFlowType = task.phases && task.currentPhaseIndex !== undefined 
-        ? task.phases[task.currentPhaseIndex].taskType 
+      const currentFlowType = isCompoundFlow
+        ? task.phases![task.currentPhaseIndex!].taskType
         : task.taskType;
 
-      if (empFlow && currentFlowType === empFlow) {
+      // Employer approval only fires for standalone single-phase flows.
+      // Compound flows always complete cleanly on the last step.
+      if (!isCompoundFlow && empFlow && currentFlowType === empFlow) {
         checkpointTask(task.taskId, activeStep.step, '');
         updateTaskState(task.taskId, {
           agentState: 'pending_employer',
@@ -207,13 +212,14 @@ export const SmartFlowEngine: React.FC = () => {
       const nextStep = task.plan[currentStepIndex + 1].step;
       const currentPhaseMatch = activeStep.step.match(/^phase(\d+)_/);
       const nextPhaseMatch = nextStep.match(/^phase(\d+)_/);
-      
-      const isPhaseTransition = task.phases && currentPhaseMatch && nextPhaseMatch && currentPhaseMatch[1] !== nextPhaseMatch[1];
-      
+
+      const isPhaseTransition = isCompoundFlow && currentPhaseMatch && nextPhaseMatch && currentPhaseMatch[1] !== nextPhaseMatch[1];
+
       if (isPhaseTransition) {
-        checkpointTask(task.taskId, activeStep.step, '');
+        // FIX: pass nextStep (not '') so currentCheckpoint stays valid after transition
+        checkpointTask(task.taskId, activeStep.step, nextStep);
         completeCurrentPhase(task.taskId);
-        
+
         const bareStep = nextStep.replace(/^phase\d+_/, '');
         let nextState = 'planned';
         if (NEEDS_USER_STEPS.has(bareStep)) nextState = 'needs_user';
