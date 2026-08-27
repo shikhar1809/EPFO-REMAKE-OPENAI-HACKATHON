@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSettingsStore } from '../../store/useSettingsStore';
 import { toast } from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -145,6 +146,15 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
       document.body.classList.remove('senior-mode');
     }
   }, [fontScale]);
+
+  const lowInternetMode = useSettingsStore(s => s.lowInternetMode);
+  React.useEffect(() => {
+    if (lowInternetMode) {
+      document.body.classList.add('low-internet-mode');
+    } else {
+      document.body.classList.remove('low-internet-mode');
+    }
+  }, [lowInternetMode]);
 
   const { t } = useTranslation();
   

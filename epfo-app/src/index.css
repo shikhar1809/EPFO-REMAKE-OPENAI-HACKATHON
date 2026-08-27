@@ -39,3 +39,22 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Low Internet Mode overrides */
+body.low-internet-mode * {
+  /* Disable heavy visual effects */
+  box-shadow: none !important;
+  text-shadow: none !important;
+  backdrop-filter: none !important;
+  /* Make gradients solid colors */
+  background-image: none !important;
+}
+body.low-internet-mode img,
+body.low-internet-mode video,
+body.low-internet-mode svg {
+  /* Simplify vector/image rendering if possible, but mainly keep it light */
+}
+body.low-internet-mode .absolute.inset-0.z-0 > img {
+  display: none !important; /* Hide heavy background images */
+}
+

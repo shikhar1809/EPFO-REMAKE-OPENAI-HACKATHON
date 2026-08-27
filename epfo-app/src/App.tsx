@@ -6,6 +6,8 @@ import { Toaster } from 'react-hot-toast';
 import { SceneTransition } from './components/layout/SceneTransition';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { OfflineBanner } from './components/ui/OfflineBanner';
+import { useSettingsStore } from './store/useSettingsStore';
+import { MotionConfig } from 'framer-motion';
 import './i18n/config';
 
 const Onboarding = React.lazy(() => import('./pages/Onboarding').then(m => ({ default: m.Onboarding })));
@@ -47,7 +49,10 @@ const RootRedirect = () => {
 };
 
 function App() {
+  const lowInternetMode = useSettingsStore(s => s.lowInternetMode);
+
   return (
+    <MotionConfig reducedMotion={lowInternetMode ? 'always' : 'user'}>
     <BrowserRouter>
       <MobileFrame>
         <OfflineBanner />
@@ -82,6 +87,7 @@ function App() {
       </MobileFrame>
       <Toaster position="bottom-center" />
     </BrowserRouter>
+    </MotionConfig>
   );
 }
 
