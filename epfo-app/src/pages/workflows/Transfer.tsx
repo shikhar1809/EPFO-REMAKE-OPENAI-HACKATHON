@@ -62,7 +62,7 @@ export const Transfer: React.FC = () => {
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className='flex-1 flex flex-col bg-transparent overflow-y-auto pb-12'>
       {/* Top Bar */}
       <div className='bg-white/90 backdrop-blur-md px-4 py-4 flex items-center sticky top-0 z-20 border-b border-slate-100 shadow-sm'>
-        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'>
+        <button onClick={() => navigate(-1)} aria-label="Back to dashboard" className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'>
           <ArrowLeft className='w-5 h-5' />
         </button>
         <div className='ml-2 flex-1'>
@@ -102,6 +102,7 @@ export const Transfer: React.FC = () => {
               <Button 
                 onClick={handle1TapConsolidate}
                 disabled={isConsolidating}
+                aria-label={isConsolidating ? "Merging accounts" : "Merge all accounts"}
                 className='bg-cyan-400 text-slate-950 hover:bg-cyan-300 font-bold text-xs py-2.5 px-4 rounded-xl shadow-md flex items-center gap-1.5'
               >
                 {isConsolidating ? (

@@ -15,7 +15,6 @@
     "framer-motion": "^13.1.1",
     "i18next": "^26.4.0",
     "lucide-react": "^1.33.0",
-    "openai": "^7.5.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-hot-toast": "^2.6.0",

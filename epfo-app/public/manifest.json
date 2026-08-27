@@ -1,0 +1,12 @@
+{
+  "name": "EPFO Portal — Smart Flow",
+  "short_name": "EPFO Portal",
+  "description": "AI-guided EPFO services — claims, transfers, certificates & grievances",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1e40af",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "64x64", "type": "image/x-icon" }
+  ]
+}

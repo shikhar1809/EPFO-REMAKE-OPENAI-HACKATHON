@@ -180,6 +180,7 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
               <div className='flex items-center bg-slate-100 rounded-full px-1.5 py-0.5 border border-slate-200'>
                 <button
                   onClick={() => handleFontSize(-1)}
+                  aria-label="Decrease font size"
                   className='px-1 py-0.5 text-xs font-bold text-slate-700 hover:text-epfo-blue transition-colors'
                 >
                   A-
@@ -187,6 +188,7 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
                 <div className='w-px h-3 bg-slate-300 mx-0.5'></div>
                 <button
                   onClick={() => handleFontSize(1)}
+                  aria-label="Increase font size"
                   className='px-1 py-0.5 text-xs font-bold text-slate-700 hover:text-epfo-blue transition-colors'
                 >
                   A+
@@ -198,6 +200,7 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
                 <select
                   value={i18n.language || 'en'}
                   onChange={handleLanguageChange}
+                  aria-label="Language"
                   className='bg-transparent border-none outline-none cursor-pointer pr-1 text-[11px] font-bold'
                 >
                   <option value="en">EN</option>
@@ -211,20 +214,27 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
             </div>
           </div>
 
+          {/* Skip to main content */}
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[200] focus:bg-white focus:p-2">Skip to main content</a>
+
           {/* Children content */}
-          <div className="relative z-10 flex-1 flex flex-col overflow-hidden h-full">
+          <main id="main-content" className="relative z-10 flex-1 flex flex-col overflow-hidden h-full" role="main" aria-label="EPFO Portal content">
             {children}
-          </div>
+          </main>
         </div>
 
         {/* Mobile Compare FAB — visible on small screens */}
         <button
           onClick={() => setMobileCompareOpen(!mobileCompareOpen)}
+          aria-label="Toggle comparison panel"
           className='lg:hidden mt-3 flex items-center gap-2 px-4 py-2 bg-slate-800 text-white text-xs font-semibold rounded-full shadow-lg hover:bg-slate-700 transition-colors'
         >
           {mobileCompareOpen ? <ChevronDown className='w-3.5 h-3.5' /> : <ChevronUp className='w-3.5 h-3.5' />}
           {mobileCompareOpen ? 'Hide Comparison' : 'Compare: EPFO vs Remake'}
         </button>
+        <div className='bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-1.5 mt-3 text-center shrink-0'>
+          <p className='text-[10px] font-bold text-amber-600 uppercase tracking-wider'>⚠ Prototype — Not connected to real EPFO services. All data is simulated.</p>
+        </div>
       </div>
 
       {/* Right Panel — Comparison (Desktop) */}
@@ -247,6 +257,9 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Comparison panel"
             className='lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_30px_rgba(0,0,0,0.15)] z-50 overflow-hidden'
           >
             <div className='px-4 py-3 border-b border-slate-100 flex items-center justify-between'>

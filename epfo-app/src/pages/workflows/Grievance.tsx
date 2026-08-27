@@ -42,6 +42,7 @@ export const Grievance: React.FC = () => {
         <div className='relative z-10 px-4 pt-4 pb-0 flex items-center'>
           <button
             onClick={() => navigate(-1)}
+            aria-label="Back to dashboard"
             className='p-2 -ml-1 text-white/80 rounded-full hover:bg-white/10 transition-colors'
           >
             <ArrowLeft className='w-5 h-5' />
@@ -111,19 +112,20 @@ export const Grievance: React.FC = () => {
                     </p>
                   </div>
 
-                  <form onSubmit={handleRegister} className='space-y-3'>
-                    <Input type='text' placeholder='Full Name' required />
-                    <Input type='tel' placeholder='Mobile Number' required />
-                    <Input type='text' placeholder='UAN (Optional)' />
+                  <form onSubmit={handleRegister} className='space-y-3' role="form">
+                    <Input type='text' placeholder='Full Name' required aria-label="Full name" />
+                    <Input type='tel' placeholder='Mobile Number' required aria-label="Mobile number" />
+                    <Input type='text' placeholder='UAN (Optional)' aria-label="UAN number optional" />
                     <div className='space-y-1.5'>
-                      <label className='text-sm font-medium text-slate-700 ml-1'>Description</label>
+                      <label htmlFor="grievance-desc" className='text-sm font-medium text-slate-700 ml-1'>Description</label>
                       <textarea
+                        id="grievance-desc"
                         className='w-full bg-white border border-slate-200 text-slate-900 placeholder-slate-400 rounded-2xl px-4 py-3.5 focus:outline-none focus:border-epfo-blue focus:ring-2 focus:ring-epfo-blue/20 transition-all min-h-[110px] resize-none shadow-sm'
                         placeholder='Describe your issue clearly...'
                         required
                       />
                     </div>
-                    <Button type='submit' className='w-full py-3.5 text-base font-semibold shadow-md'>
+                    <Button type='submit' className='w-full py-3.5 text-base font-semibold shadow-md' aria-label="Submit grievance">
                       Submit Grievance
                     </Button>
                   </form>
@@ -194,10 +196,10 @@ export const Grievance: React.FC = () => {
                   <LifeBuoy className='w-4 h-4 text-epfo-blue' />
                   <span className='text-sm font-semibold text-slate-800'>Track your ticket</span>
                 </div>
-                <form onSubmit={handleTrack} className='space-y-3'>
-                  <Input type='text' placeholder='Ticket Number (e.g., TKT-9921)' required />
-                  <Input type='tel' placeholder='Registered Mobile Number' required />
-                  <Button type='submit' className='w-full'>
+                <form onSubmit={handleTrack} className='space-y-3' role="form">
+                  <Input type='text' placeholder='Ticket Number (e.g., TKT-9921)' required aria-label="Ticket number" />
+                  <Input type='tel' placeholder='Registered Mobile Number' required aria-label="Registered mobile number" />
+                  <Button type='submit' className='w-full' aria-label="Check grievance status">
                     <Search className='w-4 h-4 mr-2' /> Check Status
                   </Button>
                 </form>
@@ -259,8 +261,8 @@ export const Grievance: React.FC = () => {
                   {userClosedTicket === false && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='bg-orange-50 border border-orange-200 p-4 rounded-2xl flex flex-col gap-3'>
                       <p className='text-sm text-orange-800 font-semibold'>Ticket reopened and escalated to Level 2 Support.</p>
-                      <textarea className='w-full p-3 rounded-xl border border-orange-200 text-sm bg-white' placeholder='Please explain what is still not working...' />
-                      <Button className='bg-orange-600 hover:bg-orange-700 text-white'>Submit Escalation</Button>
+                      <textarea id="grievance-escalation" className='w-full p-3 rounded-xl border border-orange-200 text-sm bg-white' placeholder='Please explain what is still not working...' />
+                      <Button className='bg-orange-600 hover:bg-orange-700 text-white' aria-label="Submit escalation">Submit Escalation</Button>
                     </motion.div>
                   )}
                 </motion.div>

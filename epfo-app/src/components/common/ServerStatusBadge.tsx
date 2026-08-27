@@ -44,21 +44,21 @@ export const ServerStatusBadge: React.FC = () => {
           dotColor: 'bg-emerald-500',
           pulseColor: 'bg-emerald-400',
           badgeBg: 'text-emerald-800 hover:opacity-75',
-          labelText: 'SERVER STATUS: OPTIMAL',
+          labelText: 'SERVER: OPTIMAL (Simulated)',
         };
       case 'medium':
         return {
           dotColor: 'bg-amber-500',
           pulseColor: 'bg-amber-400',
           badgeBg: 'text-amber-900 hover:opacity-75',
-          labelText: 'SERVER STATUS: MEDIUM LOAD',
+          labelText: 'SERVER: MEDIUM (Simulated)',
         };
       case 'heavy':
         return {
           dotColor: 'bg-rose-500',
           pulseColor: 'bg-rose-400',
           badgeBg: 'text-rose-900 hover:opacity-75',
-          labelText: 'SERVER STATUS: HEAVY LOAD',
+          labelText: 'SERVER: HEAVY (Simulated)',
         };
     }
   };
@@ -66,9 +66,10 @@ export const ServerStatusBadge: React.FC = () => {
   const config = getStatusConfig(status);
 
   return (
-    <div className="relative group inline-flex items-center">
+    <div className="relative group inline-flex items-center" role="status">
       <button
         onClick={() => navigate('/status')}
+        aria-label={`Server status: ${status}. This is simulated data.`}
         className={`flex items-center gap-1.5 px-1 py-0.5 transition-all cursor-pointer select-none text-[10px] font-extrabold tracking-tight shrink-0 ${config.badgeBg}`}
       >
         <span className="relative flex h-2 w-2 shrink-0">

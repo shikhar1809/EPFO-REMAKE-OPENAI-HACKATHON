@@ -110,6 +110,7 @@ export const KycMismatch: React.FC = () => {
             else if (step === 'otp') setStep('diff');
             else navigate(-1);
           }}
+          aria-label="Go back to previous step"
           className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'
         >
           <ArrowLeft className='w-5 h-5' />
@@ -221,6 +222,7 @@ export const KycMismatch: React.FC = () => {
               onClick={handleProceed}
               className='w-full py-3.5 font-semibold text-sm'
               disabled={selectedFields.length === 0}
+              aria-label="Proceed to Aadhaar OTP sign"
             >
               Proceed to Aadhaar OTP Sign <ArrowRight className='w-4 h-4 ml-1' />
             </Button>
@@ -247,11 +249,13 @@ export const KycMismatch: React.FC = () => {
 
               <form onSubmit={handleOtpVerify} className='space-y-4 pt-2'>
                 <input
+                  id="kyc-otp"
                   type='text'
                   maxLength={4}
                   value={otp}
                   onChange={e => setOtp(e.target.value)}
                   placeholder='1234'
+                  aria-label="Enter Aadhaar OTP for KYC correction"
                   className='w-40 mx-auto text-center tracking-widest text-2xl font-bold p-3 border-2 border-epfo-blue/40 rounded-2xl focus:border-epfo-blue outline-none bg-slate-50'
                   autoFocus
                   required
@@ -309,6 +313,7 @@ export const KycMismatch: React.FC = () => {
 
               <button
                 onClick={() => navigate('/')}
+                aria-label="Back to dashboard"
                 className='w-full py-2 text-slate-500 text-xs hover:text-slate-800'
               >
                 Back to Dashboard

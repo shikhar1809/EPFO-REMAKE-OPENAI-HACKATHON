@@ -56,7 +56,7 @@ export const EmployerApprovalStatus: React.FC<Props> = ({ employerApproval }) =>
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className='space-y-4'>
-      <div className='bg-white p-5 rounded-2xl border border-blue-200 shadow-sm relative overflow-hidden'>
+      <div className='bg-white p-5 rounded-2xl border border-blue-200 shadow-sm relative overflow-hidden' role="status" aria-label="Employer approval status">
         <div className='absolute top-0 left-0 w-1 h-full bg-blue-500'></div>
 
         <div className='flex justify-between items-start mb-4'>
@@ -151,6 +151,7 @@ export const EmployerApprovalStatus: React.FC<Props> = ({ employerApproval }) =>
               </p>
               <button
                 onClick={handleEscalate}
+                aria-label="Escalate employer non-response via grievance"
                 className='mt-2 bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1'
               >
                 Escalate via Grievance <ArrowRight className='w-3 h-3' />

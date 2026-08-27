@@ -97,6 +97,7 @@ export const LifeCertificate: React.FC = () => {
             if (step === 'status') navigate(-1);
             else setStep('status');
           }} 
+          aria-label="Go back to previous step"
           className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'
         >
           <ArrowLeft className='w-5 h-5' />
@@ -162,6 +163,7 @@ export const LifeCertificate: React.FC = () => {
               {/* Method 1: Face-Auth on Mobile (Recommended) */}
               <button
                 onClick={startFaceAuth}
+                aria-label="Scan face for life certificate"
                 className='w-full bg-white/90 backdrop-blur-sm border-2 border-epfo-blue/40 hover:border-epfo-blue p-4 rounded-2xl shadow-sm text-left transition-all hover:shadow-md flex items-center gap-4 group'
               >
                 <div className='w-12 h-12 bg-blue-100 text-epfo-blue rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
@@ -311,6 +313,7 @@ export const LifeCertificate: React.FC = () => {
 
                 <button 
                   onClick={() => navigate('/')}
+                  aria-label="Return to dashboard"
                   className='w-full py-3 text-slate-600 font-medium text-xs hover:text-slate-900 transition-colors'
                 >
                   Return to Dashboard
@@ -344,8 +347,9 @@ export const LifeCertificate: React.FC = () => {
                 setStep('status');
               }} className='space-y-3 pt-2 text-xs'>
                 <div>
-                  <label className='font-semibold text-slate-700 block mb-1'>Delivery Address</label>
+                  <label htmlFor="lc-address" className='font-semibold text-slate-700 block mb-1'>Delivery Address</label>
                   <textarea 
+                    id="lc-address"
                     defaultValue="Flat 402, Shanti Vihar, Sector 14, Dwarka, New Delhi - 110078"
                     className='w-full p-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-epfo-blue outline-none resize-none h-20'
                     required
@@ -353,8 +357,9 @@ export const LifeCertificate: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className='font-semibold text-slate-700 block mb-1'>Contact Mobile Number</label>
+                  <label htmlFor="lc-phone" className='font-semibold text-slate-700 block mb-1'>Contact Mobile Number</label>
                   <input 
+                    id="lc-phone"
                     type="tel" 
                     defaultValue="+91 98765 43210"
                     className='w-full p-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-epfo-blue outline-none'

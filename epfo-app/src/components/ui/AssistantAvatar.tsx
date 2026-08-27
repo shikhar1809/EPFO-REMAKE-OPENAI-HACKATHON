@@ -22,9 +22,10 @@ export type AvatarState =
 interface AssistantAvatarProps {
   state?: AvatarState;
   className?: string;
+  ringColor?: string;
 }
 
-export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle', className }) => {
+export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle', className, ringColor }) => {
   const [blink, setBlink] = useState(false);
 
   useEffect(() => {
@@ -68,7 +69,7 @@ export const AssistantAvatar: React.FC<AssistantAvatarProps> = ({ state = 'idle'
   };
 
   return (
-    <div className={cn('relative flex items-center justify-center w-6 h-6 rounded-lg bg-[#222] shrink-0 border border-[#333]', className)}>
+    <div className={cn('relative flex items-center justify-center w-6 h-6 rounded-lg bg-[#222] shrink-0 border border-[#333]', ringColor && `ring-2 ${ringColor}`, className)}>
       
       {/* SCENERY & PROPS */}
       <AnimatePresence>

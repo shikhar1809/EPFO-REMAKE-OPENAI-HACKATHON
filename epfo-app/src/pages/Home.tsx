@@ -6,7 +6,6 @@ import {
   LogOut, 
   ShieldAlert, 
   Play, 
-  
   Trash2, 
   ShieldCheck, 
   ArrowRight, 
@@ -22,22 +21,24 @@ import {
   Vault,
   Sparkles,
   Send,
-  AlertTriangle,
-  UserX,
-  FileWarning,
-  CreditCard
 } from 'lucide-react';
 import { useSessionStore } from '../store/useSessionStore';
 import { useWorkflowStore } from '../store/useWorkflowStore';
-import type { Phase } from '../store/useWorkflowStore';
 import { useNotificationStore } from '../store/useNotificationStore';
-import { useDemoStore } from '../store/useDemoStore';
 import { Button } from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 import { NotificationModal } from '../components/notifications/NotificationModal';
+import { NotificationCardStack } from '../components/notifications/NotificationCardStack';
 import toast from 'react-hot-toast';
 import { AssistantAvatar } from '../components/ui/AssistantAvatar';
-import { detectCompoundIntent, classifyIntent, generatePlan, PHASE_META } from '../lib/flowDetection';
+import { detectCompoundIntent, classifyIntent } from '../lib/flowDetection';
+import { generatePlan } from '../agents/registry';
+import { buildMultiPhaseTask } from '../agents/compound';
+import { BalanceCard } from '../components/dashboard/BalanceCard';
+import { AccountHealthCard } from '../components/dashboard/AccountHealthCard';
+import { RecentActivityCard } from '../components/dashboard/RecentActivityCard';
+import { QuickActionsCard } from '../components/dashboard/QuickActionsCard';
+import { DemoAlertBanners } from '../components/dashboard/DemoAlertBanners';
 
 export const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -45,7 +46,6 @@ export const Home: React.FC = () => {
   const { isAuthenticated, logout, user, riskLevel } = useSessionStore();
   const { activeTasks, startTask, resumeTask, clearTask, archiveTask } = useWorkflowStore();
   const { enabled: notificationsEnabled } = useNotificationStore();
-  const { isKycMissing, isClaimRejected, isEmployerPending, hasMultipleUans, isAdvanceRejected, isNomineeMissing, isPensionCertIssue, isBankNotSeeded, isAadhaarConflict } = useDemoStore();
   
   const [flowChoice, setFlowChoice] = useState<'none' | 'agentic' | 'traditional'>('none');
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -85,6 +85,7 @@ export const Home: React.FC = () => {
                     toast.dismiss(t.id);
                     setIsNotificationOpen(true);
                   }}
+                  aria-label="Setup notifications"
                   className="mt-1 bg-epfo-blue text-white py-1.5 rounded-lg text-[11px] font-bold shadow-xs hover:bg-blue-800 transition-colors w-full"
                 >
                   Setup Notifications
@@ -131,23 +132,7 @@ export const Home: React.FC = () => {
       const detectedFlows = detectCompoundIntent(query);
 
       if (detectedFlows && detectedFlows.length >= 2) {
-        const phases: Phase[] = detectedFlows.map((flowType, idx) => ({
-          id: `phase-${idx + 1}`,
-          label: PHASE_META[flowType]?.label || flowType,
-          description: PHASE_META[flowType]?.description || '',
-          taskType: flowType,
-          plan: generatePlan(flowType),
-          status: idx === 0 ? 'active' as const : 'pending' as const,
-        }));
-
-        const combinedPlan = phases.flatMap((phase, phaseIdx) =>
-          phase.plan.map((step, stepIdx) => ({
-            ...step,
-            step: `phase${phaseIdx}_${step.step}`,
-            status: (phaseIdx === 0 && stepIdx === 0) ? 'active' as const : 'pending' as const,
-          }))
-        );
-
+        const { phases, combinedPlan } = buildMultiPhaseTask(detectedFlows);
         startTask(query, 'multi_phase', combinedPlan, phases);
       } else {
         const taskType = classifyIntent(query);
@@ -197,6 +182,7 @@ export const Home: React.FC = () => {
         <div className='flex items-center gap-1.5'>
           <button 
             onClick={() => setIsNotificationOpen(true)}
+            aria-label="Open notification settings"
             className={`p-2 rounded-full transition-all shadow-2xs relative ${
               notificationsEnabled 
                 ? 'bg-blue-50 text-epfo-blue hover:bg-blue-100' 
@@ -212,6 +198,7 @@ export const Home: React.FC = () => {
           <button 
             onClick={() => { logout(); navigate('/onboarding', { replace: true }); }} 
             className='p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors shadow-2xs' 
+            aria-label="Logout"
             title={t('logout')}
           >
             <LogOut className='!w-4 !h-4' />
@@ -252,353 +239,27 @@ export const Home: React.FC = () => {
         {/* ========================================================= */}
         {!isAnalyzing && flowChoice === 'none' && (
           <>
-            {/* Streamlined PF Balance Card */}
+            {/* PF Balance Card */}
+            {isAuthenticated && <BalanceCard />}
+
+            {/* Smart Notifications — Card Stack */}
+            {isAuthenticated && <NotificationCardStack />}
+
+            {/* Account Health + Recent Activity */}
             {isAuthenticated && (
-              <section className='bg-white/95 backdrop-blur-md rounded-2xl p-3.5 border border-slate-200/90 shadow-2xs relative overflow-hidden'>
-                <div className='flex items-center justify-between'>
-                  <span className='text-slate-500 text-[11px] font-bold uppercase tracking-wider'>
-                    {t('total_pf_balance')}
-                  </span>
-                  <button 
-                    onClick={() => navigate('/passbook')}
-                    className='bg-blue-50 hover:bg-blue-100 text-epfo-blue font-bold px-2.5 py-1 rounded-lg text-[11px] transition-colors flex items-center gap-1'
-                  >
-                    {t('view_passbook')} <ArrowRight className='w-3 h-3' />
-                  </button>
-                </div>
-                
-                <div className='text-2xl font-extrabold my-1 text-slate-900 tracking-tight'>
-                  ₹2,34,560
-                </div>
-
-
-              </section>
+              <div className='grid grid-cols-2 gap-3'>
+                <AccountHealthCard />
+                <RecentActivityCard />
+              </div>
             )}
 
-            {/* Smart Notifications — Always Visible */}
+            {/* Demo Alert Banners */}
             {isAuthenticated && (
-              <section className='space-y-2'>
-                <div className='px-0.5'>
-                  <h2 className='text-[11px] font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5'>
-                    <Bell className='!w-3.5 !h-3.5 text-epfo-blue' />
-                    Smart Notifications
-                  </h2>
-                </div>
-
-                <div className='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-2xl p-3.5 shadow-xs'>
-                  <div className='flex items-start gap-2.5'>
-                    <div className='bg-blue-100 p-1.5 rounded-lg text-blue-600 shrink-0 mt-0.5'>
-                      <ShieldCheck className='!w-4 !h-4' />
-                    </div>
-                    <div className='flex-1 min-w-0'>
-                      <h4 className='text-xs font-bold text-blue-900'>KYC Annual Deadline</h4>
-                      <p className='text-[11px] text-blue-700 mt-0.5 leading-snug'>
-                        Last date for Aadhaar-Bank seeding verification is <span className='font-bold'>30 Sep 2026</span>. Ensure all documents are updated to avoid claim rejection.
-                      </p>
-                      <button
-                        onClick={() => navigate('/documents')}
-                        className='mt-2 text-[10px] font-bold text-blue-600 hover:text-blue-800 underline underline-offset-2'
-                      >
-                        Check Vault Status →
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200/80 rounded-2xl p-3.5 shadow-xs'>
-                  <div className='flex items-start gap-2.5'>
-                    <div className='bg-teal-100 p-1.5 rounded-lg text-teal-600 shrink-0 mt-0.5'>
-                      <CalendarX2 className='!w-4 !h-4' />
-                    </div>
-                    <div className='flex-1 min-w-0'>
-                      <h4 className='text-xs font-bold text-teal-900'>Life Certificate Due</h4>
-                      <p className='text-[11px] text-teal-700 mt-0.5 leading-snug'>
-                        Your annual Digital Life Certificate is due by <span className='font-bold'>30 Nov 2026</span>. Submit early via Face Auth to avoid pension interruption.
-                      </p>
-                      <button
-                        onClick={() => navigate('/life-certificate')}
-                        className='mt-2 text-[10px] font-bold text-teal-600 hover:text-teal-800 underline underline-offset-2'
-                      >
-                        Submit Now →
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl p-3.5 shadow-xs'>
-                  <div className='flex items-start gap-2.5'>
-                    <div className='bg-amber-100 p-1.5 rounded-lg text-amber-600 shrink-0 mt-0.5'>
-                      <AlertTriangle className='!w-4 !h-4' />
-                    </div>
-                    <div className='flex-1 min-w-0'>
-                      <h4 className='text-xs font-bold text-amber-900'>Employer Contribution Filing</h4>
-                      <p className='text-[11px] text-amber-700 mt-0.5 leading-snug'>
-                        Monthly PF contribution deadline is <span className='font-bold'>15th of each month</span>. Late filing attracts penal damages of up to 25%.
-                      </p>
-                      <button
-                        onClick={() => navigate('/passbook')}
-                        className='mt-2 text-[10px] font-bold text-amber-600 hover:text-amber-800 underline underline-offset-2'
-                      >
-                        View Contributions →
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
+              <DemoAlertBanners onAgenticStart={(query) => handleAgenticStart(undefined, query)} />
             )}
 
-            {/* KYC Missing (Demo) */}
-            {isAuthenticated && isKycMissing() && (
-              <section className='bg-amber-50 border border-amber-200 rounded-2xl p-4 shadow-sm'>
-                <div className='flex items-start gap-3'>
-                  <div className='bg-amber-100 p-2 rounded-xl text-amber-600 shrink-0'>
-                    <AlertTriangle className='!w-7 !h-7' />
-                  </div>
-                  <div className='flex-1'>
-                    <h3 className='font-bold text-amber-900 text-sm'>KYC Not Completed</h3>
-                    <p className='text-xs text-amber-800 mt-1 leading-snug'>
-                      Your KYC (Aadhaar + Bank + PAN) is not linked. You cannot file claims, transfers, or exit dates until KYC is complete.
-                    </p>
-                    <button
-                      onClick={() => navigate('/documents')}
-                      className='mt-3 bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors'
-                    >
-                      Complete KYC Now
-                    </button>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Multiple Accounts Action Required */}
-            {isAuthenticated && hasMultipleUans() && (
-              <section className='bg-orange-50 border border-orange-200 rounded-2xl p-4 shadow-sm relative overflow-hidden'>
-                <div className='flex items-start gap-3'>
-                  <div className='bg-orange-100 p-2 rounded-xl text-orange-600 shrink-0'>
-                    <AlertTriangle className='!w-7 !h-7' />
-                  </div>
-                  <div>
-                    <h3 className='font-bold text-orange-900 text-sm'>Action Required: Multiple Accounts</h3>
-                    <p className='text-xs text-orange-800 mt-1 leading-snug'>
-                      We found ₹45,000 in an old UAN. Merge it to your current account to earn maximum interest.
-                    </p>
-                    <button 
-                      onClick={() => handleAgenticStart(undefined, 'I want to merge my old PF account')}
-                      className='mt-3 bg-orange-600 hover:bg-orange-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors'
-                    >
-                      Merge with Smart Flow
-                    </button>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Claim Rejected (Demo) */}
-            {isAuthenticated && isClaimRejected() && (
-              <section className='bg-red-50 border border-red-200 rounded-2xl p-4 shadow-sm'>
-                <div className='flex items-start gap-3'>
-                  <div className='bg-red-100 p-2 rounded-xl text-red-600 shrink-0'>
-                    <AlertTriangle className='!w-7 !h-7' />
-                  </div>
-                  <div className='flex-1'>
-                    <h3 className='font-bold text-red-900 text-sm'>PF Claim Rejected</h3>
-                    <p className='text-xs text-red-800 mt-1 leading-snug'>
-                      Your PF claim (Form 31 Advance) was rejected. EPFO says insufficient documents. You can appeal or re-file with correct documents.
-                    </p>
-                    <div className='flex gap-2 mt-3'>
-                      <button
-                        onClick={() => handleAgenticStart(undefined, 'My PF advance claim was rejected, I want to appeal')}
-                        className='bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors'
-                      >
-                        Appeal via Smart Flow
-                      </button>
-                      <button
-                        onClick={() => navigate('/grievance')}
-                        className='bg-white hover:bg-red-50 text-red-700 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors border border-red-200'
-                      >
-                        File Grievance
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Employer Pending (Demo) */}
-            {isAuthenticated && isEmployerPending() && (
-              <section className='bg-blue-50 border border-blue-200 rounded-2xl p-4 shadow-sm'>
-                <div className='flex items-start gap-3'>
-                  <div className='bg-blue-100 p-2 rounded-xl text-blue-600 shrink-0'>
-                    <AlertTriangle className='!w-7 !h-7' />
-                  </div>
-                  <div className='flex-1'>
-                    <h3 className='font-bold text-blue-900 text-sm'>Waiting for Employer Approval</h3>
-                    <p className='text-xs text-blue-800 mt-1 leading-snug'>
-                      Your PF withdrawal request is pending employer approval. SLA: 5 business days. 3 days elapsed.
-                    </p>
-                    <div className='mt-3 bg-blue-100 rounded-full h-2 overflow-hidden'>
-                      <div className='bg-blue-600 h-full rounded-full' style={{ width: '60%' }} />
-                    </div>
-                    <p className='text-[10px] text-blue-700 mt-1 font-semibold'>3 / 5 days elapsed — TCS (Tata Consultancy Services)</p>
-                    <div className='flex gap-2 mt-3'>
-                      <button
-                        onClick={() => handleAgenticStart(undefined, 'My employer has not approved my PF withdrawal, escalate the request')}
-                        className='bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors'
-                      >
-                        Escalate to EPFO
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Advance Claim Rejected (Demo) */}
-            {isAuthenticated && isAdvanceRejected() && (
-              <section className='bg-red-50 border border-red-200 rounded-2xl p-4 shadow-sm'>
-                <div className='flex items-start gap-3'>
-                  <div className='bg-red-100 p-2 rounded-xl text-red-600 shrink-0'>
-                    <AlertTriangle className='!w-7 !h-7' />
-                  </div>
-                  <div className='flex-1'>
-                    <h3 className='font-bold text-red-900 text-sm'>PF Advance Rejected</h3>
-                    <p className='text-xs text-red-800 mt-1 leading-snug'>
-                      Your PF advance claim (Form 31) was rejected due to insufficient service years. You need at least 5 years of service for education/illness advance.
-                    </p>
-                    <div className='flex gap-2 mt-3'>
-                      <button
-                        onClick={() => handleAgenticStart(undefined, 'My PF advance was rejected, I have less than 5 years of service')}
-                        className='bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors'
-                      >
-                        Check Eligibility
-                      </button>
-                      <button
-                        onClick={() => handleAgenticStart(undefined, 'What are the eligibility rules for PF advance withdrawal')}
-                        className='bg-white hover:bg-red-50 text-red-700 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors border border-red-200'
-                      >
-                        Learn Rules
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Nominee Not Updated (Demo) */}
-            {isAuthenticated && isNomineeMissing() && (
-              <section className='bg-purple-50 border border-purple-200 rounded-2xl p-4 shadow-sm'>
-                <div className='flex items-start gap-3'>
-                  <div className='bg-purple-100 p-2 rounded-xl text-purple-600 shrink-0'>
-                    <UserX className='!w-7 !h-7' />
-                  </div>
-                  <div className='flex-1'>
-                    <h3 className='font-bold text-purple-900 text-sm'>e-Nomination Not Filed</h3>
-                    <p className='text-xs text-purple-800 mt-1 leading-snug'>
-                      Your claim is pending because e-nomination is not updated. Without it, your family cannot claim PF in case of death.
-                    </p>
-                    <div className='flex gap-2 mt-3'>
-                      <button
-                        onClick={() => handleAgenticStart(undefined, 'I need to update my e-nomination for PF')}
-                        className='bg-purple-600 hover:bg-purple-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors'
-                      >
-                        File e-Nomination
-                      </button>
-                      <button
-                        onClick={() => handleAgenticStart(undefined, 'Why is e-nomination required for PF claim')}
-                        className='bg-white hover:bg-purple-50 text-purple-700 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors border border-purple-200'
-                      >
-                        Why is this needed?
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Pension Certificate Issue (Demo) */}
-            {isAuthenticated && isPensionCertIssue() && (
-              <section className='bg-teal-50 border border-teal-200 rounded-2xl p-4 shadow-sm'>
-                <div className='flex items-start gap-3'>
-                  <div className='bg-teal-100 p-2 rounded-xl text-teal-600 shrink-0'>
-                    <FileWarning className='!w-7 !h-7' />
-                  </div>
-                  <div>
-                    <h3 className='font-bold text-teal-900 text-sm'>Pension Certificate Mismatch</h3>
-                    <p className='text-xs text-teal-800 mt-1 leading-snug'>
-                      Your Scheme Certificate / Form 10D failed due to service-history mismatch. Check your employment records.
-                    </p>
-                    <button
-                      onClick={() => handleAgenticStart(undefined, 'My pension scheme certificate failed due to service history mismatch')}
-                      className='mt-3 bg-teal-600 hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors'
-                    >
-                      Resolve via Smart Flow
-                    </button>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Bank Account Not Seeded (Demo) */}
-            {isAuthenticated && isBankNotSeeded() && (
-              <section className='bg-indigo-50 border border-indigo-200 rounded-2xl p-4 shadow-sm'>
-                <div className='flex items-start gap-3'>
-                  <div className='bg-indigo-100 p-2 rounded-xl text-indigo-600 shrink-0'>
-                    <CreditCard className='!w-7 !h-7' />
-                  </div>
-                  <div>
-                    <h3 className='font-bold text-indigo-900 text-sm'>Bank Account Not Verified</h3>
-                    <p className='text-xs text-indigo-800 mt-1 leading-snug'>
-                      Your claim was approved but disbursement failed. The linked bank account is not verified or IFSC is outdated.
-                    </p>
-                    <div className='flex gap-2 mt-3'>
-                      <button
-                        onClick={() => navigate('/documents')}
-                        className='bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors'
-                      >
-                        Update Bank Details
-                      </button>
-                      <button
-                        onClick={() => handleAgenticStart(undefined, 'My bank account IFSC is outdated, how to update')}
-                        className='bg-white hover:bg-indigo-50 text-indigo-700 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors border border-indigo-200'
-                      >
-                        Get Help
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Aadhaar Conflict (Demo) */}
-            {isAuthenticated && isAadhaarConflict() && (
-              <section className='bg-rose-50 border border-rose-200 rounded-2xl p-4 shadow-sm'>
-                <div className='flex items-start gap-3'>
-                  <div className='bg-rose-100 p-2 rounded-xl text-rose-600 shrink-0'>
-                    <ShieldAlert className='!w-7 !h-7' />
-                  </div>
-                  <div>
-                    <h3 className='font-bold text-rose-900 text-sm'>Aadhaar Linked to Wrong UAN</h3>
-                    <p className='text-xs text-rose-800 mt-1 leading-snug'>
-                      Your Aadhaar is already linked to another UAN. This blocks activation of your current UAN. You need to merge or de-link.
-                    </p>
-                    <div className='flex gap-2 mt-3'>
-                      <button
-                        onClick={() => handleAgenticStart(undefined, 'My Aadhaar is linked to wrong UAN, need to de-link')}
-                        className='bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors'
-                      >
-                        Fix via Smart Flow
-                      </button>
-                      <button
-                        onClick={() => navigate('/grievance')}
-                        className='bg-white hover:bg-rose-50 text-rose-700 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors border border-rose-200'
-                      >
-                        File Grievance
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
+            {/* Quick Actions */}
+            {isAuthenticated && <QuickActionsCard />}
 
             {/* NEED MORE HELP ? (Smart Flow vs Traditional Flow) */}
             <section className='space-y-2.5 pt-1'>
@@ -710,6 +371,7 @@ export const Home: React.FC = () => {
             {/* Back Button to Dashboard */}
             <button 
               onClick={() => setFlowChoice('none')} 
+              aria-label="Back to dashboard"
               className='text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1 font-semibold transition-colors'
             >
               <ArrowLeft className='!w-4 !h-4' /> {t('back_to_choices') || 'Back to Dashboard'}
@@ -740,6 +402,7 @@ export const Home: React.FC = () => {
                       <button 
                         type="button"
                         onClick={toggleRecording}
+                        aria-label="Toggle voice recording"
                         className={`p-2 rounded-xl transition-all ${isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-200'}`}
                         title='Voice input'
                       >
@@ -748,6 +411,7 @@ export const Home: React.FC = () => {
                       <button 
                         type='submit' 
                         disabled={!chatInput.trim()}
+                        aria-label="Send message"
                         className='bg-epfo-blue hover:bg-blue-700 text-white rounded-xl px-3.5 py-1.5 text-xs font-bold transition-colors disabled:opacity-40 flex items-center gap-1.5 shadow-xs'
                       >
                         <Send className='w-3 h-3' />
@@ -798,6 +462,7 @@ export const Home: React.FC = () => {
                   <button
                     key={idx}
                     onClick={(e) => handleAgenticStart(e, faq.query)}
+                    aria-label={faq.title}
                     className='w-full p-3 bg-white/95 hover:bg-blue-50/80 hover:border-epfo-blue border border-slate-200/90 rounded-2xl flex items-center justify-between text-left transition-all shadow-2xs group'
                   >
                     <div>
@@ -814,7 +479,7 @@ export const Home: React.FC = () => {
               </div>
 
               {/* Compound Multi-Phase Intents */}
-              <div className='mt-4 space-y-2'>
+              <div className='mt-4 space-y-2' role="region" aria-label="Multi-Step Compound Workflows">
                 <div className='flex items-center gap-1.5 px-1'>
                   <div className='w-1.5 h-1.5 rounded-full bg-epfo-orange' />
                   <h3 className='text-[11px] font-bold text-slate-600 uppercase tracking-wider'>
@@ -867,6 +532,7 @@ export const Home: React.FC = () => {
                   <button
                     key={`compound-${idx}`}
                     onClick={(e) => handleAgenticStart(e, faq.query)}
+                    aria-label={faq.title}
                     className='w-full p-3 bg-gradient-to-r from-orange-50/80 to-amber-50/60 hover:from-orange-100 hover:to-amber-100 border border-orange-200/80 hover:border-orange-300 rounded-2xl flex items-center justify-between text-left transition-all shadow-2xs group'
                   >
                     <div>
@@ -900,6 +566,7 @@ export const Home: React.FC = () => {
             {/* Back Button to Dashboard */}
             <button 
               onClick={() => setFlowChoice('none')} 
+              aria-label="Back to dashboard"
               className='text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1 font-semibold transition-colors'
             >
               <ArrowLeft className='!w-4 !h-4' /> {t('back_to_choices') || 'Back to Dashboard'}

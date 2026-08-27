@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Bell, 
@@ -40,6 +40,15 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, on
   const [localEmail, setLocalEmail] = useState(email);
   const [localWhatsapp, setLocalWhatsapp] = useState(whatsapp);
   const [showConsentPopup, setShowConsentPopup] = useState(false);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      const first = modalRef.current.querySelector<HTMLElement>('button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      first?.focus();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -109,8 +118,9 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, on
   };
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm'>
+    <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm' role="dialog" aria-modal="true" aria-labelledby="notif-modal-title">
       <motion.div 
+        ref={modalRef}
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -123,12 +133,13 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, on
               <Bell className='w-5 h-5' />
             </div>
             <div>
-              <h2 className='text-base font-bold text-slate-900'>Notification Center</h2>
+              <h2 id="notif-modal-title" className='text-base font-bold text-slate-900'>Notification Center</h2>
               <p className='text-[11px] text-slate-500'>Deadlines, Claim Updates & Alerts</p>
             </div>
           </div>
           <button 
             onClick={onClose}
+            aria-label="Close notification settings"
             className='p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors'
           >
             <X className='w-5 h-5' />
@@ -152,7 +163,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, on
               </p>
             </div>
             
-            <label className="relative inline-flex items-center cursor-pointer">
+            <label className="relative inline-flex items-center cursor-pointer" aria-label="Enable or disable notifications">
               <input 
                 type="checkbox" 
                 checked={enabled} 
@@ -173,10 +184,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, on
 
               {/* WhatsApp Input */}
               <div className='space-y-1.5'>
-                <label className='font-semibold text-slate-700 flex items-center gap-1.5'>
+                <label htmlFor="notif-whatsapp" className='font-semibold text-slate-700 flex items-center gap-1.5'>
                   <MessageSquare className='w-4 h-4 text-emerald-600' /> WhatsApp Mobile Number
                 </label>
                 <input 
+                  id="notif-whatsapp"
                   type='tel'
                   value={localWhatsapp}
                   onChange={(e) => setLocalWhatsapp(e.target.value)}
@@ -188,10 +200,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, on
 
               {/* Email Input */}
               <div className='space-y-1.5'>
-                <label className='font-semibold text-slate-700 flex items-center gap-1.5'>
+                <label htmlFor="notif-email" className='font-semibold text-slate-700 flex items-center gap-1.5'>
                   <Mail className='w-4 h-4 text-blue-600' /> Email Address for PDF Statements
                 </label>
                 <input 
+                  id="notif-email"
                   type='email'
                   value={localEmail}
                   onChange={(e) => setLocalEmail(e.target.value)}

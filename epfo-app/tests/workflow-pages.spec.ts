@@ -122,7 +122,7 @@ test('Claim — full flow: bank verify -> details -> review+OTP -> success', asy
   // Step 4: Success
   await expect(page.getByText('Claim Submitted Successfully')).toBeVisible({ timeout: 5000 });
   await expect(page.getByText('Operation Ledger ID')).toBeVisible();
-  await page.getByRole('button', { name: /Return to Dashboard/i }).click();
+  await page.locator('button').filter({ hasText: 'Return to Dashboard' }).click();
   await page.waitForURL('**/', { timeout: 5000 });
 });
 
@@ -189,13 +189,13 @@ test('Transfer — shows discovered accounts and merge button', async ({ page })
   await expect(page.getByText('₹1,10,450').first()).toBeVisible();
   await expect(page.getByText('Zenith Retail Services Pvt Ltd')).toBeVisible();
   await expect(page.getByText('QuickLogistics Express Ltd')).toBeVisible();
-  await expect(page.getByRole('button', { name: /1-Tap Merge All/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Merge all accounts/i })).toBeVisible();
 });
 
 test('Transfer — 1-Tap Merge shows consolidation in progress', async ({ page }) => {
   await onboard(page);
   await gotoPage(page, '/transfer');
-  await page.getByRole('button', { name: /1-Tap Merge All/i }).click();
+  await page.getByRole('button', { name: /Merge all accounts/i }).click();
   await expect(page.getByText('Merging...')).toBeVisible({ timeout: 3000 });
   await expect(page.getByText('Consolidation in Progress')).toBeVisible({ timeout: 5000 });
   await expect(page.getByText('Transfers Tracked under EPF Scheme 1952')).toBeVisible();
@@ -221,7 +221,7 @@ test('Life Certificate — shows pensioner details and two methods', async ({ pa
   await expect(page.getByText('Rameshwar Lal Sharma')).toBeVisible();
   await expect(page.getByText('DL/CPM/00098412/EPS')).toBeVisible();
   await expect(page.getByText('30 Nov 2026')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Face-Auth via Camera/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Scan face for life certificate/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /Request Postman Visit/i })).toBeVisible();
   await expect(page.getByText('Submit Anytime in the Year')).toBeVisible();
 });
@@ -229,7 +229,7 @@ test('Life Certificate — shows pensioner details and two methods', async ({ pa
 test('Life Certificate — face auth flow goes through scan -> success', async ({ page }) => {
   await onboard(page);
   await gotoPage(page, '/life-certificate');
-  await page.getByRole('button', { name: /Face-Auth via Camera/i }).click();
+  await page.getByRole('button', { name: /Scan face for life certificate/i }).click();
   // Face auth camera simulation
   await expect(page.getByText('Facial Liveness Verification')).toBeVisible({ timeout: 3000 });
   await expect(page.getByText('Position your face inside the frame')).toBeVisible();
@@ -302,7 +302,7 @@ test('Mark Exit — active employment shows disabled state', async ({ page }) =>
 test('Document Vault — shows vault info and add document', async ({ page }) => {
   await onboard(page);
   await gotoPage(page, '/documents');
-  await expect(page.getByText('Document Vault')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Document Vault' })).toBeVisible();
   await expect(page.getByText('Permissioned Storage')).toBeVisible();
   await expect(page.getByText('Stored Documents')).toBeVisible();
   await expect(page.getByText('Add Document')).toBeVisible();
@@ -353,7 +353,7 @@ test('Grievance — track tab shows ticket resolution flow', async ({ page }) =>
   await expect(page.getByPlaceholder('Ticket Number')).toBeVisible({ timeout: 3000 });
   await page.getByPlaceholder('Ticket Number').fill('TKT-9921');
   await page.getByPlaceholder('Registered Mobile Number').fill('9876543210');
-  await page.getByRole('button', { name: /Check Status/i }).click();
+  await page.getByRole('button', { name: /Check grievance status/i }).click();
   await expect(page.getByText('Status: Resolved by EPFO')).toBeVisible({ timeout: 3000 });
   await expect(page.getByText('Did this actually solve your issue?')).toBeVisible();
   // Click Yes
@@ -367,7 +367,7 @@ test('Grievance — reopen escalation flow', async ({ page }) => {
   await page.getByText('Track Status').click();
   await page.getByPlaceholder('Ticket Number').fill('TKT-9921');
   await page.getByPlaceholder('Registered Mobile Number').fill('9876543210');
-  await page.getByRole('button', { name: /Check Status/i }).click();
+  await page.getByRole('button', { name: /Check grievance status/i }).click();
   await expect(page.getByText('Did this actually solve your issue?')).toBeVisible({ timeout: 3000 });
   await page.getByRole('button', { name: /No, Reopen/i }).click();
   await expect(page.getByText('Ticket reopened and escalated')).toBeVisible({ timeout: 3000 });
@@ -431,7 +431,7 @@ test('MergeAccounts — full 5-step flow to success', async ({ page }) => {
   await page.getByRole('button', { name: /Proceed to Review/i }).click();
   // Step 2: Confirm
   await expect(page.getByText('Confirm Account Merge')).toBeVisible({ timeout: 3000 });
-  await page.getByRole('button', { name: /Confirm & Proceed to Aadhaar OTP/i }).click();
+  await page.getByRole('button', { name: /Confirm merge and proceed to Aadhaar OTP sign/i }).click();
   // Step 3: OTP
   await expect(page.getByText('Aadhaar Digital Signature')).toBeVisible({ timeout: 3000 });
   await page.getByPlaceholder('1234').fill('1234');
@@ -547,4 +547,96 @@ test('Integration — no_exit scenario navigates through Mark Exit and returns',
   await expect(page.getByRole('button', { name: /Proceed to File Form 19/i })).toBeVisible();
   await page.getByText('Back to Dashboard').click();
   await page.waitForURL('**/', { timeout: 5000 });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// MULTI-PHASE COMPOUND FLOWS
+// ═══════════════════════════════════════════════════════════════════
+
+test('Multi-Phase — demo scenario creates 2-phase KYC+Withdraw task', async ({ page }) => {
+  await onboard(page);
+  // Click the sidebar button to trigger applyScenario (creates workflow + navigates)
+  await page.locator('button').filter({ hasText: 'Fix KYC + Withdraw PF' }).first().click();
+  await page.waitForURL('**/smart-flow', { timeout: 15000 });
+  await expect(page.getByText('Plan Ready')).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText('Phase 1: Fix KYC Mismatch')).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Phase 2: Withdraw PF')).toBeVisible({ timeout: 5000 });
+});
+
+test('Multi-Phase — 3-phase merge+transfer+withdraw from demo panel', async ({ page }) => {
+  await onboard(page);
+  await page.locator('button').filter({ hasText: 'Merge + Transfer + Withdraw' }).first().click();
+  await page.waitForURL('**/smart-flow', { timeout: 15000 });
+  await expect(page.getByText('Plan Ready')).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText('Phase 1: Merge Accounts')).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Phase 2: Transfer PF')).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Phase 3: Withdraw PF')).toBeVisible({ timeout: 5000 });
+});
+
+test('Multi-Phase — compound intent from chat auto-detects phases', async ({ page }) => {
+  await onboard(page);
+  await page.locator('button').filter({ hasText: 'Smart Flow' }).first().click();
+  await expect(page.getByText('Common Questions & Workflows')).toBeVisible({ timeout: 5000 });
+  const textarea = page.locator('textarea');
+  await textarea.fill('Fix my KYC mismatch and then withdraw PF');
+  await textarea.press('Enter');
+  await page.waitForURL('**/smart-flow', { timeout: 15000 });
+  await expect(page.getByText('Plan Ready')).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText('Phase 1: Fix KYC Mismatch')).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Phase 2: Withdraw PF')).toBeVisible({ timeout: 5000 });
+});
+
+test('Multi-Phase — 3-phase compound intent from chat', async ({ page }) => {
+  await onboard(page);
+  await page.locator('button').filter({ hasText: 'Smart Flow' }).first().click();
+  await expect(page.getByText('Common Questions & Workflows')).toBeVisible({ timeout: 5000 });
+  const textarea = page.locator('textarea');
+  await textarea.fill('Fix my KYC, mark my exit date, and then withdraw my PF');
+  await textarea.press('Enter');
+  await page.waitForURL('**/smart-flow', { timeout: 15000 });
+  await expect(page.getByText('Plan Ready')).toBeVisible({ timeout: 10000 });
+  // Should have 3 phases detected from compound intent
+  await expect(page.getByText('Phase 1: Fix KYC Mismatch')).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Phase 2:')).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Phase 3:')).toBeVisible({ timeout: 5000 });
+  // All 3 distinct phase labels should be present
+  await expect(page.getByText('Phase 1: Fix KYC Mismatch')).toBeVisible();
+  await expect(page.getByText('Phase 2: Withdraw PF')).toBeVisible();
+  await expect(page.getByText('Phase 3: Mark Exit Date')).toBeVisible();
+});
+
+test('SmartFlow — refine intent input re-parses compound request', async ({ page }) => {
+  await onboard(page);
+  // Click sidebar to trigger multi_phase scenario
+  await page.locator('button').filter({ hasText: 'Fix KYC + Withdraw PF' }).first().click();
+  await page.waitForURL('**/smart-flow', { timeout: 15000 });
+  await expect(page.getByText('Plan Ready')).toBeVisible({ timeout: 10000 });
+  // Find the refine input and type a new compound request
+  const refineInput = page.getByPlaceholder(/Fix KYC then mark exit/);
+  await expect(refineInput).toBeVisible({ timeout: 5000 });
+  await refineInput.fill('Merge my old PF accounts and transfer the balance');
+  await page.getByRole('button', { name: 'Parse' }).click();
+  // After parsing, should show updated phases
+  await expect(page.getByText('Phase 1: Merge Accounts')).toBeVisible({ timeout: 8000 });
+  await expect(page.getByText('Phase 2: Transfer PF')).toBeVisible({ timeout: 5000 });
+});
+
+test('Multi-Phase — exit+withdraw demo scenario', async ({ page }) => {
+  await onboard(page);
+  await page.locator('button').filter({ hasText: 'Mark Exit + Withdraw PF' }).first().click();
+  await page.waitForURL('**/smart-flow', { timeout: 15000 });
+  await expect(page.getByText('Plan Ready')).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText('Phase 1: Mark Exit Date')).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Phase 2: Withdraw PF')).toBeVisible({ timeout: 5000 });
+});
+
+test('Compound flow quick intents — compound buttons visible in Smart Flow view', async ({ page }) => {
+  await onboard(page);
+  await page.locator('button').filter({ hasText: 'Smart Flow' }).first().click();
+  await expect(page.getByText('Common Questions & Workflows')).toBeVisible({ timeout: 5000 });
+  // Should see the compound section with multi-step heading
+  await expect(page.getByText('Multi-Step Compound Workflows')).toBeVisible({ timeout: 5000 });
+  // Count compound intent buttons (orange gradient styled) by their "Multi-Phase" or "3-Phase" badges
+  const compoundBadges = page.locator('span').filter({ hasText: /Multi-Phase|3-Phase/ });
+  await expect(compoundBadges).toHaveCount(8, { timeout: 5000 });
 });

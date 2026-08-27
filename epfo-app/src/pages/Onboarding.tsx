@@ -232,6 +232,7 @@ export const Onboarding: React.FC = () => {
               else if (step === 'prerequisites') setStep('profile_setup');
               else if (step === 'vault_intro') setStep('prerequisites');
             }} 
+            aria-label="Go back to previous step"
             className='p-2 bg-white/80 backdrop-blur-md border border-slate-200 text-slate-600 rounded-full shadow-sm hover:bg-transparent transition-colors'
           >
             <ArrowLeft className='w-4 h-4' />
@@ -250,9 +251,9 @@ export const Onboarding: React.FC = () => {
                 <h1 className='text-3xl font-semibold mb-2 text-slate-900'>{t('onboarding_title')}</h1>
                 <p className='text-slate-500 text-sm'>{t('onboarding_subtitle')}</p>
               </div>
-              <div className='space-y-3 mt-8'>
+              <div className='space-y-3 mt-8' role="listbox" aria-label="Select language">
                 {languages.map((lang) => (
-                  <button key={lang.code} onClick={() => handleLanguageSelect(lang.code)} className='w-full p-4 rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm text-left hover:border-epfo-blue transition-colors'>
+                  <button key={lang.code} onClick={() => handleLanguageSelect(lang.code)} aria-label={`Select language: ${lang.name}`} className='w-full p-4 rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm text-left hover:border-epfo-blue transition-colors'>
                     <span className='font-medium text-lg'>{lang.name}</span>
                   </button>
                 ))}
@@ -324,6 +325,7 @@ export const Onboarding: React.FC = () => {
                   
                   <div className='space-y-4 mt-8'>
                     <input 
+                      id="onboard-uan"
                       type="text"
                       maxLength={12}
                       className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all'
@@ -336,9 +338,11 @@ export const Onboarding: React.FC = () => {
                     {showOtp && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
                         <input 
+                          id="onboard-otp"
                           type="text"
                           className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all mt-4'
                           placeholder="Enter OTP (Use 1234)"
+                          aria-label="Enter OTP for UAN verification"
                           value={otpInput}
                           onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
                         />
@@ -450,8 +454,10 @@ export const Onboarding: React.FC = () => {
               <h1 className='text-3xl font-semibold mb-2'>Verify UAN</h1>
               <div className='space-y-4'>
                 <input 
+                  id="onboard-verify-uan"
                   type="text" 
                   placeholder="Enter 12-digit UAN" 
+                  aria-label="Enter 12-digit UAN"
                   className='w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-epfo-orange outline-none'
                   value={uanInput}
                   onChange={e => setUanInput(e.target.value.replace(/\D/g, ''))}
@@ -461,9 +467,11 @@ export const Onboarding: React.FC = () => {
                 {showOtp && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
                     <input 
+                      id="onboard-verify-otp"
                       type="text"
                       className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-orange transition-all mt-4'
                       placeholder="Enter OTP (Use 1234)"
+                      aria-label="Enter OTP for UAN verification"
                       value={otpInput}
                       onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
                     />
@@ -500,15 +508,19 @@ export const Onboarding: React.FC = () => {
               <p className='text-slate-500'>Enter your Aadhaar-linked phone number. You can use this to find your UAN or access non-UAN services.</p>
               <div className='space-y-4'>
                 <input 
+                  id="onboard-phone"
                   type="tel" 
                   placeholder="Phone Number" 
+                  aria-label="Aadhaar-linked phone number"
                   className='w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-epfo-orange outline-none'
                   value={phoneInput}
                   onChange={e => setPhoneInput(e.target.value.replace(/\D/g, ''))}
                 />
                 <input 
+                  id="onboard-phone-otp"
                   type="text" 
                   placeholder="OTP (use 1234)" 
+                  aria-label="Enter OTP for phone verification"
                   className='w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-epfo-orange outline-none'
                   value={otpInput}
                   onChange={e => setOtpInput(e.target.value)}
@@ -528,8 +540,9 @@ export const Onboarding: React.FC = () => {
               <p className='text-slate-500'>We've successfully verified your UAN. What should we call you?</p>
               
               <div className='pt-6 text-left'>
-                <label className="text-sm font-medium text-slate-700 block mb-2">Full Name</label>
+                <label htmlFor="profile-name" className="text-sm font-medium text-slate-700 block mb-2">Full Name</label>
                 <input 
+                  id="profile-name"
                   type="text"
                   placeholder="e.g. Ramesh Kumar"
                   className="w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all"
@@ -559,23 +572,24 @@ export const Onboarding: React.FC = () => {
               
               <div className='space-y-4 pt-4'>
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium text-slate-700'>Mobile Verification (OTP)</label>
-                  <input type="text" value="1234" readOnly className='w-full p-4 border border-slate-200 rounded-xl bg-transparent text-slate-500 outline-none' />
+                  <label htmlFor="onboard-mobile-verify" className='text-sm font-medium text-slate-700'>Mobile Verification (OTP)</label>
+                  <input id="onboard-mobile-verify" type="text" value="1234" readOnly className='w-full p-4 border border-slate-200 rounded-xl bg-transparent text-slate-500 outline-none' />
                 </div>
                 
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium text-slate-700'>Captcha Verification</label>
+                  <label htmlFor="onboard-captcha" className='text-sm font-medium text-slate-700'>Captcha Verification</label>
                   <div className='flex gap-3'>
                     <div className='p-4 bg-slate-100 border border-slate-200 rounded-xl font-mono text-lg tracking-widest text-slate-700 select-none'>
                       aB3cD
                     </div>
-                    <input type="text" value="aB3cD" readOnly className='flex-1 p-4 border border-slate-200 rounded-xl bg-transparent text-slate-500 outline-none' />
+                    <input id="onboard-captcha" type="text" value="aB3cD" readOnly className='flex-1 p-4 border border-slate-200 rounded-xl bg-transparent text-slate-500 outline-none' />
                   </div>
                 </div>
 
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium text-slate-700'>Set a 4-Digit MPIN</label>
+                  <label htmlFor="onboard-mpin" className='text-sm font-medium text-slate-700'>Set a 4-Digit MPIN</label>
                   <input 
+                    id="onboard-mpin"
                     type="password" 
                     maxLength={4}
                     value={mpinInput} 

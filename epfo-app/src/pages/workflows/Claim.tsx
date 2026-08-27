@@ -92,7 +92,7 @@ export const Claim: React.FC = () => {
   return (
     <div className='flex-1 flex flex-col bg-transparent relative'>
       <div className='bg-white px-4 py-4 flex items-center sticky top-0 z-10 border-b border-slate-100'>
-        <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent'>
+        <button onClick={() => navigate(-1)} aria-label="Back to dashboard" className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent'>
           <ArrowLeft className='w-5 h-5' />
         </button>
         <h1 className='text-lg font-medium ml-2'>{t('claim_heading')}</h1>
@@ -129,11 +129,12 @@ export const Claim: React.FC = () => {
               <h3 className='font-semibold text-blue-900'>{t('bank_verify_title')}</h3>
               <p className='text-sm text-blue-800 mt-1'>{t('bank_verify_desc')}</p>
             </div>
-            <form onSubmit={handleBankVerify} className='space-y-4'>
+            <form onSubmit={handleBankVerify} className='space-y-4' role="form">
               <div className='flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm'>
                 <CreditCard className='w-5 h-5 text-slate-400' />
                 <div className='text-lg tracking-widest text-slate-500'>•••• •••• ••••</div>
                 <input 
+                  id="claim-bank-digits"
                   type='text' 
                   maxLength={4}
                   className='w-16 text-lg font-bold tracking-widest border-b-2 border-slate-300 focus:border-epfo-blue outline-none text-center bg-transparent'
@@ -151,10 +152,11 @@ export const Claim: React.FC = () => {
         {step === 2 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className='space-y-6'>
             <h2 className='text-xl font-semibold'>{t('claim_type_label')}</h2>
-            <form onSubmit={handleDetailsSubmit} className='space-y-4'>
+            <form onSubmit={handleDetailsSubmit} className='space-y-4' role="form">
               <div className='space-y-2'>
-                <label className='text-sm font-medium text-slate-700'>{t('claim_type_label')}</label>
+                <label htmlFor="claim-type" className='text-sm font-medium text-slate-700'>{t('claim_type_label')}</label>
                 <select 
+                  id="claim-type"
                   className='w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none text-slate-800 shadow-sm font-medium'
                   value={claimType}
                   onChange={e => setClaimType(e.target.value)}
@@ -168,8 +170,9 @@ export const Claim: React.FC = () => {
               {claimType === '31' && (
                 <>
                   <div className='space-y-2 mt-4'>
-                    <label className='text-sm font-medium text-slate-700'>{t('purpose_label')}</label>
+                    <label htmlFor="claim-purpose" className='text-sm font-medium text-slate-700'>{t('purpose_label')}</label>
                     <select 
+                      id="claim-purpose"
                       className='w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none text-slate-800 shadow-sm'
                       value={purpose}
                       onChange={e => setPurpose(e.target.value)}
@@ -183,8 +186,9 @@ export const Claim: React.FC = () => {
                     </select>
                   </div>
                   <div className='space-y-2 mt-4'>
-                    <label className='text-sm font-medium text-slate-700'>{t('amount_label')}</label>
+                    <label htmlFor="claim-amount" className='text-sm font-medium text-slate-700'>{t('amount_label')}</label>
                     <input 
+                      id="claim-amount"
                       className="w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none shadow-sm"
                       type='number' 
                       placeholder='Enter amount' 
@@ -267,7 +271,7 @@ export const Claim: React.FC = () => {
                 <p className='text-xs text-orange-800 mb-2'>
                   Filing a claim is a sensitive action. Please sign this request.
                 </p>
-                <Input type='text' placeholder='Enter Aadhaar OTP (1234)' value={otp} onChange={e => setOtp(e.target.value)} className='bg-white' />
+                <Input type='text' placeholder='Enter Aadhaar OTP (1234)' value={otp} onChange={e => setOtp(e.target.value)} className='bg-white' aria-label="Enter Aadhaar OTP for claim authentication" />
                 {authError && <OtpFallbackOptions variant='compact' />}
               </div>
             </div>
@@ -292,7 +296,7 @@ export const Claim: React.FC = () => {
               <p className='text-xs text-slate-400 mt-2'>Store this ID. It guarantees your submission is recorded uniquely, preventing duplicate claims.</p>
             </div>
 
-            <Button className='w-full mt-6 py-4 text-lg' onClick={() => navigate('/')}>Return to Dashboard</Button>
+            <Button className='w-full mt-6 py-4 text-lg' onClick={() => navigate('/')} aria-label="Back to dashboard">Return to Dashboard</Button>
           </motion.div>
         )}
 

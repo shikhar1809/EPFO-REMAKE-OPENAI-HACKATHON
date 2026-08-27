@@ -59,7 +59,7 @@ test('4. claim_denied — card → Appeal via Smart Flow (loading → /smart-flo
   await clickScenario(page, 'Need to Appeal');
   await expect(page.getByRole('heading', { name: 'PF Claim Rejected' })).toBeVisible({ timeout: 5000 });
   await expect(page.getByText('Appeal via Smart Flow')).toBeVisible();
-  await expect(page.getByText('File Grievance')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'File Grievance', exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Appeal via Smart Flow' }).click();
   await expect(page.locator('text=Analyzing request & rules')).toBeVisible({ timeout: 3000 });
@@ -71,7 +71,7 @@ test('4b. claim_denied — card → File Grievance → /grievance', async ({ pag
   await onboard(page);
   await clickScenario(page, 'Need to Appeal');
   await expect(page.getByRole('heading', { name: 'PF Claim Rejected' })).toBeVisible({ timeout: 5000 });
-  await page.getByRole('button', { name: 'File Grievance' }).click();
+  await page.getByRole('button', { name: 'File Grievance', exact: true }).click();
   await page.waitForURL('**/grievance', { timeout: 5000 });
 });
 
@@ -82,7 +82,7 @@ test('5. employer_hold — SLA card → Escalate to EPFO', async ({ page }) => {
   await clickScenario(page, 'SLA Tracking');
   await expect(page.getByRole('heading', { name: 'Waiting for Employer Approval' })).toBeVisible({ timeout: 5000 });
   await expect(page.getByText('3 / 5 days elapsed')).toBeVisible();
-  await expect(page.getByText('TCS (Tata Consultancy Services)')).toBeVisible();
+  await expect(page.getByText('TCS (Tata Consultancy Services)').first()).toBeVisible();
 
   await page.getByRole('button', { name: 'Escalate to EPFO' }).click();
   await expect(page.locator('text=Analyzing request & rules')).toBeVisible({ timeout: 3000 });
@@ -193,7 +193,7 @@ test('13b. aadhaar_conflict — card → File Grievance → /grievance', async (
   await onboard(page);
   await clickScenario(page, 'Wrong UAN Linkage');
   await expect(page.getByRole('heading', { name: 'Aadhaar Linked to Wrong UAN' })).toBeVisible({ timeout: 5000 });
-  await page.getByRole('button', { name: 'File Grievance' }).click();
+  await page.getByRole('button', { name: 'File Grievance', exact: true }).click();
   await page.waitForURL('**/grievance', { timeout: 5000 });
 });
 

@@ -35,7 +35,7 @@ export const DocumentVault: React.FC = () => {
       {/* Header */}
       <div className='px-6 py-4 flex items-center justify-between border-b border-slate-200 z-10 bg-white'>
         <div className='flex items-center'>
-          <button onClick={() => navigate(-1)} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent transition-colors'>
+          <button onClick={() => navigate(-1)} aria-label="Back to dashboard" className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent transition-colors'>
             <ArrowLeft className='w-5 h-5' />
           </button>
           <h1 className='text-lg font-semibold ml-2 flex items-center gap-2'>
@@ -58,7 +58,7 @@ export const DocumentVault: React.FC = () => {
         <div>
           <div className='flex items-center justify-between mb-4'>
             <h3 className='font-semibold text-slate-800'>Stored Documents</h3>
-            <button onClick={handleMockAdd} disabled={isAdding} className='text-sm text-epfo-blue font-medium flex items-center gap-1 hover:underline disabled:opacity-50'>
+            <button onClick={handleMockAdd} disabled={isAdding} aria-label="Add document to vault" className='text-sm text-epfo-blue font-medium flex items-center gap-1 hover:underline disabled:opacity-50'>
               <Plus className='w-4 h-4' /> Add Document
             </button>
           </div>

@@ -101,6 +101,7 @@ export const MarkExit: React.FC = () => {
             else if (step === 'otp') setStep('form');
             else navigate(-1);
           }} 
+          aria-label="Go back to previous step"
           className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'
         >
           <ArrowLeft className='w-5 h-5' />
@@ -195,10 +196,11 @@ export const MarkExit: React.FC = () => {
 
               <form onSubmit={handleFormSubmit} className='space-y-4'>
                 <div>
-                  <label className='block text-xs font-bold text-slate-700 mb-1.5'>
+                  <label htmlFor="mark-exit-date" className='block text-xs font-bold text-slate-700 mb-1.5'>
                     Date of Exit (Last Working Day) *
                   </label>
                   <input 
+                    id="mark-exit-date"
                     type="date"
                     value={exitDate}
                     onChange={(e) => setExitDate(e.target.value)}
@@ -211,10 +213,11 @@ export const MarkExit: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className='block text-xs font-bold text-slate-700 mb-1.5'>
+                  <label htmlFor="mark-exit-reason" className='block text-xs font-bold text-slate-700 mb-1.5'>
                     Reason for Leaving *
                   </label>
                   <select 
+                    id="mark-exit-reason"
                     value={exitReason}
                     onChange={(e) => setExitReason(e.target.value)}
                     className='w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-epfo-blue outline-none text-slate-900 font-medium'
@@ -259,11 +262,13 @@ export const MarkExit: React.FC = () => {
 
               <form onSubmit={handleOtpVerify} className='space-y-4 pt-2'>
                 <input 
+                  id="mark-exit-otp"
                   type="text"
                   maxLength={4}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   placeholder="1234"
+                  aria-label="Enter Aadhaar OTP for exit date declaration"
                   className='w-40 mx-auto text-center tracking-widest text-2xl font-bold p-3 border-2 border-epfo-blue/40 rounded-2xl focus:border-epfo-blue outline-none bg-slate-50'
                   autoFocus
                   required
@@ -342,6 +347,7 @@ export const MarkExit: React.FC = () => {
 
               <button 
                 onClick={() => navigate('/')}
+                aria-label="Back to dashboard"
                 className='w-full py-2 text-slate-500 text-xs hover:text-slate-800'
               >
                 Back to Dashboard
