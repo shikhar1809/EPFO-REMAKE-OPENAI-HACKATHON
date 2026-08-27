@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, CheckCircle2, History as HistoryIcon, SlidersHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
 import { EmployerApprovalStatus } from '../../components/ui/EmployerApprovalStatus';
 
 export const History: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { completedTasks, activeTasks } = useWorkflowStore();
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,7 +32,7 @@ export const History: React.FC = () => {
         </button>
         <h1 className='text-lg font-semibold ml-2 flex items-center gap-2'>
           <HistoryIcon className='w-5 h-5 text-epfo-blue' />
-          Past Requests
+          {t('hist_past_requests')}
         </h1>
       </div>
 
@@ -40,7 +42,7 @@ export const History: React.FC = () => {
           <Search className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400' />
           <input 
             type="text" 
-            placeholder="Search past requests..." 
+            placeholder={t('hist_search_past_requests_placeholder')} 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className='w-full pl-12 pr-12 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-epfo-blue/50 text-slate-700'
@@ -52,7 +54,7 @@ export const History: React.FC = () => {
 
         {searchQuery === '' && filteredPending.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className='mb-6'>
-            <h2 className='text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 px-1'>Active Requests</h2>
+            <h2 className='text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 px-1'>{t('hist_active_requests')}</h2>
             <div className='space-y-3'>
               {filteredPending.map(task => (
                 <EmployerApprovalStatus
@@ -68,13 +70,13 @@ export const History: React.FC = () => {
         {filteredTasks.length === 0 ? (
           <div className='flex flex-col items-center justify-center flex-1 text-slate-500 opacity-80'>
             <HistoryIcon className='w-16 h-16 mb-4 text-slate-300' />
-            <p className="text-lg font-medium text-slate-600 mb-2">No requests found</p>
-            <p className="text-sm text-center mb-6">You haven't made any requests yet, or none match your search.</p>
+            <p className="text-lg font-medium text-slate-600 mb-2">{t('hist_no_requests_found')}</p>
+            <p className="text-sm text-center mb-6">{t('hist_no_requests_found_description')}</p>
             <button 
               onClick={() => navigate('/')}
               className='bg-epfo-blue text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition-colors shadow-md'
             >
-              Start your first request →
+              {t('hist_start_first_request')}
             </button>
           </div>
         ) : (
@@ -95,7 +97,7 @@ export const History: React.FC = () => {
                       {new Date(task.lastCheckpoint).toLocaleDateString()}
                     </span>
                     <span className='bg-green-100 text-green-700 text-xs px-2 py-1 rounded-md font-medium'>
-                      Completed
+                      {t('hist_completed_status')}
                     </span>
                   </div>
                 </div>

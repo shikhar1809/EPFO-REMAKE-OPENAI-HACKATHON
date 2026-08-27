@@ -17,15 +17,16 @@ import { ScamAwarenessAnimation } from '../components/animations/ScamAwarenessAn
 import { OtpFallbackOptions } from '../components/ui/OtpFallbackOptions';
 
 const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
+  const { t } = useTranslation();
   const [vaultState, setVaultState] = useState<'intro' | 'fetching' | 'done'>('intro');
   const [fetchedDocs, setFetchedDocs] = useState<string[]>([]);
 
   const startDigiLockerFetch = () => {
     setVaultState('fetching');
     
-    setTimeout(() => setFetchedDocs(prev => [...prev, 'Aadhaar Card']), 1000);
-    setTimeout(() => setFetchedDocs(prev => [...prev, 'PAN Card']), 2000);
-    setTimeout(() => setFetchedDocs(prev => [...prev, 'Bank Passbook']), 3000);
+    setTimeout(() => setFetchedDocs(prev => [...prev, t('ob_doc_aadhaar')]), 1000);
+    setTimeout(() => setFetchedDocs(prev => [...prev, t('ob_doc_pan')]), 2000);
+    setTimeout(() => setFetchedDocs(prev => [...prev, t('ob_doc_bank')]), 3000);
     setTimeout(() => setVaultState('done'), 4000);
   };
 
@@ -39,9 +40,9 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
 
       {vaultState !== 'intro' && (
         <div>
-          <h1 className='text-2xl font-bold text-slate-900'>Document Vault</h1>
+          <h1 className='text-2xl font-bold text-slate-900'>{t('ob_vault_title')}</h1>
           <p className='text-xs text-slate-500 mt-0.5'>
-            Government DigiLocker & KYC Integration
+            {t('ob_vault_subtitle')}
           </p>
         </div>
       )}
@@ -49,17 +50,17 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
       {vaultState === 'intro' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-3'>
           <p className='text-xs text-slate-600 text-center leading-relaxed px-2'>
-            To provide seamless 1-click services, we securely fetch and encrypt your KYC documents from DigiLocker.
+            {t('ob_vault_desc')}
           </p>
           <div className='bg-white border border-slate-200/90 rounded-2xl p-3.5 flex items-start gap-3 shadow-2xs'>
             <Lock className='w-4 h-4 text-slate-500 shrink-0 mt-0.5' />
             <p className='text-[11px] text-slate-600 leading-snug'>
-              Your documents (Aadhaar, PAN, Bank Details) are 256-bit encrypted. We only share verified cryptographic references upon your explicit approval.
+              {t('ob_vault_encryption_note')}
             </p>
           </div>
           <div className='pt-1'>
             <Button className='w-full py-3.5 text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-2xl shadow-sm' onClick={startDigiLockerFetch}>
-              Connect with DigiLocker →
+              {t('ob_vault_connect')} →
             </Button>
           </div>
         </motion.div>
@@ -69,10 +70,10 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-6 py-4'>
           <SyncAnimation />
           <p className='text-epfo-blue font-medium text-center'>
-            Syncing with DigiLocker...
+            {t('ob_vault_syncing')}
           </p>
           <div className='space-y-3'>
-            {['Aadhaar Card', 'PAN Card', 'Bank Passbook'].map((doc) => {
+            {[t('ob_doc_aadhaar'), t('ob_doc_pan'), t('ob_doc_bank')].map((doc) => {
               const isFetched = fetchedDocs.includes(doc);
               return (
                 <div key={doc} className={`flex items-center gap-3 p-3 rounded-lg border ${isFetched ? 'border-green-200 bg-green-50' : 'border-slate-100 bg-transparent opacity-50'}`}>
@@ -91,12 +92,12 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
           <div className='bg-green-50 text-green-800 p-4 rounded-xl border border-green-200 flex items-start gap-3 text-left'>
             <CheckCircle2 className='w-6 h-6 text-green-600 shrink-0' />
             <div>
-              <p className='font-semibold'>Vault Ready!</p>
-              <p className='text-sm mt-1'>3 documents successfully fetched and securely stored. You're all set.</p>
+              <p className='font-semibold'>{t('ob_vault_ready')}</p>
+              <p className='text-sm mt-1'>{t('ob_vault_success')}</p>
             </div>
           </div>
           <div className='space-y-3'>
-            {['Aadhaar Card', 'PAN Card', 'Bank Passbook'].map(doc => (
+            {[t('ob_doc_aadhaar'), t('ob_doc_pan'), t('ob_doc_bank')].map(doc => (
               <div key={doc} className='flex items-center gap-3 p-3 rounded-lg border border-green-200 bg-green-50'>
                 <CheckCircle2 className='w-5 h-5 text-green-600' />
                 <span className='font-medium text-green-800'>{doc}</span>
@@ -105,7 +106,7 @@ const VaultSetup = ({ finishOnboarding }: { finishOnboarding: () => void }) => {
           </div>
           <div className='pt-4'>
             <Button className='w-full py-4 text-lg' onClick={finishOnboarding}>
-              Go to Dashboard
+              {t('ob_vault_go_dashboard')}
             </Button>
           </div>
         </motion.div>
@@ -157,7 +158,7 @@ export const Onboarding: React.FC = () => {
         setShowOtp(true);
         setShowFallback(false);
       } else {
-        alert('Invalid UAN (must be 12 digits)');
+        alert(t('ob_invalid_uan'));
       }
       return;
     }
@@ -182,7 +183,7 @@ export const Onboarding: React.FC = () => {
           return next;
         });
         setShowFallback(true);
-        toast.error('Invalid OTP');
+        toast.error(t('ob_invalid_otp'));
       }
     } else {
       setFailedAttempts(prev => {
@@ -191,7 +192,7 @@ export const Onboarding: React.FC = () => {
         return next;
       });
       setShowFallback(true);
-      toast.error('Invalid OTP. Attempt ' + (failedAttempts + 1) + ' of 3');
+      toast.error(t('ob_invalid_otp_attempt', { attempt: failedAttempts + 1 }));
     }
   };
 
@@ -207,7 +208,7 @@ export const Onboarding: React.FC = () => {
       }
     } else {
       setShowFallback(true);
-      toast.error('Invalid OTP');
+      toast.error(t('ob_invalid_otp'));
     }
   };
 
@@ -232,7 +233,7 @@ export const Onboarding: React.FC = () => {
               else if (step === 'prerequisites') setStep('profile_setup');
               else if (step === 'vault_intro') setStep('prerequisites');
             }} 
-            aria-label="Go back to previous step"
+            aria-label={t('ob_go_back')}
             className='p-2 bg-white/80 backdrop-blur-md border border-slate-200 text-slate-600 rounded-full shadow-sm hover:bg-transparent transition-colors'
           >
             <ArrowLeft className='w-4 h-4' />
@@ -251,9 +252,9 @@ export const Onboarding: React.FC = () => {
                 <h1 className='text-3xl font-semibold mb-2 text-slate-900'>{t('onboarding_title')}</h1>
                 <p className='text-slate-500 text-sm'>{t('onboarding_subtitle')}</p>
               </div>
-              <div className='space-y-3 mt-8' role="listbox" aria-label="Select language">
+              <div className='space-y-3 mt-8' role="listbox" aria-label={t('ob_select_language')}>
                 {languages.map((lang) => (
-                  <button key={lang.code} onClick={() => handleLanguageSelect(lang.code)} aria-label={`Select language: ${lang.name}`} className='w-full p-4 rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm text-left hover:border-epfo-blue transition-colors'>
+                  <button key={lang.code} onClick={() => handleLanguageSelect(lang.code)} aria-label={t('ob_select_language_name', { name: lang.name })} className='w-full p-4 rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm text-left hover:border-epfo-blue transition-colors'>
                     <span className='font-medium text-lg'>{lang.name}</span>
                   </button>
                 ))}
@@ -319,8 +320,8 @@ export const Onboarding: React.FC = () => {
                     <ShieldCheck className='w-8 h-8 text-epfo-blue' />
                   </div>
                   <div>
-                    <h1 className='text-3xl font-semibold mb-2'>Welcome Back</h1>
-                    <p className='text-slate-500'>Enter your 12-digit UAN to continue.</p>
+                    <h1 className='text-3xl font-semibold mb-2'>{t('ob_welcome_back')}</h1>
+                    <p className='text-slate-500'>{t('ob_enter_uan_continue')}</p>
                   </div>
                   
                   <div className='space-y-4 mt-8'>
@@ -329,7 +330,7 @@ export const Onboarding: React.FC = () => {
                       type="text"
                       maxLength={12}
                       className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all'
-                      placeholder="Enter 12-digit UAN"
+                      placeholder={t('enter_uan')}
                       value={uanInput}
                       onChange={(e) => setUanInput(e.target.value.replace(/\D/g, ''))}
                       disabled={showOtp}
@@ -341,8 +342,8 @@ export const Onboarding: React.FC = () => {
                           id="onboard-otp"
                           type="text"
                           className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all mt-4'
-                          placeholder="Enter OTP (Use 1234)"
-                          aria-label="Enter OTP for UAN verification"
+                          placeholder={t('ob_enter_otp_hint')}
+                          aria-label={t('ob_otp_aria')}
                           value={otpInput}
                           onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
                         />
@@ -350,10 +351,10 @@ export const Onboarding: React.FC = () => {
                           <OtpFallbackOptions />
                         ) : (
                           <div className='flex justify-between items-center mt-3 px-1'>
-                            <p className='text-xs text-slate-500'>Didn't receive OTP?</p>
+                            <p className='text-xs text-slate-500'>{t('ob_no_otp')}</p>
                             <div className='flex gap-3'>
-                              <button className='text-xs font-semibold text-epfo-blue hover:underline' onClick={() => toast.success('OTP sent via WhatsApp')}>WhatsApp</button>
-                              <button className='text-xs font-semibold text-epfo-blue hover:underline' onClick={() => toast.success('Initiating Voice Call...')}>Voice Call</button>
+                              <button className='text-xs font-semibold text-epfo-blue hover:underline' onClick={() => toast.success(t('ob_otp_whatsapp'))}>{t('ob_whatsapp')}</button>
+                              <button className='text-xs font-semibold text-epfo-blue hover:underline' onClick={() => toast.success(t('ob_voice_call_init'))}>{t('ob_voice_call')}</button>
                             </div>
                           </div>
                         )}
@@ -366,23 +367,23 @@ export const Onboarding: React.FC = () => {
                       disabled={(uanInput.length !== 12) || (showOtp && otpInput.length < 4) || isVerifying}
                       isLoading={isVerifying}
                     >
-                      {showOtp ? 'Verify OTP & Login' : 'Get OTP'}
+                      {showOtp ? t('ob_verify_otp_login') : t('get_otp')}
                     </Button>
 
                     <div className='pt-6 relative'>
                       <div className='absolute inset-0 flex items-center'><div className='w-full border-t border-slate-200'></div></div>
-                      <div className='relative flex justify-center text-sm'><span className='px-2 bg-slate-50 text-slate-500'>OR</span></div>
+                      <div className='relative flex justify-center text-sm'><span className='px-2 bg-slate-50 text-slate-500'>{t('ob_or')}</span></div>
                     </div>
                     
                     <Button variant='outline' className='w-full py-4' onClick={() => setStep('mobile_login')}>
-                      Login via Mobile OTP
+                      {t('ob_login_mobile_otp')}
                     </Button>
                     <div className='pt-2 border-t border-slate-100'>
                       <Button variant='outline' className='w-full py-4' onClick={() => navigate('/uan-activation')}>
-                        Activate UAN
+                        {t('ob_activate_uan')}
                       </Button>
                     </div>
-                    <p className='text-xs text-center text-slate-500'>Use mobile login to access Grievance, Tracking, or to find your UAN.</p>
+                    <p className='text-xs text-center text-slate-500'>{t('ob_mobile_login_hint')}</p>
                   </div>
                 </>
               ) : (
@@ -391,20 +392,20 @@ export const Onboarding: React.FC = () => {
                     <Lock className='w-12 h-12 text-red-500' />
                   </div>
                   <div>
-                    <h1 className='text-2xl font-bold mb-2 text-slate-900'>Account Locked</h1>
+                    <h1 className='text-2xl font-bold mb-2 text-slate-900'>{t('ob_account_locked')}</h1>
                     <p className='text-slate-500 px-4'>
-                      For your security, OTP login has been disabled after 3 failed attempts.
+                      {t('ob_locked_desc')}
                     </p>
                   </div>
                   
                   <div className='bg-orange-50 border border-orange-200 p-5 rounded-2xl text-left mt-6'>
-                    <h3 className='font-semibold text-orange-900 mb-2'>Unlock Options</h3>
+                    <h3 className='font-semibold text-orange-900 mb-2'>{t('ob_unlock_options')}</h3>
                     <p className='text-sm text-orange-800 mb-4'>
-                      Unlike the old portal, you don't need a working OTP loop to fix this. Verify your identity securely via:
+                      {t('ob_unlock_desc')}
                     </p>
                     <div className='space-y-3'>
-                      <Button className='w-full bg-orange-600 hover:bg-orange-700' onClick={() => {setIsLocked(false); setFailedAttempts(0); toast.success('Unlocked via DigiLocker FaceRD');}}>
-                        Unlock via DigiLocker / FaceRD
+                      <Button className='w-full bg-orange-600 hover:bg-orange-700' onClick={() => {setIsLocked(false); setFailedAttempts(0); toast.success(t('ob_unlocked'));}}>
+                        {t('ob_unlock_btn')}
                       </Button>
                     </div>
                   </div>
@@ -419,30 +420,30 @@ export const Onboarding: React.FC = () => {
                 <User className='w-8 h-8 text-epfo-blue' />
               </div>
               <div>
-                <h1 className='text-3xl font-semibold mb-2'>Identity Discovery</h1>
+                <h1 className='text-3xl font-semibold mb-2'>{t('ob_identity_discovery')}</h1>
                 <p className='text-slate-500'>
-                  We strongly recommend signing in with your UAN to access all EPFO services.
+                  {t('ob_identity_recommend')}
                 </p>
               </div>
 
               <div className='bg-transparent p-4 rounded-xl border border-slate-200 mt-4 space-y-3'>
                 <div className='flex items-center gap-2 mb-2'>
                   <CheckCircle2 className='w-4 h-4 text-epfo-blue' />
-                  <h3 className='font-semibold text-slate-800 text-sm'>Why use a UAN?</h3>
+                  <h3 className='font-semibold text-slate-800 text-sm'>{t('ob_why_uan')}</h3>
                 </div>
-                <p className='text-xs text-slate-600'>The Universal Account Number (UAN) is a 12-digit number provided by EPFO. It securely links your multiple PF accounts and is required for Withdrawals, Transfers, and Passbook access.</p>
+                <p className='text-xs text-slate-600'>{t('ob_why_uan_desc')}</p>
               </div>
 
               <div className='space-y-4 pt-4'>
                 <Button className='w-full py-4 text-lg' onClick={() => setStep('verify_uan')}>
-                  Yes, login with UAN
+                  {t('ob_yes_login_uan')}
                 </Button>
                 <Button variant='outline' className='w-full py-4 text-lg' onClick={() => setStep('mobile_login')}>
-                  Continue without UAN (Mobile Only)
+                  {t('ob_continue_without_uan')}
                 </Button>
                 <div className="pt-2 text-center">
                   <button onClick={() => setStep('mobile_login')} className="text-sm text-epfo-blue hover:underline font-medium">
-                    I don't know my UAN / Help me find it
+                    {t('ob_dont_know_uan')}
                   </button>
                 </div>
               </div>
@@ -451,13 +452,13 @@ export const Onboarding: React.FC = () => {
 
           {step === 'verify_uan' && (
             <motion.div key="verify_uan" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='space-y-6 my-auto'>
-              <h1 className='text-3xl font-semibold mb-2'>Verify UAN</h1>
+              <h1 className='text-3xl font-semibold mb-2'>{t('ob_verify_uan')}</h1>
               <div className='space-y-4'>
                 <input 
                   id="onboard-verify-uan"
                   type="text" 
-                  placeholder="Enter 12-digit UAN" 
-                  aria-label="Enter 12-digit UAN"
+                  placeholder={t('enter_uan')} 
+                  aria-label={t('enter_uan')}
                   className='w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-epfo-orange outline-none'
                   value={uanInput}
                   onChange={e => setUanInput(e.target.value.replace(/\D/g, ''))}
@@ -470,8 +471,8 @@ export const Onboarding: React.FC = () => {
                       id="onboard-verify-otp"
                       type="text"
                       className='w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-orange transition-all mt-4'
-                      placeholder="Enter OTP (Use 1234)"
-                      aria-label="Enter OTP for UAN verification"
+                      placeholder={t('ob_enter_otp_hint')}
+                      aria-label={t('ob_otp_aria')}
                       value={otpInput}
                       onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
                     />
@@ -479,10 +480,10 @@ export const Onboarding: React.FC = () => {
                       <OtpFallbackOptions />
                     ) : (
                       <div className='flex justify-between items-center mt-3 px-1'>
-                        <p className='text-xs text-slate-500'>Didn't receive OTP?</p>
+                        <p className='text-xs text-slate-500'>{t('ob_no_otp')}</p>
                         <div className='flex gap-3'>
-                          <button className='text-xs font-semibold text-epfo-orange hover:underline' onClick={() => toast.success('OTP sent via WhatsApp')}>WhatsApp</button>
-                          <button className='text-xs font-semibold text-epfo-orange hover:underline' onClick={() => toast.success('Initiating Voice Call...')}>Voice Call</button>
+                          <button className='text-xs font-semibold text-epfo-orange hover:underline' onClick={() => toast.success(t('ob_otp_whatsapp'))}>{t('ob_whatsapp')}</button>
+                          <button className='text-xs font-semibold text-epfo-orange hover:underline' onClick={() => toast.success(t('ob_voice_call_init'))}>{t('ob_voice_call')}</button>
                         </div>
                       </div>
                     )}
@@ -490,12 +491,12 @@ export const Onboarding: React.FC = () => {
                 )}
 
                 <Button className='w-full py-4' disabled={(uanInput.length !== 12) || (showOtp && otpInput.length < 4) || isVerifying} onClick={handleUanVerification}>
-                  {isVerifying ? 'Verifying...' : showOtp ? 'Verify OTP' : 'Get OTP'}
+                  {isVerifying ? t('ob_verifying') : showOtp ? t('verify_otp') : t('get_otp')}
                 </Button>
                 <div className='pt-4 border-t border-slate-100'>
-                  <p className='text-sm text-center text-slate-500 mb-3'>Haven't activated your UAN yet?</p>
+                  <p className='text-sm text-center text-slate-500 mb-3'>{t('ob_not_activated')}</p>
                   <Button variant='outline' className='w-full py-3' onClick={() => navigate('/uan-activation')}>
-                    Activate UAN
+                    {t('ob_activate_uan')}
                   </Button>
                 </div>
               </div>
@@ -504,14 +505,14 @@ export const Onboarding: React.FC = () => {
 
           {step === 'mobile_login' && (
             <motion.div key="mobile_login" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='space-y-6 my-auto'>
-              <h1 className='text-3xl font-semibold mb-2'>Mobile Authentication</h1>
-              <p className='text-slate-500'>Enter your Aadhaar-linked phone number. You can use this to find your UAN or access non-UAN services.</p>
+              <h1 className='text-3xl font-semibold mb-2'>{t('ob_mobile_auth')}</h1>
+              <p className='text-slate-500'>{t('ob_phone_hint')}</p>
               <div className='space-y-4'>
                 <input 
                   id="onboard-phone"
                   type="tel" 
-                  placeholder="Phone Number" 
-                  aria-label="Aadhaar-linked phone number"
+                  placeholder={t('ob_phone_placeholder')} 
+                  aria-label={t('ob_phone_aria')}
                   className='w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-epfo-orange outline-none'
                   value={phoneInput}
                   onChange={e => setPhoneInput(e.target.value.replace(/\D/g, ''))}
@@ -519,14 +520,14 @@ export const Onboarding: React.FC = () => {
                 <input 
                   id="onboard-phone-otp"
                   type="text" 
-                  placeholder="OTP (use 1234)" 
-                  aria-label="Enter OTP for phone verification"
+                  placeholder={t('ob_otp_placeholder')} 
+                  aria-label={t('ob_phone_otp_aria')}
                   className='w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-epfo-orange outline-none'
                   value={otpInput}
                   onChange={e => setOtpInput(e.target.value)}
                 />
                 <Button className='w-full py-4' disabled={isVerifying || phoneInput.length < 10} onClick={handlePhoneLogin}>
-                  {isVerifying ? 'Verifying...' : 'Login'}
+                  {isVerifying ? t('ob_verifying') : t('ob_login')}
                 </Button>
                 {showFallback && <OtpFallbackOptions />}
               </div>
@@ -536,15 +537,15 @@ export const Onboarding: React.FC = () => {
           {step === 'profile_setup' && (
             <motion.div key="profile_setup" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='space-y-6 my-auto text-center'>
               <ProfileSuccessAnim />
-              <h1 className='text-3xl font-semibold mb-2'>UAN Verified</h1>
-              <p className='text-slate-500'>We've successfully verified your UAN. What should we call you?</p>
+              <h1 className='text-3xl font-semibold mb-2'>{t('ob_uan_verified')}</h1>
+              <p className='text-slate-500'>{t('ob_uan_verified_desc')}</p>
               
               <div className='pt-6 text-left'>
-                <label htmlFor="profile-name" className="text-sm font-medium text-slate-700 block mb-2">Full Name</label>
+                <label htmlFor="profile-name" className="text-sm font-medium text-slate-700 block mb-2">{t('full_name')}</label>
                 <input 
                   id="profile-name"
                   type="text"
-                  placeholder="e.g. Ramesh Kumar"
+                  placeholder={t('ob_name_placeholder')}
                   className="w-full p-4 rounded-xl border border-slate-200 text-lg outline-none focus:ring-2 focus:ring-epfo-blue transition-all"
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
@@ -556,7 +557,7 @@ export const Onboarding: React.FC = () => {
                   completeProfile({ name: profileName });
                   setStep('prerequisites');
                 }}>
-                  Continue
+                  {t('ob_continue')}
                 </Button>
               </div>
             </motion.div>
@@ -567,17 +568,17 @@ export const Onboarding: React.FC = () => {
               <div className='bg-orange-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4'>
                 <ShieldCheck className='w-8 h-8 text-orange-600' />
               </div>
-              <h1 className='text-3xl font-semibold mb-2'>One-Time Security Setup</h1>
-              <p className='text-slate-500 text-sm'>This is the one and only time you will need to submit this. Your verified status will carry across all your sessions.</p>
+              <h1 className='text-3xl font-semibold mb-2'>{t('mpin_setup_title')}</h1>
+              <p className='text-slate-500 text-sm'>{t('ob_security_setup_desc')}</p>
               
               <div className='space-y-4 pt-4'>
                 <div className='space-y-2'>
-                  <label htmlFor="onboard-mobile-verify" className='text-sm font-medium text-slate-700'>Mobile Verification (OTP)</label>
+                  <label htmlFor="onboard-mobile-verify" className='text-sm font-medium text-slate-700'>{t('ob_mobile_verification')}</label>
                   <input id="onboard-mobile-verify" type="text" value="1234" readOnly className='w-full p-4 border border-slate-200 rounded-xl bg-transparent text-slate-500 outline-none' />
                 </div>
                 
                 <div className='space-y-2'>
-                  <label htmlFor="onboard-captcha" className='text-sm font-medium text-slate-700'>Captcha Verification</label>
+                  <label htmlFor="onboard-captcha" className='text-sm font-medium text-slate-700'>{t('ob_captcha_verification')}</label>
                   <div className='flex gap-3'>
                     <div className='p-4 bg-slate-100 border border-slate-200 rounded-xl font-mono text-lg tracking-widest text-slate-700 select-none'>
                       aB3cD
@@ -587,21 +588,21 @@ export const Onboarding: React.FC = () => {
                 </div>
 
                 <div className='space-y-2'>
-                  <label htmlFor="onboard-mpin" className='text-sm font-medium text-slate-700'>Set a 4-Digit MPIN</label>
+                  <label htmlFor="onboard-mpin" className='text-sm font-medium text-slate-700'>{t('ob_set_mpin')}</label>
                   <input 
                     id="onboard-mpin"
                     type="password" 
                     maxLength={4}
                     value={mpinInput} 
                     onChange={e => setMpinInput(e.target.value.replace(/\D/g, ''))}
-                    placeholder="Enter 4 digits"
+                    placeholder={t('ob_enter_mpin')}
                     className='w-full p-4 border border-slate-200 rounded-xl bg-transparent focus:ring-2 focus:ring-epfo-orange outline-none tracking-[1em] text-center text-lg' 
                   />
-                  <p className='text-xs text-slate-500 text-center'>You will use this MPIN to quickly log in to the app next time.</p>
+                  <p className='text-xs text-slate-500 text-center'>{t('mpin_hint')}</p>
                 </div>
 
                 <Button className='w-full py-4 text-lg mt-4 bg-orange-600 hover:bg-orange-700' disabled={mpinInput.length !== 4} onClick={() => setStep('vault_intro')}>
-                  Verify & Continue
+                  {t('verify_and_continue')}
                 </Button>
               </div>
             </motion.div>

@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, ShieldAlert, AlertTriangle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useAccountStore } from '../../store/useAccountStore';
 import { useDemoStore } from '../../store/useDemoStore';
+import { useTranslation } from 'react-i18next';
 
 export const AccountHealthCard: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { serviceMonths } = useAccountStore();
   const sc = useDemoStore(s => s.activeScenario);
 
@@ -23,16 +25,16 @@ export const AccountHealthCard: React.FC = () => {
   const exitOk = !isExitNotMarked;
   const serviceOk = serviceMonths >= 12;
 
-  const aadhaarDetail = isAadhaarConflict ? 'Linked to wrong UAN' : isKycMismatch ? 'Mismatch detected' : aadhaarOk ? 'Linked & verified' : 'Not linked';
-  const panDetail = isKycMismatch ? 'Mismatch detected' : panOk ? 'Verified' : 'Not linked';
+  const aadhaarDetail = isAadhaarConflict ? 'Linked to wrong UAN' : isKycMismatch ? 'Mismatch detected' : aadhaarOk ? t('sts_linked_verified', 'Linked & verified') : 'Not linked';
+  const panDetail = isKycMismatch ? 'Mismatch detected' : panOk ? t('sts_verified', 'Verified') : 'Not linked';
 
   const items = [
-    { label: 'Aadhaar KYC', ok: aadhaarOk, detail: aadhaarDetail },
-    { label: 'PAN KYC', ok: panOk, detail: panDetail },
-    { label: 'Bank KYC', ok: bankOk, detail: bankOk ? 'IFSC verified' : 'Not seeded' },
-    { label: 'e-Nomination', ok: nomineeOk, detail: nomineeOk ? 'Filed' : 'Not filed' },
-    { label: 'Exit Status', ok: exitOk, detail: exitOk ? 'Marked (23 Jul 2026)' : 'Not marked' },
-    { label: 'Service', ok: serviceOk, detail: `${serviceMonths} months` },
+    { label: t('lbl_aadhaar_kyc', 'Aadhaar KYC'), ok: aadhaarOk, detail: aadhaarDetail },
+    { label: t('lbl_pan_kyc', 'PAN KYC'), ok: panOk, detail: panDetail },
+    { label: t('lbl_bank_kyc', 'Bank KYC'), ok: bankOk, detail: bankOk ? t('sts_ifsc_verified', 'IFSC verified') : 'Not seeded' },
+    { label: t('lbl_e_nomination', 'e-Nomination'), ok: nomineeOk, detail: nomineeOk ? t('sts_filed', 'Filed') : 'Not filed' },
+    { label: t('lbl_exit_status', 'Exit Status'), ok: exitOk, detail: exitOk ? 't('sts_marked', 'Marked (23 Jul 2026)')' : 'Not marked' },
+    { label: t('lbl_service', 'Service'), ok: serviceOk, detail: `${serviceMonths} months` },
   ];
 
   const okCount = items.filter(i => i.ok).length;
@@ -54,7 +56,7 @@ export const AccountHealthCard: React.FC = () => {
           ) : (
             <ShieldAlert className='!w-3.5 !h-3.5 text-amber-600' />
           )}
-          <span className='text-[10px] font-bold text-slate-700 uppercase tracking-wider'>Account Details</span>
+          <span className='text-[10px] font-bold text-slate-700 uppercase tracking-wider'>{t('lbl_account_details', 'Account Details')}</span>
         </div>
         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
           score === 100 ? 'bg-emerald-100 text-emerald-700' :

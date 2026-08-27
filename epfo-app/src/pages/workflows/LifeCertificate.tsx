@@ -29,7 +29,7 @@ export const LifeCertificate: React.FC = () => {
   const [step, setStep] = useState<'status' | 'face_auth' | 'processing' | 'success' | 'doorstep'>('status');
   const [cameraActive, setCameraActive] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
-  const [scanPrompt, setScanPrompt] = useState('Position your face inside the frame');
+  const [scanPrompt, setScanPrompt] = useState(t('dlc_position_face_in_frame'));
   const [pramaanId, setPramaanId] = useState<string | null>(null);
   
   // Pensioner Profile Data (Mocked from Aadhaar / PPO Store)
@@ -48,10 +48,10 @@ export const LifeCertificate: React.FC = () => {
   useEffect(() => {
     if (step === 'face_auth' && cameraActive) {
       const prompts = [
-        { progress: 25, text: 'Keep your head straight...' },
-        { progress: 50, text: 'Blink your eyes slowly...' },
-        { progress: 75, text: 'Hold still, verifying with Aadhaar...' },
-        { progress: 100, text: 'Face matched successfully! 🎉' }
+        { progress: 25, text: t('dlc_keep_head_straight') },
+        { progress: 50, text: t('dlc_blink_eyes') },
+        { progress: 75, text: t('dlc_hold_still_verifying') },
+        { progress: 100, text: `${t('dlc_face_matched')} 🎉` }
       ];
 
       let idx = 0;
@@ -69,7 +69,7 @@ export const LifeCertificate: React.FC = () => {
               const generatedId = `JP-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
               setPramaanId(generatedId);
               setStep('success');
-              toast.success('Digital Life Certificate submitted successfully!');
+              toast.success(t('dlc_submitted_success'));
             }, 2500);
           }, 800);
         }
@@ -82,7 +82,7 @@ export const LifeCertificate: React.FC = () => {
   const startFaceAuth = () => {
     setStep('face_auth');
     setScanProgress(0);
-    setScanPrompt('Position your face inside the frame');
+    setScanPrompt(t('dlc_position_face_in_frame'));
     setTimeout(() => {
       setCameraActive(true);
     }, 600);
@@ -97,7 +97,7 @@ export const LifeCertificate: React.FC = () => {
             if (step === 'status') navigate(-1);
             else setStep('status');
           }} 
-          aria-label="Go back to previous step"
+          aria-label={t('dlc_go_back_label')}
           className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'
         >
           <ArrowLeft className='w-5 h-5' />
@@ -125,14 +125,14 @@ export const LifeCertificate: React.FC = () => {
                   <span className='text-xs uppercase tracking-wider font-bold text-emerald-100'>{t('pension_status')}</span>
                 </div>
                 <span className='bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-white'>
-                  {pensioner.status}
+                  {t('dlc_status_active')}
                 </span>
               </div>
 
               <div className='mt-4'>
                 <p className='text-xs text-emerald-100'>{t('pensioner_name')}</p>
                 <p className='text-xl font-bold mt-0.5 tracking-tight'>{pensioner.name}</p>
-                <p className='text-xs font-mono text-emerald-200 mt-1'>PPO: {pensioner.ppoNumber}</p>
+                <p className='text-xs font-mono text-emerald-200 mt-1'>{t('dlc_ppo_prefix')}: {pensioner.ppoNumber}</p>
               </div>
 
               <div className='grid grid-cols-2 gap-3 mt-5 pt-4 border-t border-white/20 text-xs'>
@@ -151,19 +151,19 @@ export const LifeCertificate: React.FC = () => {
             <div className='bg-blue-50/90 backdrop-blur-sm border border-blue-200/80 rounded-2xl p-4 flex gap-3 items-start shadow-sm'>
               <AlertCircle className='w-5 h-5 text-epfo-blue shrink-0 mt-0.5' />
               <div className='text-xs text-blue-950 leading-relaxed'>
-                <p className='font-bold text-blue-900 mb-1'>Good News: Submit Anytime in the Year</p>
-                As per latest EPFO rules, your Life Certificate is valid for a full 12 months from your submission date. You do not have to crowd offices only in November.
+                <p className='font-bold text-blue-900 mb-1'>{t('dlc_good_news_title')}</p>
+                {t('dlc_policy_note_body')}
               </div>
             </div>
 
             {/* Action Cards */}
             <div className='space-y-3 pt-2'>
-              <h2 className='text-sm font-bold text-slate-800 uppercase tracking-wider px-1'>Choose Submission Method</h2>
+              <h2 className='text-sm font-bold text-slate-800 uppercase tracking-wider px-1'>{t('dlc_choose_method_title')}</h2>
 
               {/* Method 1: Face-Auth on Mobile (Recommended) */}
               <button
                 onClick={startFaceAuth}
-                aria-label="Scan face for life certificate"
+                aria-label={t('dlc_scan_face_aria')}
                 className='w-full bg-white/90 backdrop-blur-sm border-2 border-epfo-blue/40 hover:border-epfo-blue p-4 rounded-2xl shadow-sm text-left transition-all hover:shadow-md flex items-center gap-4 group'
               >
                 <div className='w-12 h-12 bg-blue-100 text-epfo-blue rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform'>
@@ -205,9 +205,9 @@ export const LifeCertificate: React.FC = () => {
         {step === 'face_auth' && (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className='space-y-4 text-center'>
             <div className='bg-white/90 backdrop-blur-md border border-slate-200 rounded-3xl p-6 shadow-md'>
-              <h2 className='text-lg font-bold text-slate-900'>Facial Liveness Verification</h2>
+              <h2 className='text-lg font-bold text-slate-900'>{t('dlc_facial_liveness_title')}</h2>
               <p className='text-xs text-slate-500 mt-1'>
-                Look directly at the front camera in good lighting.
+                {t('dlc_camera_look_direct')}
               </p>
 
               {/* Interactive Camera Viewport */}
@@ -226,7 +226,7 @@ export const LifeCertificate: React.FC = () => {
 
                 {/* Progress Overlay */}
                 <div className='absolute bottom-3 bg-black/60 backdrop-blur-sm text-cyan-300 text-xs font-mono px-3 py-1 rounded-full'>
-                  {scanProgress}% Verified
+                  {scanProgress}% {t('dlc_verified')}
                 </div>
               </div>
 
@@ -241,7 +241,7 @@ export const LifeCertificate: React.FC = () => {
               onClick={() => setStep('status')} 
               className='text-xs text-slate-500 hover:text-slate-700 font-medium underline'
             >
-              Cancel and go back
+              {t('dlc_cancel_go_back')}
             </button>
           </motion.div>
         )}
@@ -252,9 +252,9 @@ export const LifeCertificate: React.FC = () => {
             <div className='w-16 h-16 bg-blue-50 text-epfo-blue rounded-full mx-auto flex items-center justify-center animate-spin'>
               <RefreshCw className='w-8 h-8' />
             </div>
-            <h2 className='text-lg font-bold text-slate-900'>Generating Jeevan Pramaan ID...</h2>
+            <h2 className='text-lg font-bold text-slate-900'>{t('dlc_generating_id')}</h2>
             <p className='text-xs text-slate-500 max-w-xs mx-auto'>
-              Matching biometric hash with UIDAI and updating your EPFO pension disbursal record.
+              {t('dlc_matching_biometric')}
             </p>
           </motion.div>
         )}
@@ -269,34 +269,34 @@ export const LifeCertificate: React.FC = () => {
 
               <div>
                 <span className='bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200'>
-                  Certificate Accepted & Recorded
+                  {t('dlc_certificate_accepted')}
                 </span>
-                <h2 className='text-xl font-bold text-slate-900 mt-2'>Jeevan Pramaan Submitted!</h2>
+                <h2 className='text-xl font-bold text-slate-900 mt-2'>{t('dlc_jeevan_pramaan_submitted')}</h2>
                 <p className='text-xs text-slate-500 mt-1'>
-                  Your pension will continue uninterrupted till <strong>{new Date().getDate()} {new Date().toLocaleString('default', { month: 'short' })} {new Date().getFullYear() + 1}</strong>.
+                  {t('dlc_pension_uninterrupted_before')} <strong>{new Date().getDate()} {new Date().toLocaleString('default', { month: 'short' })} {new Date().getFullYear() + 1}</strong>.
                 </p>
               </div>
 
               {/* Digital Certificate Receipt Card */}
               <div className='bg-slate-50 border border-slate-200 rounded-2xl p-4 text-left space-y-2.5 text-xs'>
                 <div className='flex justify-between items-center pb-2 border-b border-slate-200 font-bold'>
-                  <span className='text-slate-600'>Pramaan ID</span>
+                  <span className='text-slate-600'>{t('dlc_pramaan_id_label')}</span>
                   <span className='font-mono text-epfo-blue text-sm'>{pramaanId}</span>
                 </div>
                 <div className='flex justify-between'>
-                  <span className='text-slate-500'>Pensioner Name</span>
+                  <span className='text-slate-500'>{t('dlc_pensioner_name_label')}</span>
                   <span className='font-medium text-slate-900'>{pensioner.name}</span>
                 </div>
                 <div className='flex justify-between'>
-                  <span className='text-slate-500'>PPO Number</span>
+                  <span className='text-slate-500'>{t('dlc_ppo_number_label')}</span>
                   <span className='font-mono font-medium text-slate-900'>{pensioner.ppoNumber}</span>
                 </div>
                 <div className='flex justify-between'>
-                  <span className='text-slate-500'>Authentication Mode</span>
-                  <span className='font-medium text-emerald-700'>Aadhaar Face RD (AI Liveness)</span>
+                  <span className='text-slate-500'>{t('dlc_auth_mode_label')}</span>
+                  <span className='font-medium text-emerald-700'>{t('dlc_aadhaar_face_rd')}</span>
                 </div>
                 <div className='flex justify-between pt-1 border-t border-slate-200'>
-                  <span className='text-slate-500'>Submission Timestamp</span>
+                  <span className='text-slate-500'>{t('dlc_submission_timestamp_label')}</span>
                   <span className='font-medium text-slate-900'>{new Date().toLocaleString()}</span>
                 </div>
               </div>
@@ -304,19 +304,19 @@ export const LifeCertificate: React.FC = () => {
               <div className='space-y-2 pt-2'>
                 <Button 
                   onClick={() => {
-                    toast.success('Certificate downloaded to your device!');
+                    toast.success(t('dlc_cert_downloaded'));
                   }}
                   className='w-full py-3.5 flex items-center justify-center gap-2 font-semibold'
                 >
-                  <Download className='w-4 h-4' /> Download Certificate (PDF)
+                  <Download className='w-4 h-4' /> {t('dlc_download_certificate')}
                 </Button>
 
                 <button 
                   onClick={() => navigate('/')}
-                  aria-label="Return to dashboard"
+                  aria-label={t('dlc_return_dashboard_aria')}
                   className='w-full py-3 text-slate-600 font-medium text-xs hover:text-slate-900 transition-colors'
                 >
-                  Return to Dashboard
+                  {t('dlc_return_to_dashboard')}
                 </button>
               </div>
             </div>
@@ -332,22 +332,22 @@ export const LifeCertificate: React.FC = () => {
                   <Truck className='w-5 h-5' />
                 </div>
                 <div>
-                  <h2 className='text-base font-bold text-slate-900'>Book Postman Doorstep Visit</h2>
-                  <p className='text-xs text-slate-500'>India Post Payments Bank (IPPB)</p>
+                  <h2 className='text-base font-bold text-slate-900'>{t('dlc_book_postman_visit')}</h2>
+                  <p className='text-xs text-slate-500'>{t('dlc_ippb_subtitle')}</p>
                 </div>
               </div>
 
               <div className='bg-amber-50/90 border border-amber-200 rounded-xl p-3 text-xs text-amber-900'>
-                A certified postal agent will visit your home within 48 hours equipped with a biometric scanner. Standard government fee: <strong>₹70</strong> (payable after certificate generation).
+                {t('dlc_agent_note_prefix')} <strong>₹70</strong> {t('dlc_agent_note_suffix')}
               </div>
 
               <form onSubmit={(e) => {
                 e.preventDefault();
-                toast.success('Doorstep request registered! Postman will contact you.');
+                toast.success(t('dlc_doorstep_registered'));
                 setStep('status');
               }} className='space-y-3 pt-2 text-xs'>
                 <div>
-                  <label htmlFor="lc-address" className='font-semibold text-slate-700 block mb-1'>Delivery Address</label>
+                  <label htmlFor="lc-address" className='font-semibold text-slate-700 block mb-1'>{t('dlc_delivery_address_label')}</label>
                   <textarea 
                     id="lc-address"
                     defaultValue="Flat 402, Shanti Vihar, Sector 14, Dwarka, New Delhi - 110078"
@@ -357,7 +357,7 @@ export const LifeCertificate: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="lc-phone" className='font-semibold text-slate-700 block mb-1'>Contact Mobile Number</label>
+                  <label htmlFor="lc-phone" className='font-semibold text-slate-700 block mb-1'>{t('dlc_contact_mobile_label')}</label>
                   <input 
                     id="lc-phone"
                     type="tel" 
@@ -369,14 +369,14 @@ export const LifeCertificate: React.FC = () => {
 
                 <div className='pt-2 flex gap-2'>
                   <Button type='submit' className='flex-1 py-3 bg-amber-600 hover:bg-amber-700'>
-                    Confirm Booking
+                    {t('dlc_confirm_booking')}
                   </Button>
                   <button 
                     type='button' 
                     onClick={() => setStep('status')}
                     className='px-4 py-3 border border-slate-200 rounded-xl text-slate-600 font-medium'
                   >
-                    Back
+                    {t('dlc_back')}
                   </button>
                 </div>
               </form>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -43,6 +44,7 @@ const duplicateAccounts = [
 
 export const MergeAccounts: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { stepUpAuth } = useSessionStore();
 
   const [step, setStep] = useState<'review' | 'confirm' | 'otp' | 'processing' | 'success'>('review');
@@ -66,7 +68,7 @@ export const MergeAccounts: React.FC = () => {
 
   const handleProceed = () => {
     if (selectedToMerge.length === 0) {
-      toast.error('Please select at least one account to merge.');
+      toast.error(t('mrg_toast_select_at_least_one'));
       return;
     }
     setStep('confirm');
@@ -89,11 +91,11 @@ export const MergeAccounts: React.FC = () => {
       setTimeout(() => {
         setOperationId(`OP-MRG-${Math.floor(Math.random() * 1000000)}`);
         setStep('success');
-        toast.success('Accounts merged successfully!');
+        toast.success(t('mrg_toast_merged_success'));
       }, 3000);
     } else {
       setAuthError(true);
-      toast.error('Invalid OTP. Use 1234.');
+      toast.error(t('mrg_toast_invalid_otp'));
     }
   };
 
@@ -108,14 +110,14 @@ export const MergeAccounts: React.FC = () => {
             else if (step === 'otp') setStep('confirm');
             else navigate(-1);
           }}
-          aria-label="Go back to previous step"
+          aria-label={t('mrg_aria_go_back')}
           className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'
         >
           <ArrowLeft className='w-5 h-5' />
         </button>
         <div className='ml-2 flex-1'>
-          <h1 className='text-lg font-bold text-slate-900 leading-tight'>Merge Duplicate Accounts</h1>
-          <p className='text-xs text-slate-500 font-medium'>One Member One EPF consolidation</p>
+          <h1 className='text-lg font-bold text-slate-900 leading-tight'>{t('mrg_title_merge_duplicate')}</h1>
+          <p className='text-xs text-slate-500 font-medium'>{t('mrg_subtitle_one_member_one_epf')}</p>
         </div>
       </div>
 
@@ -128,34 +130,34 @@ export const MergeAccounts: React.FC = () => {
             <div className='bg-blue-50/90 backdrop-blur-sm border border-blue-200/80 rounded-2xl p-4 flex gap-3 items-start shadow-sm'>
               <Info className='w-5 h-5 text-epfo-blue shrink-0 mt-0.5' />
               <div className='text-xs text-blue-950 leading-relaxed'>
-                <p className='font-bold text-blue-900 mb-0.5'>One Member One EPF</p>
-                <p>EPFO detected multiple UANs linked to your Aadhaar. Under the One Member One EPF rule, all accounts must be consolidated into a single UAN. Your employer will be asked to digitally attest the transfer.</p>
+                <p className='font-bold text-blue-900 mb-0.5'>{t('mrg_info_one_member_one_epf')}</p>
+                <p>{t('mrg_info_epfo_detected')}</p>
               </div>
             </div>
 
             {/* Active Account (Target) */}
             <div className='bg-white/90 backdrop-blur-sm border border-emerald-200 rounded-2xl p-4 shadow-sm'>
               <div className='flex items-center justify-between mb-2'>
-                <span className='bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase'>Active (Target)</span>
+                <span className='bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase'>{t('mrg_badge_active_target')}</span>
                 <CheckCircle2 className='w-4 h-4 text-emerald-500' />
               </div>
               <h3 className='font-bold text-sm text-slate-900'>{activeAccount?.establishmentName}</h3>
               <p className='text-[11px] font-mono text-slate-500 mt-0.5'>UAN: {activeAccount?.uan}</p>
               <div className='grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600'>
                 <div>
-                  <p className='text-[10px] text-slate-400'>Joined</p>
+                  <p className='text-[10px] text-slate-400'>{t('mrg_label_joined')}</p>
                   <p className='font-medium text-slate-700'>{activeAccount?.doj}</p>
                 </div>
                 <div>
-                  <p className='text-[10px] text-slate-400'>PF Balance</p>
+                  <p className='text-[10px] text-slate-400'>{t('mrg_label_pf_balance')}</p>
                   <p className='font-bold text-emerald-700'>₹{activeAccount?.balance.toLocaleString()}</p>
                 </div>
               </div>
-              <p className='text-[11px] text-slate-500 mt-2 italic'>All old balances will be transferred here.</p>
+              <p className='text-[11px] text-slate-500 mt-2 italic'>{t('mrg_active_balances_transferred')}</p>
             </div>
 
             {/* Inactive Accounts (Select to merge) */}
-            <h2 className='text-sm font-bold text-slate-800 uppercase tracking-wider px-1'>Select Accounts to Merge</h2>
+            <h2 className='text-sm font-bold text-slate-800 uppercase tracking-wider px-1'>{t('mrg_heading_select_accounts')}</h2>
 
             <div className='space-y-3'>
               {inactiveAccounts.map(acc => {
@@ -186,24 +188,24 @@ export const MergeAccounts: React.FC = () => {
 
                     <div className='grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600'>
                       <div>
-                        <p className='text-[10px] text-slate-400'>Joined</p>
+                        <p className='text-[10px] text-slate-400'>{t('mrg_label_joined')}</p>
                         <p className='font-medium text-slate-700'>{acc.doj}</p>
                       </div>
                       <div>
-                        <p className='text-[10px] text-slate-400'>Left</p>
-                        <p className='font-medium text-slate-700'>{acc.dol || 'N/A'}</p>
+                        <p className='text-[10px] text-slate-400'>{t('mrg_label_left')}</p>
+                        <p className='font-medium text-slate-700'>{acc.dol || t('mrg_na')}</p>
                       </div>
                       <div>
-                        <p className='text-[10px] text-slate-400'>Balance</p>
+                        <p className='text-[10px] text-slate-400'>{t('mrg_label_balance')}</p>
                         <p className='font-bold text-epfo-blue'>₹{acc.balance.toLocaleString()}</p>
                       </div>
                     </div>
 
                     <div className='mt-2 flex items-center gap-2 text-[10px]'>
                       {acc.aadhaarSeeded ? (
-                        <span className='bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold'>Aadhaar Seeded</span>
+                        <span className='bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold'>{t('mrg_badge_aadhaar_seeded')}</span>
                       ) : (
-                        <span className='bg-red-50 text-red-700 px-2 py-0.5 rounded-full font-bold'>Aadhaar Not Seeded</span>
+                        <span className='bg-red-50 text-red-700 px-2 py-0.5 rounded-full font-bold'>{t('mrg_badge_aadhaar_not_seeded')}</span>
                       )}
                     </div>
                   </button>
@@ -213,24 +215,24 @@ export const MergeAccounts: React.FC = () => {
 
             {/* Summary Card */}
             {selectedToMerge.length > 0 && (
-              <div className='bg-white/95 backdrop-blur-md border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2' role="status" aria-label="Merge summary">
+              <div className='bg-white/95 backdrop-blur-md border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2' role="status" aria-label={t('mrg_aria_merge_summary')}>
                 <div className='flex justify-between text-xs'>
-                  <span className='text-slate-500'>Accounts to merge</span>
+                  <span className='text-slate-500'>{t('mrg_summary_accounts_to_merge')}</span>
                   <span className='font-bold text-slate-900'>{selectedToMerge.length}</span>
                 </div>
                 <div className='flex justify-between text-xs'>
-                  <span className='text-slate-500'>Old balance to transfer</span>
+                  <span className='text-slate-500'>{t('mrg_summary_old_balance')}</span>
                   <span className='font-bold text-epfo-blue'>₹{totalOldBalance.toLocaleString()}</span>
                 </div>
                 <div className='flex justify-between text-xs pt-2 border-t border-slate-100'>
-                  <span className='text-slate-500'>Projected total after merge</span>
+                  <span className='text-slate-500'>{t('mrg_summary_projected_total')}</span>
                   <span className='font-bold text-emerald-700'>₹{(activeAccount?.balance || 0 + totalOldBalance).toLocaleString()}</span>
                 </div>
               </div>
             )}
 
             <Button onClick={handleProceed} className='w-full py-3.5 font-semibold text-sm' disabled={selectedToMerge.length === 0}>
-              Proceed to Review <ArrowRight className='w-4 h-4 ml-1' />
+              {t('mrg_btn_proceed_to_review')} <ArrowRight className='w-4 h-4 ml-1' />
             </Button>
           </motion.div>
         )}
@@ -242,13 +244,13 @@ export const MergeAccounts: React.FC = () => {
               <div className='border-b border-slate-100 pb-3'>
                 <h3 className='font-bold text-slate-900 text-base flex items-center gap-2'>
                   <GitMerge className='w-4 h-4 text-epfo-blue' />
-                  Confirm Account Merge
+                  {t('mrg_heading_confirm_merge')}
                 </h3>
               </div>
 
               <div className='space-y-3 text-xs'>
                 <div className='bg-emerald-50 border border-emerald-200 rounded-xl p-3'>
-                  <p className='text-[10px] text-emerald-600 font-bold uppercase mb-1'>Target Account</p>
+                  <p className='text-[10px] text-emerald-600 font-bold uppercase mb-1'>{t('mrg_label_target_account')}</p>
                   <p className='font-bold text-slate-900'>UAN {activeAccount?.uan}</p>
                   <p className='text-slate-600'>{activeAccount?.establishmentName}</p>
                 </div>
@@ -256,14 +258,14 @@ export const MergeAccounts: React.FC = () => {
                 <div className='flex items-center justify-center'>
                   <div className='w-px h-6 bg-slate-200' />
                   <div className='mx-2 bg-blue-50 border border-blue-200 rounded-full px-3 py-1'>
-                    <span className='text-[10px] font-bold text-epfo-blue'>↓ {selectedToMerge.length} account(s) merging ↓</span>
+                    <span className='text-[10px] font-bold text-epfo-blue'>{t('mrg_accounts_merging', { count: selectedToMerge.length })}</span>
                   </div>
                   <div className='w-px h-6 bg-slate-200' />
                 </div>
 
                 {duplicateAccounts.filter(a => selectedToMerge.includes(a.uan)).map(acc => (
                   <div key={acc.uan} className='bg-slate-50 border border-slate-200 rounded-xl p-3'>
-                    <p className='text-[10px] text-slate-400 font-bold uppercase mb-1'>Source Account</p>
+                    <p className='text-[10px] text-slate-400 font-bold uppercase mb-1'>{t('mrg_label_source_account')}</p>
                     <p className='font-bold text-slate-900'>UAN {acc.uan}</p>
                     <p className='text-slate-600'>{acc.establishmentName}</p>
                     <p className='font-bold text-epfo-blue mt-1'>₹{acc.balance.toLocaleString()}</p>
@@ -273,13 +275,13 @@ export const MergeAccounts: React.FC = () => {
                 <div className='bg-amber-50 border border-amber-200 rounded-xl p-3 flex gap-2'>
                   <AlertTriangle className='w-4 h-4 text-amber-600 shrink-0 mt-0.5' />
                   <span className='text-amber-900'>
-                    Your current employer will be asked to digitally attest this transfer. Once attested, the merge cannot be reversed.
+                    {t('mrg_attestation_warning')}
                   </span>
                 </div>
               </div>
 
-              <Button onClick={handleConfirm} className='w-full py-3.5 font-semibold text-sm' aria-label="Confirm merge and proceed to Aadhaar OTP sign">
-                Confirm & Proceed to Aadhaar OTP Sign
+              <Button onClick={handleConfirm} className='w-full py-3.5 font-semibold text-sm' aria-label={t('mrg_aria_confirm_merge')}>
+                {t('mrg_btn_confirm_and_proceed_otp')}
               </Button>
             </div>
           </motion.div>
@@ -294,9 +296,9 @@ export const MergeAccounts: React.FC = () => {
               </div>
 
               <div>
-                <h2 className='text-lg font-bold text-slate-900'>Aadhaar Digital Signature</h2>
+                <h2 className='text-lg font-bold text-slate-900'>{t('mrg_heading_aadhaar_signature')}</h2>
                 <p className='text-xs text-slate-500 mt-1'>
-                  Sign the One Member One EPF transfer request. Enter the 4-digit mock OTP.
+                  {t('mrg_aadhaar_otp_instruction')}
                 </p>
               </div>
 
@@ -308,14 +310,14 @@ export const MergeAccounts: React.FC = () => {
                   value={otp}
                   onChange={e => setOtp(e.target.value)}
                   placeholder='1234'
-                  aria-label="Enter Aadhaar OTP for merge request"
+                  aria-label={t('mrg_aria_enter_otp')}
                   className='w-40 mx-auto text-center tracking-widest text-2xl font-bold p-3 border-2 border-epfo-blue/40 rounded-2xl focus:border-epfo-blue outline-none bg-slate-50'
                   autoFocus
                   required
                 />
 
                 <p className='text-[11px] text-slate-400'>
-                  Hint: Enter <strong>1234</strong>
+                  {t('mrg_hint_enter', { otp: '1234' })}
                 </p>
 
                 <Button
@@ -323,7 +325,7 @@ export const MergeAccounts: React.FC = () => {
                   disabled={isSubmitting}
                   className='w-full py-3.5 font-semibold'
                 >
-                  {isSubmitting ? 'Signing Transfer Request...' : 'Sign & Submit Merge Request'}
+                  {isSubmitting ? t('mrg_btn_signing_request') : t('mrg_btn_sign_submit')}
                 </Button>
                 {authError && <OtpFallbackOptions variant='compact' />}
               </form>
@@ -338,8 +340,8 @@ export const MergeAccounts: React.FC = () => {
               <div className='w-16 h-16 bg-blue-50 text-epfo-blue rounded-full mx-auto flex items-center justify-center'>
                 <Loader2 className='w-8 h-8 animate-spin' />
               </div>
-              <h2 className='text-lg font-bold text-slate-900'>Merging Accounts...</h2>
-              <p className='text-xs text-slate-500'>Submitting transfer request to EPFO and notifying your employer for digital attestation.</p>
+              <h2 className='text-lg font-bold text-slate-900'>{t('mrg_heading_merging')}</h2>
+              <p className='text-xs text-slate-500'>{t('mrg_processing_submitting')}</p>
               <div className='w-full bg-slate-100 rounded-full h-2 overflow-hidden'>
                 <motion.div
                   className='bg-epfo-blue h-full rounded-full'
@@ -362,39 +364,39 @@ export const MergeAccounts: React.FC = () => {
 
               <div>
                 <span className='bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200'>
-                  Merge Request Filed
+                  {t('mrg_badge_request_filed')}
                 </span>
-                <h2 className='text-xl font-bold text-slate-900 mt-2'>Accounts Consolidation Initiated!</h2>
+                <h2 className='text-xl font-bold text-slate-900 mt-2'>{t('mrg_heading_consolidation_initiated')}</h2>
                 <p className='text-xs text-slate-500 mt-1'>
-                  Your old PF balance will be transferred to your active UAN after employer attestation.
+                  {t('mrg_success_description')}
                 </p>
               </div>
 
               <div className='bg-slate-50 border border-slate-200 rounded-2xl p-4 text-left space-y-2 text-xs'>
                 <div className='flex justify-between'>
-                  <span className='text-slate-500'>Operation ID</span>
+                  <span className='text-slate-500'>{t('mrg_success_operation_id')}</span>
                   <span className='font-mono font-bold text-slate-900'>{operationId}</span>
                 </div>
                 <div className='flex justify-between'>
-                  <span className='text-slate-500'>Accounts Merged</span>
+                  <span className='text-slate-500'>{t('mrg_success_accounts_merged')}</span>
                   <span className='font-bold text-slate-900'>{selectedToMerge.length}</span>
                 </div>
                 <div className='flex justify-between'>
-                  <span className='text-slate-500'>Balance Transferred</span>
+                  <span className='text-slate-500'>{t('mrg_success_balance_transferred')}</span>
                   <span className='font-bold text-epfo-blue'>₹{totalOldBalance.toLocaleString()}</span>
                 </div>
                 <div className='flex justify-between pt-1 border-t border-slate-200'>
-                  <span className='text-slate-500'>Next Step</span>
-                  <span className='font-semibold text-amber-700'>Awaiting employer attestation</span>
+                  <span className='text-slate-500'>{t('mrg_success_next_step')}</span>
+                  <span className='font-semibold text-amber-700'>{t('mrg_success_awaiting_attestation')}</span>
                 </div>
               </div>
 
               <button
                 onClick={() => navigate('/')}
-                aria-label="Back to dashboard"
+                aria-label={t('mrg_aria_back_to_dashboard')}
                 className='w-full py-2 text-slate-500 text-xs hover:text-slate-800'
               >
-                Back to Dashboard
+                {t('mrg_btn_back_to_dashboard')}
               </button>
             </div>
           </motion.div>

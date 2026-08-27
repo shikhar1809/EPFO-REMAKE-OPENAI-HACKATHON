@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNotificationStore, NOTIFICATION_CATEGORIES, type NotificationCategory, type NotificationItem } from '../../store/useNotificationStore';
 import { useDemoStore } from '../../store/useDemoStore';
 import { mergeNotifications } from '../../lib/scenarioNotifications';
+import { useTranslation } from 'react-i18next';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   ShieldCheck,
@@ -28,6 +29,7 @@ const COLOR_MAP: Record<string, { bg: string; text: string; border: string }> = 
 };
 
 const NotificationCard: React.FC<{ item: NotificationItem; onTap: () => void }> = ({ item, onTap }) => {
+  const { t } = useTranslation();
   const Icon = ICON_MAP[item.icon] || Bell;
   const colors = COLOR_MAP[item.color] || COLOR_MAP.blue;
   const catMeta = NOTIFICATION_CATEGORIES[item.category];
@@ -59,14 +61,14 @@ const NotificationCard: React.FC<{ item: NotificationItem; onTap: () => void }> 
               {item.title}
             </p>
             {!item.read && (
-              <span className="shrink-0 w-2 h-2 rounded-full bg-epfo-blue" aria-label="Unread" />
+              <span className="shrink-0 w-2 h-2 rounded-full bg-epfo-blue" aria-label={t('ntf_unread')} />
             )}
           </div>
           <p className={`text-[11px] mt-0.5 leading-snug ${catMeta.color.replace('-700', '-700')}`}>
             {item.body}
           </p>
           <span className="inline-block mt-1.5 text-[9px] font-semibold uppercase tracking-wider opacity-60">
-            {catMeta.label} · Due {item.date}
+            {catMeta.label} · {t('ntf_due')} {item.date}
           </span>
         </div>
       </div>
@@ -75,6 +77,7 @@ const NotificationCard: React.FC<{ item: NotificationItem; onTap: () => void }> 
 };
 
 export const Notifications: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { notifications, markRead, markAllRead } = useNotificationStore();
   const activeScenario = useDemoStore(s => s.activeScenario);
@@ -101,14 +104,14 @@ export const Notifications: React.FC = () => {
         <button
           onClick={() => navigate(-1)}
           className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-600"
-          aria-label="Go back"
+          aria-label={t('ntf_go_back')}
         >
           <ArrowLeft className="!w-5 !h-5" />
         </button>
         <div className="flex-1">
-          <h1 className="text-base font-bold text-slate-900">Notifications</h1>
+          <h1 className="text-base font-bold text-slate-900">{t('ntf_title')}</h1>
           <p className="text-[10px] text-slate-500">
-            {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
+            {unreadCount > 0 ? t('ntf_unread_count', { count: unreadCount }) : t('ntf_all_caught_up')}
           </p>
         </div>
         {unreadCount > 0 && (
@@ -117,7 +120,7 @@ export const Notifications: React.FC = () => {
             className="flex items-center gap-1 text-[11px] font-semibold text-epfo-blue hover:text-epfo-blue/80 transition-colors"
           >
             <CheckCheck className="!w-3.5 !h-3.5" />
-            Mark all read
+            {t('ntf_mark_all_read')}
           </button>
         )}
       </div>

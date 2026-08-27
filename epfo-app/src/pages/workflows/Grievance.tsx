@@ -5,8 +5,10 @@ import { ArrowLeft, MessageSquareWarning, Search, CheckCircle2, HeadphonesIcon, 
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
+import { useTranslation } from 'react-i18next';
 
 export const Grievance: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { completedTasks } = useWorkflowStore();
   const [activeTab, setActiveTab] = useState<'register' | 'track'>('register');
@@ -22,7 +24,7 @@ export const Grievance: React.FC = () => {
 
   const handleTrack = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusResult('EPFO Response: "Dear Member, your KYC has been successfully updated in our system. Ticket closed."');
+    setStatusResult('gr_epfo_response');
     setIsResolvedByEPFO(true);
     setUserClosedTicket(null);
   };
@@ -42,7 +44,7 @@ export const Grievance: React.FC = () => {
         <div className='relative z-10 px-4 pt-4 pb-0 flex items-center'>
           <button
             onClick={() => navigate(-1)}
-            aria-label="Back to dashboard"
+            aria-label={t('home_aria_back_dashboard')}
             className='p-2 -ml-1 text-white/80 rounded-full hover:bg-white/10 transition-colors'
           >
             <ArrowLeft className='w-5 h-5' />
@@ -54,9 +56,9 @@ export const Grievance: React.FC = () => {
           <div className='w-14 h-14 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-3 border border-white/20 shadow-lg'>
             <HeadphonesIcon className='w-7 h-7 text-white' />
           </div>
-          <h1 className='text-2xl font-bold text-white mb-1'>Support & Grievance</h1>
+          <h1 className='text-2xl font-bold text-white mb-1'>{t('gr_title')}</h1>
           <p className='text-sm text-blue-100 max-w-xs leading-relaxed'>
-            File a complaint or track your existing ticket. We're here to help.
+            {t('gr_subtitle')}
           </p>
         </div>
 
@@ -71,7 +73,7 @@ export const Grievance: React.FC = () => {
                   : 'text-white/80 hover:text-white'
               }`}
             >
-              Register
+              {t('gr_tab_register')}
             </button>
             <button
               onClick={() => setActiveTab('track')}
@@ -81,7 +83,7 @@ export const Grievance: React.FC = () => {
                   : 'text-white/80 hover:text-white'
               }`}
             >
-              Track Status
+              {t('gr_tab_track')}
             </button>
           </div>
         </div>
@@ -108,38 +110,38 @@ export const Grievance: React.FC = () => {
                   <div className='bg-blue-50 border border-blue-100 p-4 rounded-2xl flex gap-3'>
                     <MessageSquareWarning className='w-5 h-5 text-blue-600 shrink-0 mt-0.5' />
                     <p className='text-sm text-blue-800 leading-relaxed'>
-                      File a complaint regarding PF withdrawal, pension, or transfer delays. No login required.
+                      {t('gr_info_desc')}
                     </p>
                   </div>
 
                   <form onSubmit={handleRegister} className='space-y-3' role="form">
-                    <Input type='text' placeholder='Full Name' required aria-label="Full name" />
-                    <Input type='tel' placeholder='Mobile Number' required aria-label="Mobile number" />
-                    <Input type='text' placeholder='UAN (Optional)' aria-label="UAN number optional" />
+                    <Input type='text' placeholder={t('gr_full_name')} required aria-label={t('gr_aria_full_name')} />
+                    <Input type='tel' placeholder={t('gr_mobile')} required aria-label={t('gr_aria_mobile')} />
+                    <Input type='text' placeholder={t('gr_uan_optional')} aria-label={t('gr_aria_uan')} />
                     <div className='space-y-1.5'>
-                      <label htmlFor="grievance-desc" className='text-sm font-medium text-slate-700 ml-1'>Description</label>
+                      <label htmlFor="grievance-desc" className='text-sm font-medium text-slate-700 ml-1'>{t('gr_description')}</label>
                       <textarea
                         id="grievance-desc"
                         className='w-full bg-white border border-slate-200 text-slate-900 placeholder-slate-400 rounded-2xl px-4 py-3.5 focus:outline-none focus:border-epfo-blue focus:ring-2 focus:ring-epfo-blue/20 transition-all min-h-[110px] resize-none shadow-sm'
-                        placeholder='Describe your issue clearly...'
+                        placeholder={t('gr_desc_placeholder')}
                         required
                       />
                     </div>
-                    <Button type='submit' className='w-full py-3.5 text-base font-semibold shadow-md' aria-label="Submit grievance">
-                      Submit Grievance
+                    <Button type='submit' className='w-full py-3.5 text-base font-semibold shadow-md' aria-label={t('gr_aria_submit')}>
+                      {t('gr_submit')}
                     </Button>
                   </form>
 
                   {/* Contact alternatives */}
                   <div className='mt-4'>
-                    <p className='text-xs text-slate-400 text-center mb-3 font-medium uppercase tracking-wider'>Or reach us via</p>
+                    <p className='text-xs text-slate-400 text-center mb-3 font-medium uppercase tracking-wider'>{t('gr_or_reach')}</p>
                     <div className='grid grid-cols-2 gap-3'>
                       <a href='tel:18001180026' className='flex items-center gap-2.5 bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm hover:shadow-md transition-shadow'>
                         <div className='w-8 h-8 bg-green-100 rounded-xl flex items-center justify-center shrink-0'>
                           <Phone className='w-4 h-4 text-green-600' />
                         </div>
                         <div>
-                          <p className='text-[10px] text-slate-400 font-medium'>Toll Free</p>
+                          <p className='text-[10px] text-slate-400 font-medium'>{t('gr_toll_free')}</p>
                           <p className='text-xs font-bold text-slate-800'>1800-118-0026</p>
                         </div>
                       </a>
@@ -148,8 +150,8 @@ export const Grievance: React.FC = () => {
                           <Mail className='w-4 h-4 text-blue-600' />
                         </div>
                         <div>
-                          <p className='text-[10px] text-slate-400 font-medium'>Email</p>
-                          <p className='text-xs font-bold text-slate-800 truncate'>EPFO Mail</p>
+                          <p className='text-[10px] text-slate-400 font-medium'>{t('gr_email')}</p>
+                          <p className='text-xs font-bold text-slate-800 truncate'>{t('gr_email_label')}</p>
                         </div>
                       </a>
                     </div>
@@ -164,18 +166,18 @@ export const Grievance: React.FC = () => {
                   <div className='w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 ring-4 ring-green-100'>
                     <CheckCircle2 className='w-10 h-10 text-green-500' />
                   </div>
-                  <h2 className='text-2xl font-bold text-slate-900'>Grievance Registered!</h2>
+                  <h2 className='text-2xl font-bold text-slate-900'>{t('gr_registered_title')}</h2>
                   <p className='text-slate-500 leading-relaxed px-4'>
-                    Your ticket number is{' '}
+                    {t('gr_registered_prefix')}{' '}
                     <span className='font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-lg'>TKT-9921</span>.
-                    {' '}You will receive an SMS confirmation shortly.
+                    {' '}{t('gr_registered_suffix')}
                   </p>
                   <Button
                     variant='outline'
                     className='w-full mt-4'
                     onClick={() => { setIsSubmitted(false); setActiveTab('track'); }}
                   >
-                    Track this Ticket
+                    {t('gr_track_this_ticket')}
                   </Button>
                 </motion.div>
               )}
@@ -194,13 +196,13 @@ export const Grievance: React.FC = () => {
               <div className='bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3'>
                 <div className='flex items-center gap-2 mb-1'>
                   <LifeBuoy className='w-4 h-4 text-epfo-blue' />
-                  <span className='text-sm font-semibold text-slate-800'>Track your ticket</span>
+                  <span className='text-sm font-semibold text-slate-800'>{t('gr_track_your_ticket')}</span>
                 </div>
                 <form onSubmit={handleTrack} className='space-y-3' role="form">
-                  <Input type='text' placeholder='Ticket Number (e.g., TKT-9921)' required aria-label="Ticket number" />
-                  <Input type='tel' placeholder='Registered Mobile Number' required aria-label="Registered mobile number" />
-                  <Button type='submit' className='w-full' aria-label="Check grievance status">
-                    <Search className='w-4 h-4 mr-2' /> Check Status
+                  <Input type='text' placeholder={t('gr_ticket_placeholder')} required aria-label={t('gr_aria_ticket')} />
+                  <Input type='tel' placeholder={t('gr_mobile_placeholder')} required aria-label={t('gr_aria_registered_mobile')} />
+                  <Button type='submit' className='w-full' aria-label={t('gr_aria_check')}>
+                    <Search className='w-4 h-4 mr-2' /> {t('gr_check_status')}
                   </Button>
                 </form>
               </div>
@@ -214,9 +216,9 @@ export const Grievance: React.FC = () => {
                   <div className='p-5 bg-white border border-slate-200 shadow-sm rounded-2xl'>
                     <h3 className='text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2'>
                       <CheckCircle2 className='w-4 h-4 text-green-500' />
-                      Status: Resolved by EPFO
+                      {t('gr_status_resolved')}
                     </h3>
-                    <p className='text-slate-800 leading-relaxed text-sm font-medium'>{statusResult}</p>
+                    <p className='text-slate-800 leading-relaxed text-sm font-medium'>{t(statusResult)}</p>
                   </div>
 
                   {(() => {
@@ -227,8 +229,8 @@ export const Grievance: React.FC = () => {
                         <div className='bg-amber-50 border border-amber-200 p-4 rounded-2xl flex gap-3 items-start'>
                           <AlertTriangle className='w-5 h-5 text-amber-600 shrink-0 mt-0.5' />
                           <div>
-                            <p className='text-xs font-bold text-amber-900'>Employer Non-Deposit Grievance</p>
-                            <p className='text-xs text-amber-800 mt-1'>This grievance relates to employer non-deposit of contributions. EPFO's stated SLA is 15 working days. If unresolved, escalate to the Regional PF Commissioner.</p>
+                            <p className='text-xs font-bold text-amber-900'>{t('gr_non_deposit_title')}</p>
+                            <p className='text-xs text-amber-800 mt-1'>{t('gr_non_deposit_desc')}</p>
                           </div>
                         </div>
                       );
@@ -238,14 +240,14 @@ export const Grievance: React.FC = () => {
 
                   {isResolvedByEPFO && userClosedTicket === null && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='bg-blue-50 border border-blue-200 p-5 rounded-2xl'>
-                      <h4 className='text-blue-900 font-bold mb-1'>Did this actually solve your issue?</h4>
-                      <p className='text-sm text-blue-700 mb-4'>Tickets are no longer auto-closed. You must confirm the issue is fixed.</p>
+                      <h4 className='text-blue-900 font-bold mb-1'>{t('gr_issue_solved')}</h4>
+                      <p className='text-sm text-blue-700 mb-4'>{t('gr_issue_solved_desc')}</p>
                       <div className='flex gap-3'>
                         <Button className='flex-1 bg-green-600 hover:bg-green-700 text-white' onClick={() => setUserClosedTicket(true)}>
-                          Yes, it's fixed
+                          {t('gr_yes_fixed')}
                         </Button>
                         <Button className='flex-1 bg-white text-slate-700 border-slate-300 hover:bg-slate-50 border' onClick={() => setUserClosedTicket(false)}>
-                          No, Reopen
+                          {t('gr_no_reopen')}
                         </Button>
                       </div>
                     </motion.div>
@@ -254,15 +256,15 @@ export const Grievance: React.FC = () => {
                   {userClosedTicket === true && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='bg-green-50 border border-green-200 p-4 rounded-2xl flex items-center gap-3'>
                       <CheckCircle2 className='w-5 h-5 text-green-600 shrink-0' />
-                      <p className='text-sm text-green-800 font-semibold'>Ticket permanently closed. Thank you for confirming!</p>
+                      <p className='text-sm text-green-800 font-semibold'>{t('gr_closed')}</p>
                     </motion.div>
                   )}
 
                   {userClosedTicket === false && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='bg-orange-50 border border-orange-200 p-4 rounded-2xl flex flex-col gap-3'>
-                      <p className='text-sm text-orange-800 font-semibold'>Ticket reopened and escalated to Level 2 Support.</p>
-                      <textarea id="grievance-escalation" className='w-full p-3 rounded-xl border border-orange-200 text-sm bg-white' placeholder='Please explain what is still not working...' />
-                      <Button className='bg-orange-600 hover:bg-orange-700 text-white' aria-label="Submit escalation">Submit Escalation</Button>
+                      <p className='text-sm text-orange-800 font-semibold'>{t('gr_reopened')}</p>
+                      <textarea id="grievance-escalation" className='w-full p-3 rounded-xl border border-orange-200 text-sm bg-white' placeholder={t('gr_escalation_placeholder')} />
+                      <Button className='bg-orange-600 hover:bg-orange-700 text-white' aria-label={t('gr_aria_submit_escalation')}>{t('gr_submit_escalation')}</Button>
                     </motion.div>
                   )}
                 </motion.div>

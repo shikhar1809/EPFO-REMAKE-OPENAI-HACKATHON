@@ -72,23 +72,23 @@ export const Home: React.FC = () => {
         sessionStorage.setItem('epfo_notif_toast_seen', 'true');
         setTimeout(() => {
           toast(
-            (t) => (
+            (toastInstance) => (
               <div className="flex flex-col gap-2 p-1">
                 <span className="text-xs font-semibold text-slate-800">
-                  Stay updated on your claims!
+                  {t('home_notif_toast_title')}
                 </span>
                 <span className="text-[11px] text-slate-600 leading-tight">
-                  Enable WhatsApp & Email alerts for instant status updates.
+                  {t('home_notif_toast_desc')}
                 </span>
                 <button
                   onClick={() => {
-                    toast.dismiss(t.id);
+                    toast.dismiss(toastInstance.id);
                     setIsNotificationOpen(true);
                   }}
-                  aria-label="Setup notifications"
+                  aria-label={t('home_notif_setup_button')}
                   className="mt-1 bg-epfo-blue text-white py-1.5 rounded-lg text-[11px] font-bold shadow-xs hover:bg-blue-800 transition-colors w-full"
                 >
-                  Setup Notifications
+                  {t('home_notif_setup_button')}
                 </button>
               </div>
             ),
@@ -100,7 +100,7 @@ export const Home: React.FC = () => {
   }, [isAuthenticated, notificationsEnabled]);
 
   const activeTaskValues = Object.values(activeTasks).filter(t => t.agentState !== 'completed');
-  const firstName = user?.name ? user.name.trim().split(' ')[0] : 'Citizen';
+  const firstName = user?.name ? user.name.trim().split(' ')[0] : t('home_citizen');
 
   const toggleRecording = () => {
     if (!isRecording) {
@@ -195,7 +195,7 @@ export const Home: React.FC = () => {
       <div className='px-4 py-2 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex justify-between items-center sticky top-0 z-10 shadow-xs'>
         <div>
           <h1 className='text-base font-bold tracking-tight text-slate-900 leading-snug'>
-            {isAuthenticated ? `Welcome back, ${firstName}` : t('portal_title')}
+            {isAuthenticated ? t('welcome_back', { name: firstName }) : t('portal_title')}
           </h1>
           {isAuthenticated && user?.uan && (
             <p className='text-[11px] text-slate-500 font-mono'>
@@ -206,7 +206,7 @@ export const Home: React.FC = () => {
         <div className='flex items-center gap-1.5'>
           <button 
             onClick={() => setIsNotificationOpen(true)}
-            aria-label="Open notification settings"
+            aria-label={t('home_aria_open_notifications')}
             className={`p-2 rounded-full transition-all shadow-2xs relative ${
               notificationsEnabled 
                 ? 'bg-blue-50 text-epfo-blue hover:bg-blue-100' 
@@ -222,7 +222,7 @@ export const Home: React.FC = () => {
           <button 
             onClick={() => { logout(); navigate('/onboarding', { replace: true }); }} 
             className='p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors shadow-2xs' 
-            aria-label="Logout"
+            aria-label={t('logout')}
             title={t('logout')}
           >
             <LogOut className='!w-4 !h-4' />
@@ -244,15 +244,15 @@ export const Home: React.FC = () => {
             <div className='w-full max-w-xs space-y-2 text-xs'>
               <div className='flex items-center gap-2.5'>
                 <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
-                <span className={`font-medium ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Analyzing request & rules</span>
+                <span className={`font-medium ${analyzePhase === 'fetching' || analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>{t('home_analyze_1')}</span>
               </div>
               <div className='flex items-center gap-2.5'>
                 <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
-                <span className={`font-medium ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Generating step-by-step plan</span>
+                <span className={`font-medium ${analyzePhase === 'generating' || analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>{t('home_analyze_2')}</span>
               </div>
               <div className='flex items-center gap-2.5'>
                 <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${analyzePhase === 'starting' ? 'bg-epfo-blue' : 'bg-slate-200'}`} />
-                <span className={`font-medium ${analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>Launching secure workflow</span>
+                <span className={`font-medium ${analyzePhase === 'starting' ? 'text-slate-900' : 'text-slate-400'}`}>{t('home_analyze_3')}</span>
               </div>
             </div>
           </div>
@@ -284,7 +284,7 @@ export const Home: React.FC = () => {
             <section className='space-y-2 pt-0.5'>
               <div className='px-0.5'>
                 <h2 className='text-[11px] font-bold text-slate-500 uppercase tracking-wider'>
-                  Need More Help?
+                  {t('home_need_more_help')}
                 </h2>
               </div>
 
@@ -304,13 +304,13 @@ export const Home: React.FC = () => {
                     </span>
                   </div>
                   <h3 className='font-bold text-xs text-epfo-blue leading-tight'>
-                    Smart Flow
+                    {t('home_smart_flow_title')}
                   </h3>
                   <p className='text-[10px] text-slate-600 mt-0.5 leading-relaxed'>
-                    AI agent guides claims, transfers & certificates.
+                    {t('home_smart_flow_desc')}
                   </p>
                   <div className='mt-1.5 text-[10px] font-bold text-epfo-blue flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
-                    Launch Smart Flow →
+                    {t('home_smart_flow_launch')}
                   </div>
                 </button>
 
@@ -323,13 +323,13 @@ export const Home: React.FC = () => {
                     <FolderOpen className='!w-4 !h-4' />
                   </div>
                   <h3 className='font-bold text-xs text-slate-900 leading-tight group-hover:text-slate-700'>
-                    Traditional Flow
+                    {t('home_traditional_flow_title')}
                   </h3>
                   <p className='text-[10px] text-slate-600 mt-0.5 leading-relaxed'>
-                    Direct access to classic portal forms & filing.
+                    {t('home_traditional_flow_desc')}
                   </p>
                   <div className='mt-1.5 text-[10px] font-bold text-slate-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
-                    Open Portal →
+                    {t('home_open_portal')}
                   </div>
                 </button>
 
@@ -350,10 +350,10 @@ export const Home: React.FC = () => {
             {/* Back Button to Dashboard */}
             <button 
               onClick={() => setFlowChoice('none')} 
-              aria-label="Back to dashboard"
+              aria-label={t('home_aria_back_dashboard')}
               className='text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1 font-semibold transition-colors'
             >
-              <ArrowLeft className='!w-4 !h-4' /> {t('back_to_choices') || 'Back to Dashboard'}
+              <ArrowLeft className='!w-4 !h-4' /> {t('back_to_choices')}
             </button>
 
             {/* Smart Agent Greeting & Prompt Section */}
@@ -365,7 +365,7 @@ export const Home: React.FC = () => {
                       <AssistantAvatar state={isAnalyzing ? 'thinking' : 'listening'} className='mt-1 mr-2 shadow-sm' />
                       <textarea 
                         className='w-full p-2 pb-8 bg-transparent text-slate-900 placeholder-slate-400 outline-none text-xs font-medium resize-none min-h-[90px]'
-                        placeholder='Type what you need — try compound requests like "Fix KYC then mark exit and withdraw PF" or single tasks like "Submit life certificate"...'
+                        placeholder={t('home_chat_placeholder')}
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
                         onKeyDown={(e) => {
@@ -381,20 +381,20 @@ export const Home: React.FC = () => {
                       <button 
                         type="button"
                         onClick={toggleRecording}
-                        aria-label="Toggle voice recording"
+                        aria-label={t('home_aria_toggle_voice')}
                         className={`p-2 rounded-xl transition-all ${isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-200'}`}
-                        title='Voice input'
+                        title={t('home_voice_input')}
                       >
                         <Mic className='w-4 h-4' />
                       </button>
                       <button 
                         type='submit' 
                         disabled={!chatInput.trim()}
-                        aria-label="Send message"
+                        aria-label={t('home_aria_send')}
                         className='bg-epfo-blue hover:bg-blue-700 text-white rounded-xl px-3.5 py-1.5 text-xs font-bold transition-colors disabled:opacity-40 flex items-center gap-1.5 shadow-xs'
                       >
                         <Send className='w-3 h-3' />
-                        {t('send') || 'Analyze'}
+                        {t('send')}
                       </button>
                     </div>
                   </div>
@@ -406,50 +406,50 @@ export const Home: React.FC = () => {
               <div className='flex items-center gap-1.5 px-1'>
                 <Sparkles className='!w-4 !h-4 text-epfo-blue' />
                 <h3 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>
-                  Common Questions & Workflows
+                  {t('home_common_questions')}
                 </h3>
               </div>
 
               <div className='space-y-2'>
                 {[
                   {
-                    title: "I want to withdraw PF for medical emergency",
-                    desc: "Auto-selects Form 31 Advance with Illness clause & instant claim check",
+                    titleKey: 'home_faq_withdraw_title',
+                    descKey: 'home_faq_withdraw_desc',
                     query: "I want to withdraw ₹50,000 for medical emergency"
                   },
                   {
-                    title: "Submit my Digital Life Certificate (Jeevan Pramaan)",
-                    desc: "Pensioner face authentication and submission to nodal bank",
+                    titleKey: 'home_faq_life_title',
+                    descKey: 'home_faq_life_desc',
                     query: "I want to submit my life certificate"
                   },
                   {
-                    title: "Merge previous PF account with current employer",
-                    desc: "One Member One EPF auto-merge with online employer attestation",
+                    titleKey: 'home_faq_merge_title',
+                    descKey: 'home_faq_merge_desc',
                     query: "Transfer and merge my previous PF accounts"
                   },
                   {
-                    title: "I left my job and want to mark my exit date",
-                    desc: "Self-declare date of exit if not updated by previous employer (>60 days)",
+                    titleKey: 'home_faq_exit_title',
+                    descKey: 'home_faq_exit_desc',
                     query: "I want to mark my date of exit"
                   },
                   {
-                    title: "Why was my claim rejected or delayed?",
-                    desc: "Check reason for rejection and get auto-fix recommendations",
+                    titleKey: 'home_faq_rejected_title',
+                    descKey: 'home_faq_rejected_desc',
                     query: "Why was my claim rejected?"
                   }
                 ].map((faq, idx) => (
                   <button
                     key={idx}
                     onClick={(e) => handleAgenticStart(e, faq.query)}
-                    aria-label={faq.title}
+                    aria-label={t(faq.titleKey)}
                     className='w-full p-3 bg-white/95 hover:bg-blue-50/80 hover:border-epfo-blue border border-slate-200/90 rounded-2xl flex items-center justify-between text-left transition-all shadow-2xs group'
                   >
                     <div>
                       <p className='text-xs font-bold text-slate-800 group-hover:text-epfo-blue'>
-                        {faq.title}
+                        {t(faq.titleKey)}
                       </p>
                       <p className='text-[11px] text-slate-500 mt-0.5'>
-                        {faq.desc}
+                        {t(faq.descKey)}
                       </p>
                     </div>
                     <ArrowRight className='w-4 h-4 text-slate-400 group-hover:text-epfo-blue group-hover:translate-x-1 transition-transform shrink-0 ml-2' />
@@ -458,71 +458,71 @@ export const Home: React.FC = () => {
               </div>
 
               {/* Compound Multi-Phase Intents */}
-              <div className='mt-4 space-y-2' role="region" aria-label="Multi-Step Compound Workflows">
+              <div className='mt-4 space-y-2' role="region" aria-label={t('home_multi_step_workflows')}>
                 <div className='flex items-center gap-1.5 px-1'>
                   <div className='w-1.5 h-1.5 rounded-full bg-epfo-orange' />
                   <h3 className='text-[11px] font-bold text-slate-600 uppercase tracking-wider'>
-                    Multi-Step Compound Workflows
+                    {t('home_multi_step_workflows')}
                   </h3>
-                  <span className='bg-epfo-orange text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase ml-1'>New</span>
+                  <span className='bg-epfo-orange text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase ml-1'>{t('home_new_badge')}</span>
                 </div>
                 {[
                   {
-                    title: "Fix KYC mismatch then withdraw PF",
-                    desc: "2-phase: Correct name/DOB → File Form 31 claim (auto-sequenced)",
+                    titleKey: 'home_compound_kyc_title',
+                    descKey: 'home_compound_kyc_desc',
                     query: "Fix my KYC mismatch and then withdraw PF"
                   },
                   {
-                    title: "Mark exit date and withdraw PF balance",
-                    desc: "2-phase: Self-declare exit → Submit full settlement claim",
+                    titleKey: 'home_compound_exit_title',
+                    descKey: 'home_compound_exit_desc',
                     query: "Mark my exit date and then claim my PF"
                   },
                   {
-                    title: "Merge old PF account and transfer balance",
-                    desc: "2-phase: Discover duplicate UANs → Consolidate via One Member One EPF",
+                    titleKey: 'home_compound_merge_title',
+                    descKey: 'home_compound_merge_desc',
                     query: "Merge my old PF account and then transfer the balance"
                   },
                   {
-                    title: "Update nominee and withdraw PF",
-                    desc: "2-phase: File e-nomination → Submit Form 31 withdrawal",
+                    titleKey: 'home_compound_nominee_title',
+                    descKey: 'home_compound_nominee_desc',
                     query: "Update my nominee and then withdraw PF"
                   },
                   {
-                    title: "Fix Aadhaar conflict then update KYC",
-                    desc: "2-phase: De-link wrong UAN → Correct KYC records",
+                    titleKey: 'home_compound_aadhaar_title',
+                    descKey: 'home_compound_aadhaar_desc',
                     query: "Fix my Aadhaar conflict and then update my KYC"
                   },
                   {
-                    title: "Transfer old PF and withdraw balance",
-                    desc: "2-phase: Consolidate previous employer → File settlement claim",
+                    titleKey: 'home_compound_transfer_title',
+                    descKey: 'home_compound_transfer_desc',
                     query: "Transfer my old PF and then withdraw the balance"
                   },
                   {
-                    title: "KYC fix + exit date + withdraw PF",
-                    desc: "3-phase: Correct KYC → Mark exit → Submit full settlement (auto-sequenced)",
+                    titleKey: 'home_compound_3phase_title',
+                    descKey: 'home_compound_3phase_desc',
                     query: "Fix my KYC mismatch, mark my exit date, and then withdraw my PF"
                   },
                   {
-                    title: "Merge accounts + update nominee + withdraw",
-                    desc: "3-phase: Consolidate UANs → File e-nomination → Submit claim",
+                    titleKey: 'home_compound_super_title',
+                    descKey: 'home_compound_super_desc',
                     query: "Merge my old PF accounts, update my nominee, and then withdraw PF"
                   }
                 ].map((faq, idx) => (
                   <button
                     key={`compound-${idx}`}
                     onClick={(e) => handleAgenticStart(e, faq.query)}
-                    aria-label={faq.title}
+                    aria-label={t(faq.titleKey)}
                     className='w-full p-3 bg-gradient-to-r from-orange-50/80 to-amber-50/60 hover:from-orange-100 hover:to-amber-100 border border-orange-200/80 hover:border-orange-300 rounded-2xl flex items-center justify-between text-left transition-all shadow-2xs group'
                   >
                     <div>
                       <p className='text-xs font-bold text-slate-800 group-hover:text-orange-700 flex items-center gap-1.5'>
-                        {faq.title}
+                        {t(faq.titleKey)}
                         <span className='text-[9px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full font-bold'>
-                          {faq.query.split(' and ').length >= 3 ? '3-Phase' : 'Multi-Phase'}
+                          {faq.query.split(' and ').length >= 3 ? t('home_phase_3') : t('home_multi_phase')}
                         </span>
                       </p>
                       <p className='text-[11px] text-slate-500 mt-0.5'>
-                        {faq.desc}
+                        {t(faq.descKey)}
                       </p>
                     </div>
                     <ArrowRight className='w-4 h-4 text-orange-300 group-hover:text-orange-600 group-hover:translate-x-1 transition-transform shrink-0 ml-2' />
@@ -545,31 +545,31 @@ export const Home: React.FC = () => {
             {/* Back Button to Dashboard */}
             <button 
               onClick={() => setFlowChoice('none')} 
-              aria-label="Back to dashboard"
+              aria-label={t('home_aria_back_dashboard')}
               className='text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1 font-semibold transition-colors'
             >
-              <ArrowLeft className='!w-4 !h-4' /> {t('back_to_choices') || 'Back to Dashboard'}
+              <ArrowLeft className='!w-4 !h-4' /> {t('back_to_choices')}
             </button>
 
             <div className='px-1'>
               <h2 className='text-base font-bold text-slate-900'>
-                {t('traditional_service') || 'Traditional EPFO Services'}
+                {t('traditional_service')}
               </h2>
               <p className='text-xs text-slate-500 mt-0.5'>
-                Direct access to classic forms, passbook, claims & grievances
+                {t('home_traditional_service_subtitle')}
               </p>
             </div>
 
             {/* Direct Services List */}
             <div className='grid grid-cols-2 gap-3'>
               {[
-                { title: "Member Passbook", desc: "Monthly wage deductions & interest", path: "/passbook", icon: Wallet, color: "text-blue-600 bg-blue-50" },
-                { title: "File Online Claim", desc: "Form 31 / 19 / 10C Withdrawal", path: "/claim", icon: FileText, color: "text-emerald-600 bg-emerald-50" },
-                { title: "Transfer & Merge", desc: "One Member One EPF auto-merge", path: "/transfer", icon: ArrowRightLeft, color: "text-indigo-600 bg-indigo-50" },
-                { title: "Life Certificate", desc: "Face-Auth Jeevan Pramaan", path: "/life-certificate", icon: Award, color: "text-teal-600 bg-teal-50" },
-                { title: "Mark Exit Date", desc: "Self-declare leaving date (>60d)", path: "/mark-exit", icon: CalendarX2, color: "text-amber-600 bg-amber-50" },
-                { title: "Document Vault", desc: "DigiLocker KYC & Bank references", path: "/documents", icon: Vault, color: "text-purple-600 bg-purple-50" },
-                { title: "EPFiGMS Grievance", desc: "Register & track official complaints", path: "/grievance", icon: HelpCircle, color: "text-rose-600 bg-rose-50" }
+                { titleKey: 'home_services_passbook_title', descKey: 'home_services_passbook_desc', path: "/passbook", icon: Wallet, color: "text-blue-600 bg-blue-50" },
+                { titleKey: 'home_services_claim_title', descKey: 'home_services_claim_desc', path: "/claim", icon: FileText, color: "text-emerald-600 bg-emerald-50" },
+                { titleKey: 'home_services_transfer_title', descKey: 'home_services_transfer_desc', path: "/transfer", icon: ArrowRightLeft, color: "text-indigo-600 bg-indigo-50" },
+                { titleKey: 'home_services_life_title', descKey: 'home_services_life_desc', path: "/life-certificate", icon: Award, color: "text-teal-600 bg-teal-50" },
+                { titleKey: 'home_services_exit_title', descKey: 'home_services_exit_desc', path: "/mark-exit", icon: CalendarX2, color: "text-amber-600 bg-amber-50" },
+                { titleKey: 'home_services_vault_title', descKey: 'home_services_vault_desc', path: "/documents", icon: Vault, color: "text-purple-600 bg-purple-50" },
+                { titleKey: 'home_services_grievance_title', descKey: 'home_services_grievance_desc', path: "/grievance", icon: HelpCircle, color: "text-rose-600 bg-rose-50" }
               ].map((item, idx) => {
                 const IconComponent = item.icon;
                 return (
@@ -582,8 +582,8 @@ export const Home: React.FC = () => {
                       <IconComponent className='w-4 h-4' />
                     </div>
                     <div>
-                      <p className='text-xs font-bold text-slate-800 group-hover:text-epfo-blue leading-tight'>{item.title}</p>
-                      <p className='text-[10px] text-slate-500 mt-1 leading-snug'>{item.desc}</p>
+                      <p className='text-xs font-bold text-slate-800 group-hover:text-epfo-blue leading-tight'>{t(item.titleKey)}</p>
+                      <p className='text-[10px] text-slate-500 mt-1 leading-snug'>{t(item.descKey)}</p>
                     </div>
                   </button>
                 );
@@ -598,8 +598,8 @@ export const Home: React.FC = () => {
             <div className='bg-red-50 border border-red-200 p-4 rounded-2xl flex gap-3 items-start'>
               <ShieldAlert className='!w-7 !h-7 text-red-600 shrink-0 mt-0.5' />
               <div>
-                <h3 className='font-medium text-red-900'>Security Notice</h3>
-                <p className='text-sm text-red-700 mt-1'>Suspicious activity detected. You may be required to re-authenticate for sensitive actions.</p>
+                <h3 className='font-medium text-red-900'>{t('home_security_notice_title')}</h3>
+                <p className='text-sm text-red-700 mt-1'>{t('home_security_notice_desc')}</p>
               </div>
             </div>
           </section>
@@ -623,12 +623,12 @@ export const Home: React.FC = () => {
           <div className='bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-6'>
             <div className='flex items-center gap-3 text-epfo-blue'>
               <ShieldCheck className='!w-8 !h-8' />
-              <h2 className='text-xl font-bold'>Security Check</h2>
+              <h2 className='text-xl font-bold'>{t('home_security_check_title')}</h2>
             </div>
-            <p className='text-sm text-slate-600'>To resume this session, please answer your security question.</p>
+            <p className='text-sm text-slate-600'>{t('home_security_check_desc')}</p>
             
             <div className='space-y-2'>
-              <label className='text-sm font-medium text-slate-700'>What was the name of your first pet?</label>
+              <label className='text-sm font-medium text-slate-700'>{t('home_security_question')}</label>
               <input 
                 type="text" 
                 value={resumeSecurityAnswer}
@@ -638,7 +638,7 @@ export const Home: React.FC = () => {
                 }}
                 className='w-full p-4 border border-slate-200 rounded-xl bg-transparent outline-none focus:ring-2 focus:ring-epfo-blue' 
               />
-              {resumeError && <p className='text-red-500 text-xs'>Incorrect answer.</p>}
+              {resumeError && <p className='text-red-500 text-xs'>{t('home_incorrect_answer')}</p>}
             </div>
 
             <div className='flex gap-3'>

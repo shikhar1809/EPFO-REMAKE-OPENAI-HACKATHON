@@ -18,7 +18,7 @@ export const StatusPage: React.FC = () => {
           dotColor: 'bg-emerald-500',
           pulseColor: 'bg-emerald-400',
           badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-          desc: 'All systems running normally. High throughput, zero packet loss.',
+          desc: t('stp_desc_healthy'),
           uptime: '99.98%'
         };
       case 'medium':
@@ -27,7 +27,7 @@ export const StatusPage: React.FC = () => {
           dotColor: 'bg-amber-500',
           pulseColor: 'bg-amber-400',
           badgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
-          desc: 'Elevated traffic. Slight delays possible on heavy forms.',
+          desc: t('stp_desc_medium'),
           uptime: '99.85%'
         };
       case 'heavy':
@@ -36,7 +36,7 @@ export const StatusPage: React.FC = () => {
           dotColor: 'bg-rose-500',
           pulseColor: 'bg-rose-400',
           badgeClass: 'bg-rose-50 text-rose-800 border-rose-200',
-          desc: 'Peak load congestion. Rate-limiting active. Try again in a few minutes.',
+          desc: t('stp_desc_heavy'),
           uptime: '99.12%'
         };
     }
@@ -86,11 +86,11 @@ export const StatusPage: React.FC = () => {
             <p className='text-xs opacity-90 leading-relaxed mt-2'>{config.desc}</p>
             <div className='grid grid-cols-2 gap-2 pt-3 border-t border-black/5 mt-3 text-center'>
               <div className='p-2 bg-white/80 rounded-xl'>
-                <p className='text-[9px] uppercase font-bold text-slate-400'>30-Day Uptime</p>
+                <p className='text-[9px] uppercase font-bold text-slate-400'>{t('stp_uptime_30d')}</p>
                 <p className='text-xs font-black text-slate-900'>{config.uptime}</p>
               </div>
               <div className='p-2 bg-white/80 rounded-xl'>
-                <p className='text-[9px] uppercase font-bold text-slate-400'>Region</p>
+                <p className='text-[9px] uppercase font-bold text-slate-400'>{t('stp_region')}</p>
                 <p className='text-xs font-black text-slate-900'>ap-south-1</p>
               </div>
             </div>
@@ -101,19 +101,19 @@ export const StatusPage: React.FC = () => {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <div className='bg-white/95 rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-2.5'>
             <h2 className='text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5'>
-              <Server className='w-3.5 h-3.5 text-slate-500' /> Subsystem Health
+              <Server className='w-3.5 h-3.5 text-slate-500' /> {t('stp_subsystem_health')}
             </h2>
             <div className='space-y-2 text-xs'>
               {[
-                { name: "EPFO Unified Member Portal", latency: "38ms", status: "Operational" },
-                { name: "UIDAI Aadhaar eKYC Gateway", latency: "74ms", status: "Operational" },
-                { name: "NPCI Direct Benefit Settlement", latency: "112ms", status: "Operational" },
-                { name: "DigiLocker KYC Bridge", latency: "86ms", status: "Operational" }
+                { nameKey: 'stp_sys_member_portal', latency: "38ms", statusKey: 'stp_sys_operational' },
+                { nameKey: 'stp_sys_aadhaar_gateway', latency: "74ms", statusKey: 'stp_sys_operational' },
+                { nameKey: 'stp_sys_npci_settlement', latency: "112ms", statusKey: 'stp_sys_operational' },
+                { nameKey: 'stp_sys_digilocker_bridge', latency: "86ms", statusKey: 'stp_sys_operational' }
               ].map((sys, idx) => (
                 <div key={idx} className='p-2.5 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between'>
-                  <p className='font-bold text-slate-900'>{sys.name}</p>
+                  <p className='font-bold text-slate-900'>{t(sys.nameKey)}</p>
                   <span className='inline-flex items-center gap-1 font-bold text-emerald-600 text-[11px] shrink-0 ml-2'>
-                    <span className='w-1.5 h-1.5 rounded-full bg-emerald-500'></span> {sys.status}
+                    <span className='w-1.5 h-1.5 rounded-full bg-emerald-500'></span> {t(sys.statusKey)}
                   </span>
                 </div>
               ))}
@@ -126,7 +126,7 @@ export const StatusPage: React.FC = () => {
           <div className='bg-amber-50 border border-amber-200 p-4 rounded-2xl space-y-2'>
             <div className='flex items-center gap-2'>
               <AlertTriangle className='w-4 h-4 text-amber-600 shrink-0' />
-              <h3 className='text-xs font-bold text-amber-900 uppercase tracking-wider'>Peak Load Advisory</h3>
+              <h3 className='text-xs font-bold text-amber-900 uppercase tracking-wider'>{t('stp_peak_advisory_title')}</h3>
             </div>
             <p className='text-xs text-amber-800 leading-relaxed'>
               {t('status_peak_advisory', 'Expect higher traffic during 1st–7th of every month (salary credit cycle) and month-end KYC filing deadlines. Try off-peak hours for best experience.')}
@@ -143,7 +143,7 @@ export const StatusPage: React.FC = () => {
             <div>
               <h3 className='text-sm font-bold text-blue-900'>{t('status_umang_alt', 'Server busy?')}</h3>
               <p className='text-xs text-blue-800 mt-1 leading-relaxed'>
-                You can also access EPFO services through the <span className='font-bold'>UMANG app</span> (available on iOS & Android) as an alternative channel.
+                {t('stp_umang_desc_prefix')} <span className='font-bold'>UMANG</span> {t('stp_umang_desc_suffix')}
               </p>
             </div>
           </div>
@@ -154,10 +154,10 @@ export const StatusPage: React.FC = () => {
           <div className='bg-white/95 rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-2'>
             <div className='flex items-center gap-2'>
               <Clock className='w-3.5 h-3.5 text-slate-500' />
-              <h3 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>Scheduled Maintenance</h3>
+              <h3 className='text-xs font-bold text-slate-800 uppercase tracking-wider'>{t('stp_maint_title')}</h3>
             </div>
             <p className='text-xs text-slate-600 leading-relaxed'>
-              Routine database re-indexing and security key rotation occurs on Sundays between 02:00 AM – 03:30 AM IST. During this window, some services may be briefly unavailable.
+              {t('stp_maint_desc')}
             </p>
           </div>
         </motion.div>
@@ -172,9 +172,9 @@ export const StatusPage: React.FC = () => {
               <Headphones className='w-5 h-5' />
             </div>
             <div>
-              <h3 className='text-sm font-bold text-slate-900'>Need Support?</h3>
+              <h3 className='text-sm font-bold text-slate-900'>{t('stp_support_title')}</h3>
               <p className='text-xs text-slate-600 mt-1 leading-relaxed'>
-                Contact EPFO helpdesk or file a grievance for assistance with any issue.
+                {t('stp_support_desc')}
               </p>
             </div>
           </button>

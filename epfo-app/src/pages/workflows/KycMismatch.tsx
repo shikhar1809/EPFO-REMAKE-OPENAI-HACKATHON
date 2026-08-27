@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -41,16 +42,10 @@ interface DiffField {
 
 function getDiffFields(): DiffField[] {
   const keys: FieldKey[] = ['name', 'dob', 'gender', 'fatherName'];
-  const labels: Record<FieldKey, string> = {
-    name: 'Full Name',
-    dob: 'Date of Birth',
-    gender: 'Gender',
-    fatherName: "Father's Name",
-  };
 
   return keys.map(key => ({
     key,
-    label: labels[key],
+    label: key,
     epfoValue: epfoRecords[key],
     aadhaarValue: aadhaarRecords[key],
     mismatch: epfoRecords[key] !== aadhaarRecords[key],
@@ -59,6 +54,7 @@ function getDiffFields(): DiffField[] {
 
 export const KycMismatch: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { stepUpAuth } = useSessionStore();
 
   const [step, setStep] = useState<'diff' | 'otp' | 'success'>('diff');
@@ -78,7 +74,7 @@ export const KycMismatch: React.FC = () => {
 
   const handleProceed = () => {
     if (selectedFields.length === 0) {
-      toast.error('Select at least one field to correct.');
+      toast.error(t('kym_toast_select_field'));
       return;
     }
     setStep('otp');
@@ -93,10 +89,10 @@ export const KycMismatch: React.FC = () => {
     if (verified) {
       setAuthError(false);
       setStep('success');
-      toast.success('Joint Declaration submitted to EPFO Regional Office!');
+      toast.success(t('kym_toast_submitted'));
     } else {
       setAuthError(true);
-      toast.error('Invalid OTP. Use 1234.');
+      toast.error(t('kym_toast_invalid_otp'));
     }
   };
 
@@ -110,14 +106,14 @@ export const KycMismatch: React.FC = () => {
             else if (step === 'otp') setStep('diff');
             else navigate(-1);
           }}
-          aria-label="Go back to previous step"
+          aria-label={t('kym_aria_go_back')}
           className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'
         >
           <ArrowLeft className='w-5 h-5' />
         </button>
         <div className='ml-2 flex-1'>
-          <h1 className='text-lg font-bold text-slate-900 leading-tight'>Fix KYC Mismatch</h1>
-          <p className='text-xs text-slate-500 font-medium'>Joint Declaration for correction</p>
+          <h1 className='text-lg font-bold text-slate-900 leading-tight'>{t('kym_title')}</h1>
+          <p className='text-xs text-slate-500 font-medium'>{t('kym_subtitle')}</p>
         </div>
       </div>
 
@@ -129,8 +125,8 @@ export const KycMismatch: React.FC = () => {
             <div className='bg-blue-50/90 backdrop-blur-sm border border-blue-200/80 rounded-2xl p-4 flex gap-3 items-start shadow-sm'>
               <Info className='w-5 h-5 text-epfo-blue shrink-0 mt-0.5' />
               <div className='text-xs text-blue-950 leading-relaxed'>
-                <p className='font-bold text-blue-900 mb-0.5'>EPFO vs Aadhaar Comparison</p>
-                <p>We compared your EPFO records against your Aadhaar data. Fields that differ are shown below — select which ones to correct via Joint Declaration.</p>
+                <p className='font-bold text-blue-900 mb-0.5'>{t('kym_comparison_title')}</p>
+                <p>{t('kym_comparison_body')}</p>
               </div>
             </div>
 
@@ -138,9 +134,9 @@ export const KycMismatch: React.FC = () => {
             <div className='bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl overflow-hidden shadow-sm'>
               {/* Table Header */}
               <div className='grid grid-cols-[1fr_1fr_1fr_auto] gap-0 bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider'>
-                <div className='px-3 py-2.5'>Field</div>
-                <div className='px-3 py-2.5'>EPFO Records</div>
-                <div className='px-3 py-2.5'>Aadhaar</div>
+                <div className='px-3 py-2.5'>{t('kym_table_field')}</div>
+                <div className='px-3 py-2.5'>{t('kym_table_epfo')}</div>
+                <div className='px-3 py-2.5'>{t('kym_table_aadhaar')}</div>
                 <div className='px-3 py-2.5 w-8'></div>
               </div>
 
@@ -163,9 +159,9 @@ export const KycMismatch: React.FC = () => {
                   }`}
                 >
                   <div className='px-3 py-3 font-bold text-slate-700 flex items-center gap-1.5'>
-                    {field.label}
+                    {t(`kym_field_${field.label}`)}
                     {field.mismatch && (
-                      <span className='text-[8px] font-bold bg-red-100 text-red-600 px-1 py-0.5 rounded uppercase'>Mismatch</span>
+                      <span className='text-[8px] font-bold bg-red-100 text-red-600 px-1 py-0.5 rounded uppercase'>{t('kym_field_mismatch')}</span>
                     )}
                   </div>
                   <div className='px-3 py-3 text-slate-600 font-medium'>
@@ -194,27 +190,27 @@ export const KycMismatch: React.FC = () => {
               <div className='bg-amber-50 border border-amber-200 rounded-2xl p-4 flex gap-3 items-start'>
                 <AlertTriangle className='w-5 h-5 text-amber-600 shrink-0 mt-0.5' />
                 <div className='text-xs text-amber-900 leading-relaxed'>
-                  <p className='font-bold mb-0.5'>{mismatchFields.length} field{mismatchFields.length > 1 ? 's' : ''} differ between EPFO and Aadhaar.</p>
-                  <p>Both you and your employer must sign the Joint Declaration. It goes to the Regional PF Commissioner for verification — processing takes up to 30 working days.</p>
+                  <p className='font-bold mb-0.5'>{t('kym_summary_diff_count', { count: mismatchFields.length })}</p>
+                  <p>{t('kym_summary_diff_body')}</p>
                 </div>
               </div>
             ) : (
               <div className='bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex gap-3 items-start'>
                 <CheckCircle2 className='w-5 h-5 text-emerald-600 shrink-0 mt-0.5' />
                 <div className='text-xs text-emerald-900 leading-relaxed'>
-                  <p className='font-bold'>All records match!</p>
-                  <p>Your EPFO records are consistent with your Aadhaar data. No correction needed.</p>
+                  <p className='font-bold'>{t('kym_summary_match_title')}</p>
+                  <p>{t('kym_summary_match_body')}</p>
                 </div>
               </div>
             )}
 
             {/* What you need */}
             <div className='bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2'>
-              <p className='text-[10px] font-bold text-slate-500 uppercase tracking-wider'>What you need</p>
+              <p className='text-[10px] font-bold text-slate-500 uppercase tracking-wider'>{t('kym_what_you_need_title')}</p>
               <div className='space-y-1.5 text-xs text-slate-700'>
-                <p className='flex items-start gap-2'><span className='text-epfo-blue font-bold shrink-0'>1.</span> Self-attested copies of corrected documents (Aadhaar, PAN, marksheet)</p>
-                <p className='flex items-start gap-2'><span className='text-epfo-blue font-bold shrink-0'>2.</span> Employer's digital attestation via their EPFO portal login</p>
-                <p className='flex items-start gap-2'><span className='text-epfo-blue font-bold shrink-0'>3.</span> Aadhaar OTP to sign the Joint Declaration form</p>
+                <p className='flex items-start gap-2'><span className='text-epfo-blue font-bold shrink-0'>1.</span> {t('kym_what_you_need_1')}</p>
+                <p className='flex items-start gap-2'><span className='text-epfo-blue font-bold shrink-0'>2.</span> {t('kym_what_you_need_2')}</p>
+                <p className='flex items-start gap-2'><span className='text-epfo-blue font-bold shrink-0'>3.</span> {t('kym_what_you_need_3')}</p>
               </div>
             </div>
 
@@ -222,9 +218,9 @@ export const KycMismatch: React.FC = () => {
               onClick={handleProceed}
               className='w-full py-3.5 font-semibold text-sm'
               disabled={selectedFields.length === 0}
-              aria-label="Proceed to Aadhaar OTP sign"
+              aria-label={t('kym_aria_proceed')}
             >
-              Proceed to Aadhaar OTP Sign <ArrowRight className='w-4 h-4 ml-1' />
+              {t('kym_proceed_btn')} <ArrowRight className='w-4 h-4 ml-1' />
             </Button>
           </motion.div>
         )}
@@ -238,12 +234,12 @@ export const KycMismatch: React.FC = () => {
               </div>
 
               <div>
-                <h2 className='text-lg font-bold text-slate-900'>Aadhaar Digital Signature</h2>
+                <h2 className='text-lg font-bold text-slate-900'>{t('kym_otp_title')}</h2>
                 <p className='text-xs text-slate-500 mt-1'>
-                  Sign the Joint Declaration to correct {selectedFields.length} field{selectedFields.length > 1 ? 's' : ''}: {selectedFields.map(f => {
-                    const labels: Record<string, string> = { name: 'Name', dob: 'DOB', gender: 'Gender', fatherName: "Father's Name" };
-                    return labels[f] || f;
-                  }).join(', ')}
+                  {t('kym_otp_sign_intro', {
+                    count: selectedFields.length,
+                    names: selectedFields.map(f => t(`kym_field_${f}`)).join(', '),
+                  })}
                 </p>
               </div>
 
@@ -255,14 +251,14 @@ export const KycMismatch: React.FC = () => {
                   value={otp}
                   onChange={e => setOtp(e.target.value)}
                   placeholder='1234'
-                  aria-label="Enter Aadhaar OTP for KYC correction"
+                  aria-label={t('kym_aria_otp')}
                   className='w-40 mx-auto text-center tracking-widest text-2xl font-bold p-3 border-2 border-epfo-blue/40 rounded-2xl focus:border-epfo-blue outline-none bg-slate-50'
                   autoFocus
                   required
                 />
 
                 <p className='text-[11px] text-slate-400'>
-                  Hint: Enter <strong>1234</strong>
+                  {t('kym_otp_hint', { otp: '1234' })}
                 </p>
 
                 <Button
@@ -270,7 +266,7 @@ export const KycMismatch: React.FC = () => {
                   disabled={isSubmitting}
                   className='w-full py-3.5 font-semibold'
                 >
-                  {isSubmitting ? 'Signing Joint Declaration...' : 'Sign & Submit Correction'}
+                  {isSubmitting ? t('kym_otp_signing') : t('kym_otp_submit')}
                 </Button>
                 {authError && <OtpFallbackOptions variant='compact' />}
               </form>
@@ -288,35 +284,35 @@ export const KycMismatch: React.FC = () => {
 
               <div>
                 <span className='bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200'>
-                  Joint Declaration Filed
+                  {t('kym_success_badge')}
                 </span>
-                <h2 className='text-xl font-bold text-slate-900 mt-2'>KYC Correction Submitted!</h2>
+                <h2 className='text-xl font-bold text-slate-900 mt-2'>{t('kym_success_title')}</h2>
                 <p className='text-xs text-slate-500 mt-1'>
-                  Your request has been sent to your employer for digital attestation and then to EPFO for processing.
+                  {t('kym_success_body')}
                 </p>
               </div>
 
               <div className='bg-slate-50 border border-slate-200 rounded-2xl p-4 text-left space-y-2 text-xs'>
                 <div className='flex justify-between'>
-                  <span className='text-slate-500'>Fields Corrected</span>
+                  <span className='text-slate-500'>{t('kym_success_fields_corrected')}</span>
                   <span className='font-bold text-slate-900'>{selectedFields.length}</span>
                 </div>
                 <div className='flex justify-between'>
-                  <span className='text-slate-500'>Sign Mode</span>
-                  <span className='font-bold text-slate-900'>Aadhaar e-Sign</span>
+                  <span className='text-slate-500'>{t('kym_success_sign_mode')}</span>
+                  <span className='font-bold text-slate-900'>{t('kym_success_sign_mode_value')}</span>
                 </div>
                 <div className='flex justify-between pt-1 border-t border-slate-200'>
-                  <span className='text-slate-500'>Processing Time</span>
-                  <span className='font-semibold text-amber-700'>Up to 30 working days</span>
+                  <span className='text-slate-500'>{t('kym_success_processing_time')}</span>
+                  <span className='font-semibold text-amber-700'>{t('kym_success_processing_time_value')}</span>
                 </div>
               </div>
 
               <button
                 onClick={() => navigate('/')}
-                aria-label="Back to dashboard"
+                aria-label={t('kym_aria_back_dashboard')}
                 className='w-full py-2 text-slate-500 text-xs hover:text-slate-800'
               >
-                Back to Dashboard
+                {t('kym_back_dashboard')}
               </button>
             </div>
           </motion.div>

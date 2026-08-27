@@ -44,7 +44,7 @@ export const Claim: React.FC = () => {
     if (bankDigits === '1234') { // Mock verification
       setStep(2);
     } else {
-      alert('Invalid bank digits. Use 1234.');
+      alert(t('clm_invalid_bank_digits'));
     }
   };
 
@@ -74,7 +74,7 @@ export const Claim: React.FC = () => {
       setStep(4);
     } else {
       setAuthError(true);
-      toast.error('Invalid OTP. Use 1234.');
+      toast.error(t('clm_invalid_otp'));
     }
   };
 
@@ -82,9 +82,9 @@ export const Claim: React.FC = () => {
     return (
       <div className='flex-1 flex flex-col bg-transparent p-6 justify-center items-center text-center'>
         <XCircle className='w-16 h-16 text-red-500 mb-4' />
-        <h2 className='text-xl font-semibold mb-2'>Missing Prerequisites</h2>
-        <p className='text-slate-500 mb-8'>You must have a verified Aadhaar and Bank Account in your Document Vault before filing a claim.</p>
-        <Button onClick={() => navigate('/documents')}>Go to Document Vault</Button>
+        <h2 className='text-xl font-semibold mb-2'>{t('clm_missing_prereq_title')}</h2>
+        <p className='text-slate-500 mb-8'>{t('clm_missing_prereq_desc')}</p>
+        <Button onClick={() => navigate('/documents')}>{t('clm_go_to_doc_vault')}</Button>
       </div>
     );
   }
@@ -92,7 +92,7 @@ export const Claim: React.FC = () => {
   return (
     <div className='flex-1 flex flex-col bg-transparent relative'>
       <div className='bg-white px-4 py-4 flex items-center sticky top-0 z-10 border-b border-slate-100'>
-        <button onClick={() => navigate(-1)} aria-label="Back to dashboard" className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent'>
+        <button onClick={() => navigate(-1)} aria-label={t('clm_back_to_dashboard')} className='p-2 -ml-2 text-slate-600 rounded-full hover:bg-transparent'>
           <ArrowLeft className='w-5 h-5' />
         </button>
         <h1 className='text-lg font-medium ml-2'>{t('claim_heading')}</h1>
@@ -106,15 +106,15 @@ export const Claim: React.FC = () => {
                 <AlertTriangle className='w-5 h-5' />
               </div>
               <div>
-                <h3 className='font-bold text-red-900 text-sm'>Previous Claim Rejected</h3>
+                <h3 className='font-bold text-red-900 text-sm'>{t('clm_prev_claim_rejected')}</h3>
                 <p className='text-xs text-red-800 mt-1 leading-snug'>
-                  Your Form 31 claim (₹50,000) was rejected on 20 Jul 2026. Reason: "Bank account not seeded with Aadhaar NPCI". Please fix this before filing a new claim.
+                  {t('clm_prev_claim_rejected_desc')}
                 </p>
                 <button
                   onClick={() => navigate('/documents')}
                   className='mt-2 text-[11px] font-bold text-red-700 underline flex items-center gap-1'
                 >
-                  Fix Bank Seeding →
+                  {t('clm_fix_bank_seeding')} →
                 </button>
               </div>
             </div>
@@ -178,11 +178,11 @@ export const Claim: React.FC = () => {
                       onChange={e => setPurpose(e.target.value)}
                       required
                     >
-                      <option value="">Select Purpose</option>
-                      <option value="illness">Illness</option>
-                      <option value="education">Higher Education</option>
-                      <option value="marriage">Marriage</option>
-                      <option value="house">Purchase of House/Flat</option>
+                      <option value="">{t('clm_select_purpose')}</option>
+                      <option value="illness">{t('clm_purpose_illness')}</option>
+                      <option value="education">{t('clm_purpose_education')}</option>
+                      <option value="marriage">{t('clm_purpose_marriage')}</option>
+                      <option value="house">{t('clm_purpose_house')}</option>
                     </select>
                   </div>
                   <div className='space-y-2 mt-4'>
@@ -191,7 +191,7 @@ export const Claim: React.FC = () => {
                       id="claim-amount"
                       className="w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none shadow-sm"
                       type='number' 
-                      placeholder='Enter amount' 
+                      placeholder={t('clm_enter_amount')} 
                       value={amount} 
                       onChange={e => setAmount(e.target.value)} 
                       required 
@@ -204,7 +204,7 @@ export const Claim: React.FC = () => {
                 <label className='text-sm font-medium text-slate-700 flex items-center gap-2'><HomeIcon className='w-4 h-4' /> {t('address_label')}</label>
                 <textarea 
                   className='w-full p-4 border border-slate-200 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-epfo-blue outline-none resize-none h-24 shadow-sm'
-                  placeholder='Full residential address'
+                  placeholder={t('clm_full_address')}
                   value={address}
                   onChange={e => setAddress(e.target.value)}
                   required
@@ -213,15 +213,15 @@ export const Claim: React.FC = () => {
 
               <div className='bg-green-50 p-4 rounded-xl border border-green-100 flex gap-3 items-start mt-2'>
                 <CheckCircle2 className='w-5 h-5 text-green-600 shrink-0' />
-                <p className='text-sm text-green-800'>Bank Passbook/Cheque is already verified in your Document Vault.</p>
+                <p className='text-sm text-green-800'>{t('clm_bank_already_verified')}</p>
               </div>
 
               <Button type='submit' className='w-full mt-4 py-4 text-lg' disabled={isValidating}>
                 {isValidating ? (
                   <span className='flex items-center justify-center gap-2'>
-                    <Loader2 className='w-5 h-5 animate-spin' /> Running Pre-Submission Checks...
+                    <Loader2 className='w-5 h-5 animate-spin' /> {t('clm_running_pre_submission_checks')}
                   </span>
-                ) : 'Proceed to Review'}
+                ) : t('clm_proceed_to_review')}
               </Button>
             </form>
           </motion.div>
@@ -229,36 +229,36 @@ export const Claim: React.FC = () => {
 
         {step === 3 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className='space-y-6'>
-            <h2 className='text-xl font-semibold'>Review & Authenticate</h2>
+            <h2 className='text-xl font-semibold'>{t('clm_review_auth_title')}</h2>
             
             {validationWarnings.length > 0 && (
               <div className='bg-red-50 p-4 rounded-xl border border-red-200 flex flex-col gap-2'>
                 <div className='flex gap-2 items-center text-red-700 font-semibold'>
                   <AlertTriangle className='w-5 h-5 shrink-0' />
-                  Pre-Submission Warning
+                  {t('clm_pre_submission_warning')}
                 </div>
                 {validationWarnings.map((w, idx) => (
                   <p key={idx} className='text-sm text-red-800'>{w}</p>
                 ))}
                 <p className='text-xs text-red-600 font-medium mt-1'>
-                  Fixing this before submission reduces your chances of claim rejection from 34% to &lt;2%.
+                  {t('clm_fixing_reduces_rejection')}
                 </p>
               </div>
             )}
 
             <div className='bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4'>
               <div className='flex justify-between border-b border-slate-100 pb-3'>
-                <span className='text-slate-500'>Claim Type</span>
-                <span className='font-medium text-right'>{claimType === '31' ? 'PF Advance (Form 31)' : 'PF Withdrawal (Form 19)'}</span>
+                <span className='text-slate-500'>{t('clm_claim_type')}</span>
+                <span className='font-medium text-right'>{claimType === '31' ? t('clm_pf_advance_form_31') : t('clm_pf_withdrawal_form_19')}</span>
               </div>
               {claimType === '31' && (
                 <>
                   <div className='flex justify-between border-b border-slate-100 pb-3'>
-                    <span className='text-slate-500'>Purpose</span>
+                    <span className='text-slate-500'>{t('purpose_label')}</span>
                     <span className='font-medium capitalize text-right'>{purpose}</span>
                   </div>
                   <div className='flex justify-between border-b border-slate-100 pb-3'>
-                    <span className='text-slate-500'>Amount</span>
+                    <span className='text-slate-500'>{t('amount_label')}</span>
                     <span className='font-medium text-right'>₹{amount}</span>
                   </div>
                 </>
@@ -266,18 +266,18 @@ export const Claim: React.FC = () => {
               <div className='bg-orange-50 p-4 rounded-xl flex flex-col gap-3 mt-4 border border-orange-100'>
                 <div className='flex gap-2 items-center'>
                   <ShieldCheck className='w-5 h-5 text-orange-600 shrink-0' />
-                  <p className='text-sm font-bold text-orange-800'>Aadhaar OTP Required</p>
+                  <p className='text-sm font-bold text-orange-800'>{t('clm_aadhaar_otp_required')}</p>
                 </div>
                 <p className='text-xs text-orange-800 mb-2'>
-                  Filing a claim is a sensitive action. Please sign this request.
+                  {t('clm_sensitive_action_note')}
                 </p>
-                <Input type='text' placeholder='Enter Aadhaar OTP (1234)' value={otp} onChange={e => setOtp(e.target.value)} className='bg-white' aria-label="Enter Aadhaar OTP for claim authentication" />
+                <Input type='text' placeholder={t('clm_enter_aadhaar_otp')} value={otp} onChange={e => setOtp(e.target.value)} className='bg-white' aria-label={t('clm_aadhaar_otp_aria')} />
                 {authError && <OtpFallbackOptions variant='compact' />}
               </div>
             </div>
 
             <Button onClick={handleSubmit} isLoading={isSubmitting} className='w-full py-4 text-lg'>
-              <Lock className='w-4 h-4 mr-2' /> Sign & Submit Claim
+              <Lock className='w-4 h-4 mr-2' /> {t('clm_sign_submit_claim')}
             </Button>
           </motion.div>
         )}
@@ -287,16 +287,16 @@ export const Claim: React.FC = () => {
             <div className='w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6'>
               <CheckCircle2 className='w-10 h-10 text-green-500' />
             </div>
-            <h2 className='text-2xl font-bold text-slate-900'>Claim Submitted Successfully</h2>
-            <p className='text-slate-500'>Your claim has been forwarded to the field office.</p>
+            <h2 className='text-2xl font-bold text-slate-900'>{t('clm_submitted_success_title')}</h2>
+            <p className='text-slate-500'>{t('clm_submitted_success_desc')}</p>
             
             <div className='bg-white p-4 rounded-xl border border-slate-200 mt-6 text-left'>
-              <p className='text-xs text-slate-500 uppercase tracking-wider mb-1'>Operation Ledger ID</p>
+              <p className='text-xs text-slate-500 uppercase tracking-wider mb-1'>{t('clm_op_ledger_id')}</p>
               <p className='font-mono font-medium text-slate-900'>{operationId}</p>
-              <p className='text-xs text-slate-400 mt-2'>Store this ID. It guarantees your submission is recorded uniquely, preventing duplicate claims.</p>
+              <p className='text-xs text-slate-400 mt-2'>{t('clm_store_this_id')}</p>
             </div>
 
-            <Button className='w-full mt-6 py-4 text-lg' onClick={() => navigate('/')} aria-label="Back to dashboard">Return to Dashboard</Button>
+            <Button className='w-full mt-6 py-4 text-lg' onClick={() => navigate('/')} aria-label={t('clm_back_to_dashboard')}>{t('clm_return_to_dashboard')}</Button>
           </motion.div>
         )}
 

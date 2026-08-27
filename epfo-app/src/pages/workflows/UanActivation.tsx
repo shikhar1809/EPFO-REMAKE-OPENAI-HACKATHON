@@ -4,8 +4,10 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { ArrowLeft, ShieldCheck, User } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 export const UanActivation: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -36,18 +38,18 @@ export const UanActivation: React.FC = () => {
               <ShieldCheck className='w-8 h-8 text-epfo-blue' />
             </div>
             <div>
-              <h1 className='text-2xl font-semibold mb-2'>Let's activate your UAN</h1>
+              <h1 className='text-2xl font-semibold mb-2'>{t('uan_activate_title')}</h1>
               <p className='text-slate-500 text-sm'>
-                Activating your UAN links your Aadhaar to your PF account. This allows you to check your balance and withdraw money easily online, without visiting any office.
+                {t('uan_activate_desc')}
               </p>
             </div>
             
             <div className='space-y-4 mt-8'>
-              <Input placeholder='Enter your 12-digit UAN' defaultValue='101234567890' />
-              <Input placeholder='Enter your Aadhaar Number' defaultValue='987654321098' />
+              <Input placeholder={t('uan_placeholder')} defaultValue='101234567890' />
+              <Input placeholder={t('uan_aadhaar_placeholder')} defaultValue='987654321098' />
             </div>
 
-            <Button className='w-full mt-8' onClick={handleNext}>Continue to Verification</Button>
+            <Button className='w-full mt-8' onClick={handleNext}>{t('uan_continue_verification')}</Button>
           </motion.div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-6'>
@@ -55,29 +57,29 @@ export const UanActivation: React.FC = () => {
               <User className='w-8 h-8 text-green-600' />
             </div>
             <div>
-              <h1 className='text-2xl font-semibold mb-2'>Verify it's you</h1>
+              <h1 className='text-2xl font-semibold mb-2'>{t('uan_verify_title')}</h1>
               <p className='text-slate-500 text-sm'>
-                We've sent a 6-digit OTP to your Aadhaar-linked mobile number.
+                {t('uan_verify_desc')}
               </p>
             </div>
             
             <div className='mt-8'>
-              <Input placeholder='Enter OTP' defaultValue='123456' maxLength={6} className='text-center text-xl tracking-widest' />
+              <Input placeholder={t('uan_otp_placeholder')} defaultValue='123456' maxLength={6} className='text-center text-xl tracking-widest' />
             </div>
 
             <div className='mt-4 flex flex-col gap-3'>
               <button className='text-sm text-epfo-blue font-medium hover:underline text-left'>
-                Didn't receive OTP? Resend via WhatsApp
+                {t('uan_resend_whatsapp')}
               </button>
               <div className='bg-orange-50 border border-orange-200 p-3 rounded-lg mt-2'>
-                <p className='text-xs text-orange-800 mb-2 font-medium'>SMS Gateway Down? Don't get locked out.</p>
+                <p className='text-xs text-orange-800 mb-2 font-medium'>{t('uan_sms_gateway_down')}</p>
                 <button className='text-sm bg-white text-orange-700 border border-orange-200 px-3 py-1.5 rounded w-full hover:bg-orange-100 transition-colors'>
-                  Authenticate via Aadhaar FaceRD app
+                  {t('uan_facerd')}
                 </button>
               </div>
             </div>
 
-            <Button className='w-full mt-8 py-4 text-lg' onClick={handleNext} isLoading={loading}>Activate Account</Button>
+            <Button className='w-full mt-8 py-4 text-lg' onClick={handleNext} isLoading={loading}>{t('uan_activate_account')}</Button>
           </motion.div>
         )}
       </div>

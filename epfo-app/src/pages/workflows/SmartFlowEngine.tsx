@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, Star, Sparkles } from 'lucide-react';
@@ -57,6 +58,7 @@ const EMPLOYER_APPROVAL_FLOWS: Record<string, string> = {
 };
 
 export const SmartFlowEngine: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { getCurrentTask, updateTaskState, checkpointTask, archiveTask, completeCurrentPhase } = useWorkflowStore();
   const { stepUpAuth } = useSessionStore();
@@ -110,7 +112,7 @@ export const SmartFlowEngine: React.FC = () => {
     if (!task?.phases || task.currentPhaseIndex === undefined) return;
     if (prevPhaseIndexRef.current !== undefined && task.currentPhaseIndex > prevPhaseIndexRef.current) {
       setShowPhaseTransition(true);
-      addMessage(`Phase complete: "${task.phases[prevPhaseIndexRef.current]?.label}". Moving to "${task.phases[task.currentPhaseIndex]?.label}".`);
+      addMessage(t('sf_phase_complete_msg', { prev: task.phases[prevPhaseIndexRef.current]?.label, next: task.phases[task.currentPhaseIndex]?.label }));
     }
     prevPhaseIndexRef.current = task.currentPhaseIndex;
   }, [task?.currentPhaseIndex, task?.phases]);
@@ -139,11 +141,11 @@ export const SmartFlowEngine: React.FC = () => {
     if (key === lastToastKey.current) return;
     lastToastKey.current = key;
     if (task.agentState === 'needs_user' && step?.step === 'check_eligibility') {
-      toast.dismiss(); toast('Security Check: We need to verify it is you before checking your PF balance.', { id: 'step_toast', duration: 3000, icon: '🔐' });
+      toast.dismiss(); toast(t('sf_toast_security_check'), { id: 'step_toast', duration: 3000, icon: '🔐' });
     } else if (task.agentState === 'needs_user' && step?.step === 'review_claim') {
-      toast.dismiss(); toast('Required Info: The government needs to know why you are withdrawing funds.', { id: 'step_toast', duration: 3000, icon: '📋' });
+      toast.dismiss(); toast(t('sf_toast_required_info'), { id: 'step_toast', duration: 3000, icon: '📋' });
     } else if (task.agentState === 'sensitive_action') {
-      toast.dismiss(); toast('Final Step: Authorize this action with an OTP to proceed.', { id: 'step_toast', duration: 3000, icon: '🔒' });
+      toast.dismiss(); toast(t('sf_toast_final_step'), { id: 'step_toast', duration: 3000, icon: '🔒' });
     }
   }, [task?.agentState, task?.plan]);
 
@@ -206,7 +208,7 @@ export const SmartFlowEngine: React.FC = () => {
 
   const handleUserProvideDetails = (e: React.FormEvent) => {
     e.preventDefault();
-    if (activeStep?.step === 'check_eligibility' && bankDigits !== '1234') { alert('Invalid digits. Use 1234.'); return; }
+    if (activeStep?.step === 'check_eligibility' && bankDigits !== '1234') { alert(t('sf_invalid_digits')); return; }
     proceedToNextStep();
   };
 
@@ -222,9 +224,9 @@ export const SmartFlowEngine: React.FC = () => {
     setFlowStartTime(Date.now());
     updateTaskState(task.taskId, { agentState: 'in_progress' });
     if (task.phases && task.currentPhaseIndex !== undefined) {
-      addMessage(`I've analyzed your request: "${task.intent}". This is a ${task.phases.length}-phase workflow: ${task.phases.map(p => p.label).join(' → ')}. I'll guide you through each phase step by step. Starting with "${task.phases[0].label}".`);
+      addMessage(t('sf_analyzed_phases', { intent: task.intent, count: task.phases.length, phases: task.phases.map(p => p.label).join(' → '), first: task.phases[0].label }));
     } else {
-      addMessage(`I've analyzed your request: "${task.intent}". I've prepared a ${task.plan.length}-step plan. Let me walk you through each step.`);
+      addMessage(t('sf_analyzed_plan', { intent: task.intent, count: task.plan.length }));
     }
     setTimeout(() => {
       const step = task.plan[currentStepIndex];
@@ -242,19 +244,19 @@ export const SmartFlowEngine: React.FC = () => {
       if (detectedFlows && detectedFlows.length >= 2) {
         const { phases, combinedPlan } = buildMultiPhaseTask(detectedFlows);
         updateTaskState(task.taskId, { intent: query, taskType: 'multi_phase', plan: combinedPlan, phases, currentPhaseIndex: 0, currentStep: combinedPlan[0].step, completedSteps: [], agentState: 'planned' });
-        toast.success(`Detected ${detectedFlows.length}-phase compound workflow! Plan updated.`, { duration: 3000 });
+        toast.success(t('sf_detected_compound', { count: detectedFlows.length }), { duration: 3000 });
       } else {
         const taskType = classifyIntent(query);
         const plan = generatePlan(taskType);
         updateTaskState(task.taskId, { intent: query, taskType, plan, phases: undefined, currentPhaseIndex: undefined, currentStep: plan[0].step, completedSteps: [], agentState: 'planned' });
-        toast.success(`Updated to: ${taskType.replace(/_/g, ' ')}`, { duration: 3000 });
+        toast.success(t('sf_updated_to', { type: taskType.replace(/_/g, ' ') }), { duration: 3000 });
       }
       setIsRefining(false); setRefineInput('');
     }, 1200);
   };
 
   const formatTimeTaken = () => {
-    if (!flowStartTime || !flowEndTime) return "under a minute";
+    if (!flowStartTime || !flowEndTime) return t('sf_under_minute');
     const seconds = Math.floor((flowEndTime - flowStartTime) / 1000);
     return seconds < 60 ? `${seconds} seconds` : `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
   };
@@ -289,17 +291,17 @@ export const SmartFlowEngine: React.FC = () => {
       {/* Header */}
       <div className='bg-white/80 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-slate-200/80 z-10'>
         <div className='flex items-center'>
-          <button onClick={() => navigate(-1)} aria-label="Back to dashboard" className='p-1.5 -ml-1 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'>
+          <button onClick={() => navigate(-1)} aria-label={t('sf_back_to_dashboard')} className='p-1.5 -ml-1 text-slate-600 rounded-full hover:bg-slate-100 transition-colors'>
             <ArrowLeft className='w-5 h-5' />
           </button>
           <h1 className='text-base font-bold text-slate-900 ml-1.5 flex items-center gap-2'>
             <AssistantAvatar className='!w-6 !h-6 shadow-sm mr-1' ringColor={colors.ring} />
-            {hasStartedFlow ? (task.phases && task.phases.length > 1 && task.currentPhaseIndex !== undefined ? task.phases[task.currentPhaseIndex]?.label || 'Executing Flow' : 'Executing Flow') : 'Agent Workflow'}
+            {hasStartedFlow ? (task.phases && task.phases.length > 1 && task.currentPhaseIndex !== undefined ? task.phases[task.currentPhaseIndex]?.label || t('sf_executing_flow') : t('sf_executing_flow')) : t('sf_agent_workflow')}
           </h1>
         </div>
         <div className='flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-xl text-slate-700 font-mono text-[11px] shadow-2xs select-none'>
           <span className='w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse' />
-          <span className='text-[10px] text-slate-400 font-sans uppercase font-bold tracking-tight'>SESSION:</span>
+          <span className='text-[10px] text-slate-400 font-sans uppercase font-bold tracking-tight'>{t('sf_session')}:</span>
           <span className='font-bold text-slate-900 tracking-wider'>#{task.taskId.replace(/[^a-zA-Z0-9]/g, '').slice(-4).toUpperCase()}</span>
         </div>
       </div>
@@ -308,7 +310,7 @@ export const SmartFlowEngine: React.FC = () => {
         {isInitializing ? (
           <AgentSpawnAnimation
             colors={colors}
-            initMessages={agentConfig?.initMessages || ['Initializing Agent...', 'Processing request...', 'Plan generated. Ready to start.']}
+            initMessages={agentConfig?.initMessages || [t('sf_init_agent'), t('sf_init_processing'), t('sf_init_plan_ready')]}
             onComplete={() => setShowSpawn(false)}
           />
         ) : (
@@ -323,9 +325,9 @@ export const SmartFlowEngine: React.FC = () => {
                     <AssistantAvatar state='success' className='!w-6 !h-6 shrink-0' />
                     <div className="flex-1">
                       <p className='font-medium text-slate-800 flex items-center justify-between'>
-                        <span className={`capitalize ${colors.textPrimary}`}>Plan Ready</span>
+                        <span className={`capitalize ${colors.textPrimary}`}>{t('sf_plan_ready')}</span>
                       </p>
-                      <p className='text-sm text-slate-600 mt-1'>I've generated a secure step-by-step plan for your request. Review the overview below and start when ready.</p>
+                      <p className='text-sm text-slate-600 mt-1'>{t('sf_plan_ready_desc')}</p>
                     </div>
                   </div>
                 </div>
@@ -341,7 +343,7 @@ export const SmartFlowEngine: React.FC = () => {
                           {task.phases!.length > 1 && (
                             <div className='flex items-center gap-2 mb-2 ml-10'>
                               <div className='w-2 h-2 rounded-full' style={{ backgroundColor: phase.status === 'completed' ? '#10b981' : phase.status === 'active' ? `rgb(${colors.primaryRgb})` : '#cbd5e1' }} />
-                              <span className='text-xs font-bold text-slate-700 uppercase tracking-wider'>Phase {phaseIdx + 1}: {phase.label}</span>
+                              <span className='text-xs font-bold text-slate-700 uppercase tracking-wider'>{t('sf_phase_label', { num: phaseIdx + 1 })}: {phase.label}</span>
                             </div>
                           )}
                           <div className='space-y-3 relative ml-2'>
@@ -382,18 +384,18 @@ export const SmartFlowEngine: React.FC = () => {
                 <div className='mt-6 p-4 bg-gradient-to-r from-slate-50 to-blue-50/50 border border-slate-200/80 rounded-2xl'>
                   <p className='text-xs font-bold text-slate-600 mb-2 flex items-center gap-1.5'>
                     <Sparkles className='w-3.5 h-3.5 text-epfo-blue' />
-                    Want something else? Type a new request
+                    {t('sf_refine_label')}
                   </p>
                   <div className='flex gap-2'>
                     <input type='text' value={refineInput} onChange={(e) => setRefineInput(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter') handleRefineIntent(); }}
-                      placeholder='e.g. "Fix KYC then mark exit and withdraw PF"'
+                      placeholder={t('sf_refine_placeholder')}
                       className='flex-1 px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-epfo-blue placeholder-slate-400'
-                      disabled={isRefining} aria-label="Refine your request" />
+                      disabled={isRefining} aria-label={t('sf_refine_request')} />
                     <button onClick={handleRefineIntent} disabled={!refineInput.trim() || isRefining}
                       className='px-3 py-2 bg-epfo-blue text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-40'
-                      aria-label="Parse intent">
-                      {isRefining ? 'Analyzing...' : 'Parse'}
+                      aria-label={t('sf_parse_intent')}>
+                      {isRefining ? t('sf_analyzing') : t('sf_parse')}
                     </button>
                   </div>
                 </div>
@@ -407,7 +409,7 @@ export const SmartFlowEngine: React.FC = () => {
                 <div className='flex items-center justify-between mb-4 pb-3 border-b border-slate-100'>
                   <button onClick={goBackStep} disabled={currentStepIndex === 0}
                     className='flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-epfo-blue transition-colors disabled:opacity-30'>
-                    <ArrowLeft className='w-4 h-4' /> Back
+                    <ArrowLeft className='w-4 h-4' /> {t('sf_back')}
                   </button>
                   <div className='flex items-center gap-2 bg-slate-100 px-4 py-1.5 rounded-full'>
                     {task.phases && task.currentPhaseIndex != null && (() => {
@@ -439,14 +441,14 @@ export const SmartFlowEngine: React.FC = () => {
                       ))}
                     </div>
                     <span className='text-xs font-bold text-slate-700 tracking-wide uppercase'>
-                      Step {currentStepIndex + 1} of {task.plan.length}
+                      {t('sf_step_of_total', { current: currentStepIndex + 1, total: task.plan.length })}
                     </span>
                   </div>
                   <div className='w-[60px]' />
                 </div>
 
                 {/* Chat messages */}
-                <div className='space-y-3 mb-4' role="log" aria-label="Agent chat messages" aria-live="polite">
+                <div className='space-y-3 mb-4' role="log" aria-label={t('sf_chat_messages')} aria-live="polite">
                   <AnimatePresence>
                     {messages.map((msg) => (
                       <motion.div key={msg.id} initial={{ opacity: 0, y: 8, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.25 }}
@@ -493,7 +495,7 @@ export const SmartFlowEngine: React.FC = () => {
                         {activeStep?.description}
                         {task.agentState === 'in_progress' && <ThinkingAnimation color={`rgb(${colors.primaryRgb})`} />}
                       </h3>
-                      {task.agentState === 'planned' && <p className='text-xs text-slate-500 mt-1'>Ready to execute.</p>}
+                      {task.agentState === 'planned' && <p className='text-xs text-slate-500 mt-1'>{t('sf_ready_to_execute')}</p>}
                     </div>
                   </div>
                   <div className="border-t border-slate-100 pt-4 mt-2">
@@ -506,7 +508,7 @@ export const SmartFlowEngine: React.FC = () => {
                       onBankDigitsChange={setBankDigits} onPurposeChange={setPurpose} onAmountChange={setAmount}
                       onOtpInputChange={setOtpInput} onGrievanceTypeChange={setGrievanceType} onEmployerNameChange={setEmployerName}
                       onSubmitDetails={handleUserProvideDetails} onSensitiveAction={handleSensitiveAction}
-                      onScanFace={() => { toast.success('Face matched successfully with Aadhaar database!'); proceedToNextStep(); }}
+                      onScanFace={() => { toast.success(t('sf_face_matched')); proceedToNextStep(); }}
                       onProceed={proceedToNextStep}
                       onGrievanceSubmit={(e) => { e.preventDefault(); updateTaskState(task.taskId, { grievanceType }); proceedToNextStep(); }}
                     />
@@ -530,21 +532,21 @@ export const SmartFlowEngine: React.FC = () => {
                 <CheckCircle2 className='w-8 h-8 text-green-600' />
               </div>
               <div>
-                <h3 className='font-bold text-green-900 text-lg'>All Steps Completed</h3>
-                <p className='text-green-800 text-sm mt-1'>Your request has been processed and filed. The agent has successfully completed all necessary actions on your behalf.</p>
+                <h3 className='font-bold text-green-900 text-lg'>{t('sf_all_steps_completed')}</h3>
+                <p className='text-green-800 text-sm mt-1'>{t('sf_all_steps_completed_desc')}</p>
               </div>
             </div>
 
             {!isFeedbackSubmitted ? (
               <div className='bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden'>
                 <div className='px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between'>
-                  <span className='text-xs font-medium text-slate-500'>Process Time via Smart Flow</span>
+                  <span className='text-xs font-medium text-slate-500'>{t('sf_process_time')}</span>
                   <span className='text-xs font-bold text-epfo-blue bg-white px-2 py-0.5 rounded-md border border-slate-200'>{formatTimeTaken()}</span>
                 </div>
                 <div className='p-5 space-y-4'>
                   <div>
-                    <h4 className='font-bold text-slate-800 mb-1'>How was your experience?</h4>
-                    <p className='text-xs text-slate-400 mb-3'>Tap a star to rate</p>
+                    <h4 className='font-bold text-slate-800 mb-1'>{t('sf_how_was_experience')}</h4>
+                    <p className='text-xs text-slate-400 mb-3'>{t('sf_tap_star_to_rate')}</p>
                     <div className='flex gap-1'>
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button key={star} onClick={() => setRating(star)} className={`p-1 transition-colors ${rating >= star ? 'text-amber-400' : 'text-slate-200 hover:text-amber-200'}`}>
@@ -555,27 +557,27 @@ export const SmartFlowEngine: React.FC = () => {
                   </div>
                   {rating > 0 && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className='space-y-3 overflow-hidden'>
-                      <textarea placeholder='Any difficulty or suggestion? (Optional)' className='w-full p-3 text-sm border border-slate-200 rounded-xl outline-none focus:border-epfo-blue resize-none' rows={2} value={feedbackText} onChange={(e) => setFeedbackText(e.target.value)} />
+                      <textarea placeholder={t('sf_feedback_placeholder')} className='w-full p-3 text-sm border border-slate-200 rounded-xl outline-none focus:border-epfo-blue resize-none' rows={2} value={feedbackText} onChange={(e) => setFeedbackText(e.target.value)} />
                       <div className='flex items-start gap-2'>
                         <input type='checkbox' id='consent' checked={consentGiven} onChange={e => setConsentGiven(e.target.checked)} className='mt-1 shrink-0' />
-                        <label htmlFor='consent' className='text-[11px] text-slate-400 leading-tight'>I consent to sharing anonymous feedback to help improve EPFO services.</label>
+                        <label htmlFor='consent' className='text-[11px] text-slate-400 leading-tight'>{t('sf_consent_label')}</label>
                       </div>
                     </motion.div>
                   )}
-                  <Button onClick={() => { setIsFeedbackSubmitted(true); toast.success('Thank you for your valuable feedback!'); }}
+                  <Button onClick={() => { setIsFeedbackSubmitted(true); toast.success(t('sf_feedback_thanks')); }}
                     className='w-full bg-slate-900 text-white hover:bg-slate-800' disabled={rating === 0}>
-                    {rating === 0 ? 'Rate to Submit Feedback' : 'Submit Feedback'}
+                    {rating === 0 ? t('sf_rate_to_submit') : t('sf_submit_feedback')}
                   </Button>
                   {rating === 0 && (
-                    <p className='text-center text-[11px] text-slate-400'>Or <button className='underline font-medium' onClick={() => setIsFeedbackSubmitted(true)}>skip feedback</button></p>
+                    <p className='text-center text-[11px] text-slate-400'>{t('sf_or')} <button className='underline font-medium' onClick={() => setIsFeedbackSubmitted(true)}>{t('sf_skip_feedback')}</button></p>
                   )}
                 </div>
               </div>
             ) : (
               <div className='bg-blue-50 border border-blue-100 p-6 rounded-2xl flex flex-col items-center justify-center gap-2 shadow-inner'>
                 <AssistantAvatar state='thank_you' className='!w-12 !h-12 mb-2 shadow-md' />
-                <p className='font-bold text-blue-900 text-lg'>Thank you!</p>
-                <p className='text-sm text-blue-700'>Your feedback has been recorded.</p>
+                <p className='font-bold text-blue-900 text-lg'>{t('sf_thank_you')}</p>
+                <p className='text-sm text-blue-700'>{t('sf_feedback_recorded')}</p>
               </div>
             )}
           </motion.div>
@@ -585,22 +587,22 @@ export const SmartFlowEngine: React.FC = () => {
       {/* Bottom buttons */}
       {(!isInitializing && !isDone && !hasStartedFlow && task.agentState === 'planned') && (
         <div className='absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50'>
-          <Button className='w-full py-4 text-lg' onClick={handleStartFlow} aria-label="Start workflow">START FLOW</Button>
+          <Button className='w-full py-4 text-lg' onClick={handleStartFlow} aria-label={t('sf_start_workflow')}>{t('sf_start_flow')}</Button>
         </div>
       )}
       {(!isInitializing && !isDone && hasStartedFlow && task.agentState === 'planned') && (
         <div className='absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50'>
-          <Button className='w-full py-4 text-lg' onClick={handleAgentAction} aria-label="Execute next step">EXECUTE NEXT STEP</Button>
+          <Button className='w-full py-4 text-lg' onClick={handleAgentAction} aria-label={t('sf_execute_next_step')}>{t('sf_execute_next_step_label')}</Button>
         </div>
       )}
       {isDone && (
         <div className='absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50'>
-          <Button className='w-full py-4 text-lg' onClick={handleFinish} aria-label="Return to dashboard">Return to Dashboard</Button>
+          <Button className='w-full py-4 text-lg' onClick={handleFinish} aria-label={t('sf_back_to_dashboard')}>{t('sf_return_to_dashboard')}</Button>
         </div>
       )}
       {isPendingEmployer && (
         <div className='absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50'>
-          <Button className='w-full py-4 text-lg' onClick={() => navigate('/')} aria-label="Return to dashboard">Return to Dashboard</Button>
+          <Button className='w-full py-4 text-lg' onClick={() => navigate('/')} aria-label={t('sf_back_to_dashboard')}>{t('sf_return_to_dashboard')}</Button>
         </div>
       )}
     </div>
