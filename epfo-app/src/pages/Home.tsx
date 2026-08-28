@@ -30,7 +30,7 @@ import { NotificationModal } from '../components/notifications/NotificationModal
 import { NotificationCardStack } from '../components/notifications/NotificationCardStack';
 import toast from 'react-hot-toast';
 import { AssistantAvatar } from '../components/ui/AssistantAvatar';
-import { detectCompoundIntent, classifyIntent } from '../lib/flowDetection';
+
 import { generatePlan } from '../agents/registry';
 import { buildMultiPhaseTask } from '../agents/compound';
 import { ClaimTrackerCard } from '../components/dashboard/ClaimTrackerCard';
@@ -116,7 +116,7 @@ export const Home: React.FC = () => {
     }
   };
 
-  const handleAgenticStart = (e?: React.FormEvent, customQuery?: string) => {
+  const handleAgenticStart = async (e?: React.FormEvent, customQuery?: string) => {
     if (e) e.preventDefault();
     const query = (customQuery || chatInput).trim();
     if (!query) return;
@@ -124,27 +124,38 @@ export const Home: React.FC = () => {
     setIsAnalyzing(true);
     setAnalyzePhase('fetching');
     
-    setTimeout(() => setAnalyzePhase('generating'), 1000);
-    setTimeout(() => setAnalyzePhase('starting'), 2000);
+    try {
+      const { analyzeIntentWithGroq } = await import('../lib/llm');
+      const result = await analyzeIntentWithGroq(query);
+      
+      setAnalyzePhase('generating');
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setAnalyzePhase('starting');
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-    setTimeout(() => {
       setIsAnalyzing(false);
       setAnalyzePhase(null);
 
-      const detectedFlows = detectCompoundIntent(query);
-
-      if (detectedFlows && detectedFlows.length >= 2) {
-        const { phases, combinedPlan } = buildMultiPhaseTask(detectedFlows);
-        startTask(query, 'multi_phase', combinedPlan, phases);
+      if (result.matched) {
+        const detectedFlows = result.flows;
+        if (detectedFlows.length >= 2) {
+          const { phases, combinedPlan } = buildMultiPhaseTask(detectedFlows);
+          startTask(query, 'multi_phase', combinedPlan, phases);
+        } else {
+          const taskType = detectedFlows[0];
+          const plan = generatePlan(taskType);
+          startTask(query, taskType, plan);
+        }
+        setChatInput('');
+        navigate('/smart-flow');
       } else {
-        const taskType = classifyIntent(query);
-        const plan = generatePlan(taskType);
-        startTask(query, taskType, plan);
+        toast.error(result.message);
       }
-
-      setChatInput('');
-      navigate('/smart-flow');
-    }, 2800);
+    } catch (error) {
+      setIsAnalyzing(false);
+      setAnalyzePhase(null);
+      toast.error("no cant help use traditional flow");
+    }
   };
 
   const [resumeTaskId, setResumeTaskId] = useState<string | null>(null);

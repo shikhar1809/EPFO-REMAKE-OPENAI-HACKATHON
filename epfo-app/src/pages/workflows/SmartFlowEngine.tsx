@@ -13,7 +13,7 @@ import { useWorkflowStore } from '../../store/useWorkflowStore';
 import type { Phase } from '../../store/useWorkflowStore';
 import { PhaseTransition } from '../../components/ui/PhaseTransition';
 import { useSessionStore } from '../../store/useSessionStore';
-import { detectCompoundIntent, classifyIntent } from '../../lib/flowDetection';
+
 import { getAgentColors, getStepConfig, getAgent, generatePlan } from '../../agents/registry';
 import { buildMultiPhaseTask } from '../../agents/compound';
 import toast from 'react-hot-toast';
@@ -271,24 +271,36 @@ export const SmartFlowEngine: React.FC = () => {
     }, 1500);
   };
 
-  const handleRefineIntent = () => {
+  const handleRefineIntent = async () => {
     const query = refineInput.trim();
     if (!query) return;
     setIsRefining(true);
-    setTimeout(() => {
-      const detectedFlows = detectCompoundIntent(query);
-      if (detectedFlows && detectedFlows.length >= 2) {
-        const { phases, combinedPlan } = buildMultiPhaseTask(detectedFlows);
-        updateTaskState(task.taskId, { intent: query, taskType: 'multi_phase', plan: combinedPlan, phases, currentPhaseIndex: 0, currentStep: combinedPlan[0].step, completedSteps: [], agentState: 'planned' });
-        toast.success(t('sf_detected_compound', { count: detectedFlows.length }), { duration: 3000 });
+    
+    try {
+      const { analyzeIntentWithGroq } = await import('../../lib/llm');
+      const result = await analyzeIntentWithGroq(query);
+
+      if (result.matched) {
+        const detectedFlows = result.flows;
+        if (detectedFlows.length >= 2) {
+          const { phases, combinedPlan } = buildMultiPhaseTask(detectedFlows);
+          updateTaskState(task.taskId, { intent: query, taskType: 'multi_phase', plan: combinedPlan, phases, currentPhaseIndex: 0, currentStep: combinedPlan[0].step, completedSteps: [], agentState: 'planned' });
+          toast.success(t('sf_detected_compound', { count: detectedFlows.length }), { duration: 3000 });
+        } else {
+          const taskType = detectedFlows[0];
+          const plan = generatePlan(taskType);
+          updateTaskState(task.taskId, { intent: query, taskType, plan, phases: undefined, currentPhaseIndex: undefined, currentStep: plan[0].step, completedSteps: [], agentState: 'planned' });
+          toast.success(t('sf_updated_to', { type: taskType.replace(/_/g, ' ') }), { duration: 3000 });
+        }
       } else {
-        const taskType = classifyIntent(query);
-        const plan = generatePlan(taskType);
-        updateTaskState(task.taskId, { intent: query, taskType, plan, phases: undefined, currentPhaseIndex: undefined, currentStep: plan[0].step, completedSteps: [], agentState: 'planned' });
-        toast.success(t('sf_updated_to', { type: taskType.replace(/_/g, ' ') }), { duration: 3000 });
+        toast.error(result.message);
       }
-      setIsRefining(false); setRefineInput('');
-    }, 1200);
+    } catch (error) {
+      toast.error("no cant help use traditional flow");
+    } finally {
+      setIsRefining(false);
+      setRefineInput('');
+    }
   };
 
   const formatTimeTaken = () => {

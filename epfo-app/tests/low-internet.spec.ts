@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const BASE = 'https://epfo-remake-openai.vercel.app';
+const BASE = 'http://localhost:5173';
 
 async function stubConnection(page: Page, effectiveType: string, saveData: boolean) {
   await page.addInitScript(

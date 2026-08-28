@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const BASE = 'https://epfo-remake-openai.vercel.app';
+const BASE = 'http://localhost:5173';
 
 async function onboard(page: Page) {
   await page.goto(BASE);
