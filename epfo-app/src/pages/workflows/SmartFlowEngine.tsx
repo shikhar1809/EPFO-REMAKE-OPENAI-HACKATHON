@@ -89,7 +89,8 @@ export const SmartFlowEngine: React.FC = () => {
   const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
   const [grievanceType, setGrievanceType] = useState('');
   const [employerName, setEmployerName] = useState('');
-  const [messages, setMessages] = useState<AgentMessage[]>([]);
+  const [activeInsightTab, setActiveInsightTab] = useState<'root_cause' | 'scale'>('root_cause');
+    const [messages, setMessages] = useState<AgentMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const msgIdRef = useRef(0);
@@ -385,20 +386,20 @@ export const SmartFlowEngine: React.FC = () => {
                 {document.getElementById('right-side-portal') && createPortal(
                   <>
                     {agentConfig?.rootCause && (
-                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className='p-5 rounded-3xl border border-amber-500/20 bg-slate-900 shadow-2xl'>
-                        <p className='text-xs font-bold text-amber-500 uppercase tracking-wider mb-2'>⚠ Why this problem exists</p>
-                        <p className='text-sm text-slate-300 leading-relaxed'>{agentConfig.rootCause}</p>
+                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className='p-5 rounded-2xl border border-amber-200 bg-white shadow-sm mb-4'>
+                        <p className='text-[11px] font-bold text-amber-600 uppercase tracking-wider mb-2'>💡 Why this problem exists</p>
+                        <p className='text-[12px] text-slate-600 leading-relaxed'>{agentConfig.rootCause}</p>
                       </motion.div>
                     )}
 
                     {(agentConfig?.apiIntegration || agentConfig?.scaleNote) && (
-                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className='p-5 rounded-3xl border border-blue-500/20 bg-slate-900 shadow-2xl'>
-                        <p className='text-xs font-bold text-blue-400 uppercase tracking-wider mb-3'>🔌 How this works at scale</p>
+                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className='p-5 rounded-2xl border border-blue-200 bg-white shadow-sm'>
+                        <p className='text-[11px] font-bold text-blue-600 uppercase tracking-wider mb-3'>🚀 How this works at scale</p>
                         {agentConfig?.apiIntegration && (
-                          <p className='text-sm text-slate-300 leading-relaxed mb-3'><span className='font-semibold text-slate-100'>APIs:</span> {agentConfig.apiIntegration}</p>
+                          <p className='text-[12px] text-slate-600 leading-relaxed mb-3'><span className='font-semibold text-slate-800'>APIs:</span> {agentConfig.apiIntegration}</p>
                         )}
                         {agentConfig?.scaleNote && (
-                          <p className='text-sm text-slate-300 leading-relaxed'><span className='font-semibold text-slate-100'>Scale:</span> {agentConfig.scaleNote}</p>
+                          <p className='text-[12px] text-slate-600 leading-relaxed'><span className='font-semibold text-slate-800'>Scale:</span> {agentConfig.scaleNote}</p>
                         )}
                       </motion.div>
                     )}
@@ -701,5 +702,6 @@ export const SmartFlowEngine: React.FC = () => {
     </div>
   );
 };
+
 
 
