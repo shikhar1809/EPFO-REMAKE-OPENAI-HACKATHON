@@ -406,15 +406,6 @@ export const SmartFlowEngine: React.FC = () => {
                   document.getElementById('right-side-portal')!
                 )}
 
-                {/* Mock Disclosure */}
-                <div className='mb-4 p-3 rounded-2xl border border-blue-200 bg-blue-50 flex items-start gap-2'>
-                  <span className='text-base shrink-0'>🧪</span>
-                  <div>
-                    <p className='text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-0.5'>Prototype — All data is simulated</p>
-                    <p className='text-xs text-blue-800 leading-relaxed'>No real EPFO, UIDAI or banking APIs are called. UAN, Aadhaar, bank details, OTPs and balances are synthetic mock data. Real OTP = <span className='font-mono font-bold'>1234</span>. This prototype demonstrates the citizen journey; production would require formal API agreements and security certifications.</p>
-                  </div>
-                </div>
-
                 <div className='space-y-3 relative ml-2'>
                   <div className='absolute left-[15px] top-4 bottom-4 w-0.5 bg-slate-200 -z-10' />
                   {task.phases ? (
