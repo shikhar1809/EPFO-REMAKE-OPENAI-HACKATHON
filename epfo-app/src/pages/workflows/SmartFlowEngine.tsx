@@ -385,14 +385,14 @@ export const SmartFlowEngine: React.FC = () => {
                 {document.getElementById('right-side-portal') && createPortal(
                   <>
                     {agentConfig?.rootCause && (
-                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className='p-5 rounded-3xl border border-amber-500/20 bg-amber-500/10 shadow-2xl backdrop-blur-md'>
+                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className='p-5 rounded-3xl border border-amber-500/20 bg-slate-900 shadow-2xl'>
                         <p className='text-xs font-bold text-amber-500 uppercase tracking-wider mb-2'>⚠ Why this problem exists</p>
                         <p className='text-sm text-slate-300 leading-relaxed'>{agentConfig.rootCause}</p>
                       </motion.div>
                     )}
 
                     {(agentConfig?.apiIntegration || agentConfig?.scaleNote) && (
-                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className='p-5 rounded-3xl border border-blue-500/20 bg-blue-500/10 shadow-2xl backdrop-blur-md'>
+                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className='p-5 rounded-3xl border border-blue-500/20 bg-slate-900 shadow-2xl'>
                         <p className='text-xs font-bold text-blue-400 uppercase tracking-wider mb-3'>🔌 How this works at scale</p>
                         {agentConfig?.apiIntegration && (
                           <p className='text-sm text-slate-300 leading-relaxed mb-3'><span className='font-semibold text-slate-100'>APIs:</span> {agentConfig.apiIntegration}</p>

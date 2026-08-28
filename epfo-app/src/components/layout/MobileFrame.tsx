@@ -255,7 +255,7 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
         </div>
         
         {/* Portal Target for Right-Side Content (Outside Mobile Frame) */}
-        <div id="right-side-portal" className="hidden xl:flex flex-col gap-4 absolute left-[calc(50%+230px)] top-12 w-[340px] pointer-events-auto" />
+        <div id="right-side-portal" className="hidden lg:flex flex-col gap-4 fixed right-6 top-16 w-[320px] z-[100] pointer-events-auto" />
       </div>
 
       {/* Right Panel — Comparison (Desktop) */}
