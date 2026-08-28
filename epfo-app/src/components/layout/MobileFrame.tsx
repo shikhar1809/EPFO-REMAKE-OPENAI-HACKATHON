@@ -272,3 +272,4 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
     </div>
   );
 };
+
