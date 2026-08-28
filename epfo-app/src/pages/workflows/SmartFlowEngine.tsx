@@ -544,6 +544,12 @@ export const SmartFlowEngine: React.FC = () => {
                           msg.type === 'agent' ? 'bg-white border border-slate-200 text-slate-700 rounded-tl-md shadow-sm' : 'text-white rounded-tr-md'
                         }`} style={msg.type !== 'agent' ? { backgroundColor: `rgb(${colors.primaryRgb})` } : undefined}>
                           <TypewriterText text={msg.text} speed={18} onComplete={() => setIsTyping(false)} />
+                          {msg.type === 'agent' && idx === 0 && (
+                            <div className='mt-2 text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md uppercase tracking-wider inline-flex items-center gap-1 border border-blue-200 shadow-sm'>
+                              <div className='w-1 h-1 rounded-full bg-green-500 animate-pulse'></div>
+                              Powered by live Groq API
+                            </div>
+                          )}
                         </div>
                       </motion.div>
                     ))}
