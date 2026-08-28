@@ -270,8 +270,9 @@ export const Home: React.FC = () => {
 
         {/* Global Analyzing Overlay — shows during handleAgenticStart from any view */}
         {isAnalyzing && (
-          <div className='bg-slate-50 rounded-2xl border border-blue-100 p-6 flex flex-col items-center justify-center space-y-4 shadow-inner min-h-[180px]'>
-            <div className='w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center'>
+          <div className='bg-slate-50 rounded-2xl border border-blue-100 p-6 flex flex-col items-center justify-center space-y-4 shadow-inner min-h-[180px] relative overflow-hidden'>
+            <div className='absolute top-0 inset-x-0 bg-blue-600 text-white text-[9px] font-bold uppercase tracking-widest text-center py-1 animate-pulse shadow-sm flex items-center justify-center gap-1.5'><div className='w-1.5 h-1.5 rounded-full bg-green-400 animate-ping'></div> Calling Groq API (openai/gpt-oss-20b)</div>
+              <div className='w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mt-2'>
               <AssistantAvatar 
                 state={analyzePhase === 'fetching' ? 'reading' : analyzePhase === 'generating' ? 'generating' : 'processing'} 
                 className='!w-8 !h-8 text-epfo-blue shadow-md' 
@@ -699,3 +700,4 @@ export const Home: React.FC = () => {
     </div>
   );
 }
+
