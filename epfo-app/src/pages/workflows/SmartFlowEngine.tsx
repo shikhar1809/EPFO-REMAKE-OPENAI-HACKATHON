@@ -406,6 +406,20 @@ export const SmartFlowEngine: React.FC = () => {
                   document.getElementById('right-side-portal')!
                 )}
 
+                {/* LLM Powered Disclosure */}
+                <div className='mb-4 p-3 rounded-2xl border border-emerald-200 bg-emerald-50 flex items-center gap-3'>
+                  <div className='w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 shadow-inner'>
+                    <span className='text-lg'>⚡</span>
+                  </div>
+                  <div>
+                    <p className='text-[10px] font-bold text-emerald-700 uppercase tracking-widest mb-0.5 flex items-center gap-1.5'>
+                      <span className='w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse'></span>
+                      AI Agent Active
+                    </p>
+                    <p className='text-[11px] text-emerald-800 font-medium'>Powered by <span className='font-mono font-bold bg-emerald-200/50 px-1 py-0.5 rounded border border-emerald-300'>openai/gpt-oss-20b</span></p>
+                  </div>
+                </div>
+
                 <div className='space-y-3 relative ml-2'>
                   <div className='absolute left-[15px] top-4 bottom-4 w-0.5 bg-slate-200 -z-10' />
                   {task.phases ? (
