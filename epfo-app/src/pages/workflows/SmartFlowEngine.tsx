@@ -532,7 +532,7 @@ export const SmartFlowEngine: React.FC = () => {
                 {/* Chat messages */}
                 <div className='space-y-3 mb-4' role="log" aria-label={t('sf_chat_messages')} aria-live="polite">
                   <AnimatePresence>
-                    {messages.map((msg) => (
+                    {messages.map((msg, idx) => (
                       <motion.div key={msg.id} initial={{ opacity: 0, y: 8, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.25 }}
                         className={`flex items-start gap-2.5 ${msg.type === 'agent' ? '' : 'flex-row-reverse'}`}>
                         {msg.type === 'agent' && (
@@ -690,3 +690,4 @@ export const SmartFlowEngine: React.FC = () => {
     </div>
   );
 };
+
