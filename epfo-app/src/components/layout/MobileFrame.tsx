@@ -24,6 +24,9 @@ const ComparisonPanelContent: React.FC<{
 
   return (
     <div className='flex-1 overflow-y-auto px-4 py-3 space-y-4'>
+      {/* Portal Target for Insights Inside Comparison Panel */}
+      <div id="right-side-portal" className="flex flex-col gap-4 w-full empty:hidden" />
+      
       <div>
         <p className='text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-1'>Page</p>
         <p className='text-[13px] font-semibold text-slate-800 font-mono'>{route}</p>
@@ -253,9 +256,6 @@ export const MobileFrame: React.FC<{ children: React.ReactNode }> = ({ children 
             {children}
           </main>
         </div>
-        
-        {/* Portal Target for Right-Side Content (Outside Mobile Frame) */}
-        <div id="right-side-portal" className="hidden lg:flex flex-col gap-4 fixed right-6 top-16 w-[320px] z-[100] pointer-events-auto" />
       </div>
 
       {/* Right Panel — Comparison (Desktop) */}
